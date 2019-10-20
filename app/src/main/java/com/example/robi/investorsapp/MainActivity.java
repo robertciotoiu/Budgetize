@@ -6,7 +6,11 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableContainer;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,14 +41,31 @@ public class MainActivity extends AppCompatActivity {
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
-        wallets = new ArrayList<>();
-        wallets.add(new Wallet(2000,1000));
-        wallets.add(new Wallet(780,1000));
-        //wallets.add(new Wallet(280,45));
-        wallets.add(new Wallet(700,700));
-        //wallets.add(new Wallet(445,230));
-        //wallets.add(new Wallet(700,700));
+        init_screen();
 
+
+
+
+
+    }
+
+
+    private void init_screen()
+    {
+        init_wallets();
+        init_viewPager();
+    }
+
+    private void init_wallets()
+    {
+        wallets = new ArrayList<>();//here we should import the existing wallets from memory/database
+        wallets.add(new Wallet(2000,1000));//test data
+        wallets.add(new Wallet(780,1000));//test data
+        wallets.add(new Wallet(700,700));//test data
+    }
+
+    private void init_viewPager()
+    {
         adapter = new Adapter(wallets, this);
 
         viewPager = findViewById(R.id.viewPager);
@@ -57,24 +78,24 @@ public class MainActivity extends AppCompatActivity {
                 getResources().getColor(R.color.colorPrimaryDark)};
 
         colors = colors_temp;
+        adapter = new Adapter(wallets, this);
+
+
+//        viewPager.OnAdapterChangeListener(new ViewPager.OnAdapterChangeListener() {
+//            void onAdapterChanged(@NonNull ViewPager var1, @Nullable PagerAdapter var2, @Nullable PagerAdapter var3)
+//            {
+//
+//            }
+//
+//        });
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
-                if(i<(adapter.getCount()-1)&&i<(colors.length-1))
-                {
-                    viewPager.setBackgroundColor(
-                            (Integer)argbEvaluator.evaluate(
-                                    v,
-                                    colors[i],
-                                    colors[i+1]
-                            )
-                    );
-                }
-                else
-                {
-                    viewPager.setBackgroundColor(colors[colors.length-1]);
-                }
+                //aici e pe masura ce se schimba pagina
+                //aici pot sa pun sa se incarce cercul cu bani
+//                Adapter a = (Adapter) viewPager.getAdapter();
+//                int ie = ((Integer) a.getCurrentWallet(i).getIE()).intValue();
             }
 
             @Override
@@ -87,6 +108,35 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+//        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int i, float v, int i1) {
+//                if(i<(adapter.getCount()-1)&&i<(colors.length-1))
+//                {
+//                    viewPager.setBackgroundColor(
+//                            (Integer)argbEvaluator.evaluate(
+//                                    v,
+//                                    colors[i],
+//                                    colors[i+1]
+//                            )
+//                    );
+//                }
+//                else
+//                {
+//                    viewPager.setBackgroundColor(colors[colors.length-1]);
+//                }
+//            }
+//
+//            @Override
+//            public void onPageSelected(int i) {
+//
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int i) {
+//
+//            }
+//        });
     }
 
 }
