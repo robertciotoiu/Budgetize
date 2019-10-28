@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <ProgressBar
+        android:id= "@+id/progressBar"
+        style= "?android:attr/progressBarStyleHorizontal"
+        android:layout_width= "200dp"
+        android:layout_height= "200dp"
+        android:layout_centerInParent= "true"
+        android:background= "@drawable/circular_shape"
+        android:indeterminate= "false"
+        android:max= "100"
+        android:progress= "65"
+        android:progressDrawable= "@drawable/circular_progress_bar_negative" />
+</selector>
