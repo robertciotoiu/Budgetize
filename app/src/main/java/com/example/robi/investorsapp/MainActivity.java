@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.PagerAdapter;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.support.v7.content.res.AppCompatResources;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private void init_wallets()
     {
         wallets = new ArrayList<>();//here we should import the existing wallets from memory/database
+        //Warning: I think that the wallet needs to contain also design data
         wallets.add(new Wallet(2000,1000));//test data
         wallets.add(new Wallet(780,1000));//test data
         wallets.add(new Wallet(700,700));//test data
@@ -79,6 +82,18 @@ public class MainActivity extends AppCompatActivity {
 
         colors = colors_temp;
         adapter = new Adapter(wallets, this);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabDots);
+        tabLayout.setupWithViewPager(viewPager, true);
+
+        for(int i=0; i < tabLayout.getTabCount(); i++) {
+
+
+            View tab = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(i);
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) tab.getLayoutParams();
+            p.setMargins(0, 0, 20, 0);
+            tab.requestLayout();
+        }
 
 
 //        viewPager.OnAdapterChangeListener(new ViewPager.OnAdapterChangeListener() {

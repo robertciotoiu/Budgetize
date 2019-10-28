@@ -7,18 +7,23 @@
 
         <color name="positiveBackgroundColor">#00C853</color>
         <color name="positiveCircleColor">#B9F6CA</color> <!--#E8F5E9-->
+            <color name="positiveCircleColorNew">#1B5E20</color> <!--#E8F5E9-->
         <color name="positiveMoneyColor">#B9F6CA</color>    <!--#E8F5E9-->
         <color name="positiveButton">#00E676</color>
 
         <color name="negativeBackgroundColor">#D50000</color>
         <color name="negativeCircleColor">#FF8A80</color> <!-- FFEBEE-->
+            <color name="negativeCircleColorNew">#B71C1C</color> <!-- FFEBEE-->
         <color name="negativeMoneyColor">#FF8A80</color>    <!-- FFEBEE-->
         <color name="negativeButton">#00E676</color>
 
         <color name="neutralBackgroundColor">#FFAB00</color>
         <color name="neutralCircleColor">#FFE57F</color> <!-- FFF8E1-->
+            <color name="neutralCircleColorNew">#F57F17</color> <!-- FFF8E1-->
         <color name="neutralMoneyColor">#FFE57F</color>    <!-- FFF8E1-->
         <color name="neutralButton">#00E676</color>
 
+
+        <color name="defaultTextColor">#FFFFFF</color>
 
 </resources>

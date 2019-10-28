@@ -4,6 +4,10 @@ public class Wallet {
 
     private int income;
     private int expenses;
+    private int current_sum;
+    //private int ArrayList<IncomeObj> incomesArr;
+    //private int ArrayList<ExpenseObj> expenseArr;
+
 
     public Wallet(int income, int expenses)
     {
