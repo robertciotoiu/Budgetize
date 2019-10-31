@@ -4,7 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/base_layout"
     tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/main_screen_layout"
+        >
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_wallet"
 
@@ -25,7 +32,7 @@
         app:srcCompat="@drawable/ic_add_black_84dp"
 
 
-        />
+        android:focusable="true" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/remove_wallet"
@@ -48,7 +55,7 @@
         app:srcCompat="@drawable/ic_delete_black_24dp"
 
 
-        />
+        android:focusable="true" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager"
@@ -77,9 +84,19 @@
         app:tabBackground="@drawable/tab_selector"
         app:tabGravity="center"
         app:tabIndicatorHeight="0dp"/>
+    </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/create_wallet_layout"
+        ></RelativeLayout>
 
-
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/delete_wallet_layout"
+        ></RelativeLayout>
 
 
 </RelativeLayout>
