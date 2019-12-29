@@ -1,6 +1,7 @@
 package com.example.robi.investorsapp;
 
 import android.animation.ArgbEvaluator;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableContainer;
@@ -8,6 +9,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -33,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
     Adapter adapter;
     Integer[] colors = null;
-    ArgbEvaluator argbEvaluator = new ArgbEvaluator();
     List<Wallet> wallets;
 
 
@@ -44,11 +45,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init_screen();
-
-
-
-
-
     }
 
 
@@ -56,6 +52,19 @@ public class MainActivity extends AppCompatActivity {
     {
         init_wallets();
         init_viewPager();
+        init_listeners();
+    }
+
+    private void init_listeners()
+    {
+        FloatingActionButton myFab = (FloatingActionButton) this.findViewById(R.id.add_wallet);
+        myFab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent myIntent = new Intent(MainActivity.this, CreateWalletActivity.class);
+                //myIntent.putExtra("key", value); //Optional parameters
+                MainActivity.this.startActivity(myIntent);
+            }
+        });
     }
 
     private void init_wallets()
@@ -71,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     {
         adapter = new Adapter(wallets, this);
 
-        viewPager = findViewById(R.id.viewPager);
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
         viewPager.setPadding(0,0,0,0);
 
@@ -96,21 +105,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-//        viewPager.OnAdapterChangeListener(new ViewPager.OnAdapterChangeListener() {
-//            void onAdapterChanged(@NonNull ViewPager var1, @Nullable PagerAdapter var2, @Nullable PagerAdapter var3)
-//            {
-//
-//            }
-//
-//        });
-
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
-                //aici e pe masura ce se schimba pagina
-                //aici pot sa pun sa se incarce cercul cu bani
-//                Adapter a = (Adapter) viewPager.getAdapter();
-//                int ie = ((Integer) a.getCurrentWallet(i).getIE()).intValue();
             }
 
             @Override
@@ -123,35 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-//        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int i, float v, int i1) {
-//                if(i<(adapter.getCount()-1)&&i<(colors.length-1))
-//                {
-//                    viewPager.setBackgroundColor(
-//                            (Integer)argbEvaluator.evaluate(
-//                                    v,
-//                                    colors[i],
-//                                    colors[i+1]
-//                            )
-//                    );
-//                }
-//                else
-//                {
-//                    viewPager.setBackgroundColor(colors[colors.length-1]);
-//                }
-//            }
-//
-//            @Override
-//            public void onPageSelected(int i) {
-//
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int i) {
-//
-//            }
-//        });
+
     }
 
 }
