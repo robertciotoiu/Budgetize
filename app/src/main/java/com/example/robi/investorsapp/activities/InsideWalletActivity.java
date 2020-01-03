@@ -1,6 +1,6 @@
 package com.example.robi.investorsapp.activities;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.robi.investorsapp.R;

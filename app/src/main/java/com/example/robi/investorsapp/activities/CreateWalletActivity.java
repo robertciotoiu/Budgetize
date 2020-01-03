@@ -1,8 +1,12 @@
 package com.example.robi.investorsapp.activities;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.database.wallet.Wallet;
@@ -18,12 +22,37 @@ public class CreateWalletActivity extends AppCompatActivity {
     }
 
 
-
-    public void init_listeners(){
+    public void init_listeners() {
         Button add_button = (Button) this.findViewById(R.id.add_button);
 
+        add_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                createWallet();
+            }
+        });
 
-        wallets.add(new Wallet(700,700));
+        //MainActivity.wallets.add(new Wallet();
     }
 
+    private void createWallet() {
+        EditText WalletName = (EditText) this.findViewById(R.id.walletName);
+        EditText FinancialGoal = (EditText) this.findViewById(R.id.financialGoal);
+
+        String walletName = WalletName.getText().toString();
+        long financialGoal = Long.getLong(FinancialGoal.getText().toString());
+
+        Wallet wallet = new Wallet(walletName, financialGoal);
+
+        long status = MainActivity.myDatabase.walletDao().addWallet(wallet);
+
+        if(MainActivity.myDatabase.walletDao().getWalletById(status)!=null) {
+            Toast.makeText(this, "Wallet added successfully", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(this, "Wallet failed to be added", Toast.LENGTH_SHORT).show();
+        }
+
+        this.finish(); //closes this activity and return to MainActivity.java
+    }
 }

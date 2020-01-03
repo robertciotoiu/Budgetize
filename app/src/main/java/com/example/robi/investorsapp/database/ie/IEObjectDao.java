@@ -1,7 +1,9 @@
 package com.example.robi.investorsapp.database.ie;
 
-import android.arch.persistence.room.Insert;
+import androidx.room.Dao;
+import androidx.room.Insert;
 
+@Dao
 public interface IEObjectDao {
 
     @Insert

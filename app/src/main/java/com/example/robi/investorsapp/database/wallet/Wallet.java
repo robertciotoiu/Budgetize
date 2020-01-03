@@ -1,24 +1,71 @@
 package com.example.robi.investorsapp.database.wallet;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
+
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
 
 @Entity(tableName = "wallets")
 public class Wallet {
 
+    public Wallet(String name, double financialGoal) {
+        this.id = System.nanoTime();
+        this.name = name;
+        this.financialGoal = financialGoal;
+    }
+
     @PrimaryKey
     private long id;
 
-    @ColumnInfo(name="desired_sum")
-    private int desiredSum;
+    @ColumnInfo(name = "wallet_name")
+    private String name;
 
-    private int current_sum;
+    @ColumnInfo(name = "financial_goal")
+    private double financialGoal;
+
+    private double financialStatus;//view of current status of the wallet
     //private int ArrayList<IncomeObj> incomesArr;
     //private int ArrayList<ExpenseObj> expenseArr;
 
     //we need a view which calculate ie
+
+    public void setFinancialGoal(double financialGoal) {
+        this.financialGoal = financialGoal;
+    }
+
+    public void setFinancialStatus(double financialStatus) {
+        this.financialStatus = financialStatus;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public double getFinancialGoal() {
+        return financialGoal;
+    }
+
+    public double getFinancialStatus() {
+        return financialStatus;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    //dummy method
+    public int getIE() {
+        return 100;
+    }
 
 }

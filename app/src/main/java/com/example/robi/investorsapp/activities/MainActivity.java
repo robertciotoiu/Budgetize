@@ -1,17 +1,21 @@
 package com.example.robi.investorsapp.activities;
 
+
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
+import androidx.viewpager.widget.ViewPager;
+
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.adapters.viewpager.Adapter;
+import com.example.robi.investorsapp.database.DaoAbstract;
 import com.example.robi.investorsapp.database.wallet.Wallet;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
     Adapter adapter;
     Integer[] colors = null;
-    List<Wallet> wallets;
+    public static List<Wallet>  wallets = new ArrayList<Wallet>();
+    public static DaoAbstract myDatabase;
 
 
     @Override
@@ -29,14 +34,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-
+        myDatabase = Room.databaseBuilder(getApplicationContext(),DaoAbstract.class,"walletDB").allowMainThreadQueries().build();
         init_screen();
+
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        getWallets();
+
     }
 
 
     private void init_screen()
     {
-        init_wallets();
         init_viewPager();
         init_listeners();
     }
@@ -53,13 +66,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void init_wallets()
+    private void getWallets()
     {
-        wallets = new ArrayList<>();//here we should import the existing wallets from memory/database
-        //Warning: I think that the wallet needs to contain also design data
-        wallets.add(new Wallet(2000,1000));//test data
-        wallets.add(new Wallet(780,1000));//test data
-        wallets.add(new Wallet(700,700));//test data
+        wallets.clear();
+        wallets.addAll(myDatabase.walletDao().getAllWallets());
     }
 
     private void init_viewPager()
