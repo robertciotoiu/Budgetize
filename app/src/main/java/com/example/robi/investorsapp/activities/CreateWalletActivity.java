@@ -1,10 +1,11 @@
-package com.example.robi.investorsapp;
+package com.example.robi.investorsapp.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 
-import com.example.robi.investorsapp.viewpager.Wallet;
+import com.example.robi.investorsapp.R;
+import com.example.robi.investorsapp.database.wallet.Wallet;
 
 public class CreateWalletActivity extends AppCompatActivity {
 
