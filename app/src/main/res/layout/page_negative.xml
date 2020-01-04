@@ -56,7 +56,7 @@
         android:background= "@drawable/circular_shape"
         android:indeterminate= "false"
         android:max= "100"
-        android:progress= "80"
+        android:progress= "0"
         android:progressDrawable= "@drawable/circular_progress_bar_neutral" />
 
 </RelativeLayout>

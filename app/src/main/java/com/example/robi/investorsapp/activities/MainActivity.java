@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,18 +84,7 @@ public class MainActivity extends AppCompatActivity {
 //        colors = colors_temp;
         //adapter = new Adapter(wallets, this);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabDots);
-        tabLayout.setupWithViewPager(viewPager, true);
-
-        for(int i=0; i < tabLayout.getTabCount(); i++) {
-
-
-            View tab = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(i);
-            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) tab.getLayoutParams();
-            p.setMargins(0, 0, 20, 0);
-            tab.requestLayout();
-        }
-
+        refresh_tabs();
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -112,6 +102,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void refresh_tabs()
+    {
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabDots);
+        tabLayout.setupWithViewPager(viewPager, true);
+
+        for(int i=0; i < tabLayout.getTabCount(); i++) {
+
+
+            View tab = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(i);
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) tab.getLayoutParams();
+            p.setMargins(0, 0, 20, 0);
+            tab.requestLayout();
+        }
     }
 
     private void init_listeners()
@@ -138,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         wallets.clear();
         wallets.addAll(myDatabase.walletDao().getAllWallets());
         viewPager.setAdapter(adapter);
+        refresh_tabs();//to keep the distance between bullets
 
         if(wallets.isEmpty())
         {

@@ -15,7 +15,7 @@ public class IEObject {
     private long wallet_id;
 
     @ColumnInfo(name = "amount")
-    public int amount;
+    public double amount;
 
     @ColumnInfo(name = "name")
     public String name;
@@ -26,7 +26,7 @@ public class IEObject {
     //public int icon[];
     public int type;//0 means income, 1 means expense
 
-    public IEObject(int wallet_id, int amount, String name, String category, int type) {
+    public IEObject(int wallet_id, double amount, String name, String category, int type) {
         this.id = System.nanoTime();
         this.name = name;
         this.amount = amount;
@@ -50,7 +50,7 @@ public class IEObject {
         this.wallet_id = wallet_id;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 

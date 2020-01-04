@@ -14,4 +14,5 @@ public abstract class DaoAbstract extends RoomDatabase {
     public abstract WalletDao walletDao();
 
     public abstract IEObjectDao ieoDao();
+
 }

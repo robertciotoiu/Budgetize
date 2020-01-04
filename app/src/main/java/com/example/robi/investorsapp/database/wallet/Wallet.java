@@ -10,10 +10,11 @@ import java.util.ArrayList;
 @Entity(tableName = "wallets")
 public class Wallet {
 
-    public Wallet(String name, double financialGoal) {
+    public Wallet(String name,double financialStatus, double financialGoal) {
         this.id = System.nanoTime();
         this.name = name;
         this.financialGoal = financialGoal;
+        this.financialStatus = financialStatus;
     }
 
     @PrimaryKey
@@ -25,6 +26,7 @@ public class Wallet {
     @ColumnInfo(name = "financial_goal")
     private double financialGoal;
 
+    @ColumnInfo(name = "financial_status")
     private double financialStatus;//view of current status of the wallet
     //private int ArrayList<IncomeObj> incomesArr;
     //private int ArrayList<ExpenseObj> expenseArr;
@@ -61,11 +63,6 @@ public class Wallet {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    //dummy method
-    public int getIE() {
-        return 100;
     }
 
 }

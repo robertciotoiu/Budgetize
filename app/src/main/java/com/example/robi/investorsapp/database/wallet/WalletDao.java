@@ -21,6 +21,9 @@ public interface WalletDao {
     @Query("SELECT * from wallets")
     public List<Wallet> getAllWallets();
 
+    @Query("SELECT SUM(ie.amount) AS wallet_ie FROM wallets w, incomes_expenses ie where w.id = ie.wallet_id and w.id = :wallet_id")
+    public double getIE(long wallet_id);
+
     @Delete
     public void deleteWallet(Wallet wallet);
 

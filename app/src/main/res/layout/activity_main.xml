@@ -112,6 +112,7 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="40dp"
 
+
         app:tabMaxWidth="10dp"
 
         app:tabMinWidth="10dp"

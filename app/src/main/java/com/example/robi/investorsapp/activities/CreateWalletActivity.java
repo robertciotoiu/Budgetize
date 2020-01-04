@@ -40,13 +40,16 @@ public class CreateWalletActivity extends AppCompatActivity {
 
         String walletName = WalletName.getText().toString();
 
-        long financialGoal = 0;
+        double financialGoal = 0;
+
+        double financialStatus = 0;
 
         try{
-            financialGoal = Long.parseLong(FinancialGoal.getText().toString());
+            financialGoal = Double.parseDouble(FinancialGoal.getText().toString());
 
+            financialStatus = Double.parseDouble(FinancialGoal.getText().toString());
 
-            Wallet wallet = new Wallet(walletName, financialGoal);
+            Wallet wallet = new Wallet(walletName, financialStatus , financialGoal);
 
             long status = MainActivity.myDatabase.walletDao().addWallet(wallet);
 
