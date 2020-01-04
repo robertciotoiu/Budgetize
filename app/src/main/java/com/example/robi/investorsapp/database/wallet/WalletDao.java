@@ -2,6 +2,7 @@ package com.example.robi.investorsapp.database.wallet;
 
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -19,4 +20,8 @@ public interface WalletDao {
 
     @Query("SELECT * from wallets")
     public List<Wallet> getAllWallets();
+
+    @Delete
+    public void deleteWallet(Wallet wallet);
+
 }

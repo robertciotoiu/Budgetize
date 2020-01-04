@@ -6,12 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.database.wallet.Wallet;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -43,6 +46,11 @@ public class Adapter extends PagerAdapter {
 //        views.
 //    }
 
+    @Override
+    public int getItemPosition(Object object)
+    {
+        return POSITION_NONE;
+    }
 
     @Override
     public int getCount() {
@@ -68,25 +76,34 @@ public class Adapter extends PagerAdapter {
         return view;
     }
 
-    private View inflatePages(ViewGroup container, int position) {
+    private View inflatePages(ViewGroup container, int position) {//verifica sa nu fie null walletul
         int ie = wallets.get(position).getIE();
+        Wallet wallet = wallets.get(position);
         View view = null;
         Button b = null;
+        TextView walletName = null;
+
         if(ie>0)
         {
             view = layoutInflater.inflate(R.layout.page_positive,container,false);
-            b = view.findViewById(R.id.ie_button);
+            walletName = (TextView) view.findViewById(R.id.wallet_name);
+            walletName.setText(wallet.getName());
+            b = (Button) view.findViewById(R.id.ie_button);
             b.setText("+"+ ie +"$");
         }else if(ie<0)
         {
             view = layoutInflater.inflate(R.layout.page_negative,container,false);
-            b = view.findViewById(R.id.ie_button);
+            walletName = (TextView) view.findViewById(R.id.wallet_name);
+            walletName.setText(wallet.getName());
+            b = (Button) view.findViewById(R.id.ie_button);
             b.setText(ie +"$");
         }
         else
         {
             view = layoutInflater.inflate(R.layout.page_neutral,container,false);
-            b = view.findViewById(R.id.ie_button);
+            walletName = (TextView) view.findViewById(R.id.wallet_name);
+            walletName.setText(wallet.getName());
+            b = (Button) view.findViewById(R.id.ie_button);
             b.setText(ie +"$");
         }
         return view;

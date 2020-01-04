@@ -5,14 +5,51 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/base_layout"
-    tools:context=".activities.MainActivity">
+    tools:context=".activities.MainActivity"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/main_screen_layout"
+        android:background="@color/positiveBackgroundColor"
         >
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+
+        <TextView
+            android:id="@+id/intro_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="168dp"
+            android:layout_marginEnd="185dp"
+            android:layout_marginBottom="0dp"
+            android:fontFamily="@font/open_sans_semibold"
+            android:text="@string/intro_text"
+            android:textColor="#FFFFFF"
+            android:textSize="51dp"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/intro_arrow_imgview"
+            android:layout_width="500dp"
+            android:layout_height="500dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="100dp"
+            android:layout_marginTop="200dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="0dp"
+            android:rotation="15"
+            android:visibility="invisible"
+            app:srcCompat="@drawable/intro_arrow_white" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_wallet"
 
         android:layout_width="84dp"
@@ -64,7 +101,6 @@
         android:clipToPadding="false"
         android:foregroundGravity="center"
         android:overScrollMode="never">
-
 
     </androidx.viewpager.widget.ViewPager>
 

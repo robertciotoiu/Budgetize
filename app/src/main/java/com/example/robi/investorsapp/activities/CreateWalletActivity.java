@@ -39,20 +39,31 @@ public class CreateWalletActivity extends AppCompatActivity {
         EditText FinancialGoal = (EditText) this.findViewById(R.id.financialGoal);
 
         String walletName = WalletName.getText().toString();
-        long financialGoal = Long.getLong(FinancialGoal.getText().toString());
 
-        Wallet wallet = new Wallet(walletName, financialGoal);
+        long financialGoal = 0;
 
-        long status = MainActivity.myDatabase.walletDao().addWallet(wallet);
+        try{
+            financialGoal = Long.parseLong(FinancialGoal.getText().toString());
 
-        if(MainActivity.myDatabase.walletDao().getWalletById(status)!=null) {
-            Toast.makeText(this, "Wallet added successfully", Toast.LENGTH_SHORT).show();
+
+            Wallet wallet = new Wallet(walletName, financialGoal);
+
+            long status = MainActivity.myDatabase.walletDao().addWallet(wallet);
+
+            if(MainActivity.myDatabase.walletDao().getWalletById(status)!=null) {
+                Toast.makeText(this, "Wallet added successfully", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Toast.makeText(this, "Wallet failed to be added", Toast.LENGTH_SHORT).show();
+            }
+
+            this.finish(); //closes this activity and return to MainActivity.java
         }
-        else
-        {
-            Toast.makeText(this, "Wallet failed to be added", Toast.LENGTH_SHORT).show();
+        catch(Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            Toast.makeText(this, "Invalid Financial Goal", Toast.LENGTH_SHORT).show();
         }
-
-        this.finish(); //closes this activity and return to MainActivity.java
     }
 }
