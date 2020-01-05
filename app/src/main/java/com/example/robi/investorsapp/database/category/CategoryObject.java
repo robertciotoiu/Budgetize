@@ -8,6 +8,13 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "categories", primaryKeys = {"category_name","wallet_id"})
 public class CategoryObject {
 
+    public CategoryObject(String name, String description, long wallet_id)
+    {
+        this.name = name;
+        this.description = description;
+        this.wallet_id = wallet_id;
+    }
+
     public String getName() {
         return name;
     }

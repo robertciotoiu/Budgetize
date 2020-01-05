@@ -24,9 +24,10 @@ public class IEObject {
     public String category;
 
     //public int icon[];
+    @ColumnInfo(name="type")
     public int type;//0 means income, 1 means expense
 
-    public IEObject(long wallet_id, double amount, String name, String category, int type) {
+    public IEObject(long wallet_id,String name, double amount, String category, int type) {
         this.id = System.nanoTime();
         this.name = name;
         this.amount = amount;

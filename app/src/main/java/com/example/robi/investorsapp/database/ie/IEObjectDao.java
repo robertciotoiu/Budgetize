@@ -13,7 +13,7 @@ import java.util.List;
 public interface IEObjectDao {
 
     @Insert
-    public void addIEObject(IEObject ieObject);
+    public long addIEObject(IEObject ieObject);
 
     @Query("SELECT * FROM incomes_expenses where category=:category")
     public List<IEObject> getIESpecificList(String category);//get all ie objects from a given category

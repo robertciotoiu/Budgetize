@@ -22,10 +22,10 @@ public interface CategoryDao {
     @Query("SELECT c.category_name, c.wallet_id, c.description from wallets w, categories c WHERE w.id=:wallet_id")
     public List<CategoryObject> getAllCategories(long wallet_id);
 
-    @Query("SELECT SUM(ie.amount) AS wallet_ie FROM wallets w, incomes_expenses ie, categories cat WHERE w.id = ie.wallet_id AND w.id = :wallet_id AND ie.category = :category_name")
+    @Query("SELECT SUM(ie.amount) AS wallet_ie FROM wallets w, incomes_expenses ie, categories cat WHERE ie.wallet_id = :wallet_id AND ie.category = :category_name")
     public double getCategoryIESUM(long wallet_id,String category_name);
 
-    @Query("SELECT ie.wallet_id, ie.name, ie.id, ie.category, ie.amount, ie.type FROM wallets w, incomes_expenses ie, categories cat WHERE w.id = ie.wallet_id AND w.id = :wallet_id AND ie.category = :category_name")
+    @Query("SELECT ie.id, ie.wallet_id, ie.amount, ie.name,  ie.category,  ie.type FROM wallets w, incomes_expenses ie, categories cat WHERE ie.wallet_id = :wallet_id AND ie.category = :category_name")
     public List<IEObject> getCategorysIE(long wallet_id, String category_name);
 
     @Query("DELETE FROM categories where wallet_id = :wallet_id AND category_name=:categoryName")
