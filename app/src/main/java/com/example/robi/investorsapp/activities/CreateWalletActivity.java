@@ -37,6 +37,7 @@ public class CreateWalletActivity extends AppCompatActivity {
     private void createWallet() {
         EditText WalletName = (EditText) this.findViewById(R.id.walletName);
         EditText FinancialGoal = (EditText) this.findViewById(R.id.financialGoal);
+        EditText FinancialStatus = (EditText) this.findViewById(R.id.financialStatus);
 
         String walletName = WalletName.getText().toString();
 
@@ -47,7 +48,7 @@ public class CreateWalletActivity extends AppCompatActivity {
         try{
             financialGoal = Double.parseDouble(FinancialGoal.getText().toString());
 
-            financialStatus = Double.parseDouble(FinancialGoal.getText().toString());
+            financialStatus = Double.parseDouble(FinancialStatus.getText().toString());
 
             Wallet wallet = new Wallet(walletName, financialStatus , financialGoal);
 

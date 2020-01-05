@@ -29,6 +29,7 @@ public class IEObject {
 
     public IEObject(long wallet_id,String name, double amount, String category, int type) {
         this.id = System.nanoTime();
+        this.wallet_id = wallet_id;
         this.name = name;
         this.amount = amount;
         this.category = category;          //add incomeObj to the choosen category

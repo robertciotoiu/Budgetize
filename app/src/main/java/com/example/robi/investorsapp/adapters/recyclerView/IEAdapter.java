@@ -55,7 +55,7 @@ public class IEAdapter extends RecyclerView.Adapter<IEAdapter.SubViewHolder>{
             ieIcon = itemView.findViewById(R.id.ie_icon);
             ieValue = itemView.findViewById(R.id.text_view_ie_value);
             textViewTitle = itemView.findViewById(R.id.text_view_title);
-            ieDescription = itemView.findViewById(R.id.text_view_description);
+            ieDescription = itemView.findViewById(R.id.text_view_ie_description);
         }
     }
 }

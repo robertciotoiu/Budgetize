@@ -43,7 +43,7 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.recycle_view_ie, parent, false);
+        View view = mInflater.inflate(R.layout.recycle_view_category, parent, false);
         return new ViewHolder(view);
     }
 
@@ -52,9 +52,9 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, int position) {
         //MainActivity.myDatabase.ieoDao().getIESpecificList();
         CategoryObject categoryObject = categoryObjectsList.get(position);
-        List<IEObject> ieObjectList = MainActivity.myDatabase.categoryDao().getCategorysIE(wallet.getId(),categoryObject.getName());
+        List<IEObject> ieObjectList = MainActivity.myDatabase.ieoDao().getCategorysIE(wallet.getId(),categoryObject.getName());
         //holder.categoryIcon.draw();
-        holder.textViewValue.setText(String.valueOf(MainActivity.myDatabase.categoryDao().getCategoryIESUM(wallet.getId(),categoryObject.getName())));//EDIT TO VIEW BASED ON SUM OF ALL IE Objects (ANOTHER VIEW)
+        holder.textViewValue.setText(String.valueOf(MainActivity.myDatabase.categoryDao().getCategoryIESUM(categoryObject.getWallet_id(),categoryObject.getName())));//EDIT TO VIEW BASED ON SUM OF ALL IE Objects (ANOTHER VIEW)
         holder.categoryName.setText(categoryObject.getName());
         holder.textViewDescription.setText(categoryObject.getDescription());
 
