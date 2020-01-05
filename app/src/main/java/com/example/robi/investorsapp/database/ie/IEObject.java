@@ -26,7 +26,7 @@ public class IEObject {
     //public int icon[];
     public int type;//0 means income, 1 means expense
 
-    public IEObject(int wallet_id, double amount, String name, String category, int type) {
+    public IEObject(long wallet_id, double amount, String name, String category, int type) {
         this.id = System.nanoTime();
         this.name = name;
         this.amount = amount;

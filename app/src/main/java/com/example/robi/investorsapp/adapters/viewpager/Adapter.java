@@ -101,7 +101,7 @@ public class Adapter extends PagerAdapter {
                 b = (Button) view.findViewById(R.id.ie_button);
                 b.setText("+" + ie + "$");
 
-                init_pb_listener(view);
+                init_pb_listener(view,position);
             } else if (ie < 0) {
                 view = layoutInflater.inflate(R.layout.page_negative, container, false);
                 walletName = (TextView) view.findViewById(R.id.wallet_name);
@@ -109,7 +109,7 @@ public class Adapter extends PagerAdapter {
                 b = (Button) view.findViewById(R.id.ie_button);
                 b.setText(ie + "$");
 
-                init_pb_listener(view);
+                init_pb_listener(view,position);
             } else {
                 view = layoutInflater.inflate(R.layout.page_neutral, container, false);
                 walletName = (TextView) view.findViewById(R.id.wallet_name);
@@ -117,7 +117,7 @@ public class Adapter extends PagerAdapter {
                 b = (Button) view.findViewById(R.id.ie_button);
                 b.setText(ie + "$");
 
-                init_pb_listener(view);
+                init_pb_listener(view,position);
             }
             return view;
         }catch(Exception e)
@@ -128,13 +128,15 @@ public class Adapter extends PagerAdapter {
         return null;
     }
 
-    private void init_pb_listener(View view) {
+    private void init_pb_listener(View view, int position) {
+        final int p = position;
         ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         progressBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent myIntent = new Intent(context, IEActivity.class);
-                //myIntent.putExtra("key", value); //Optional parameters
+                myIntent.putExtra("wallet", p); //Optional parameters
                 context.startActivity(myIntent);
             }
         });
