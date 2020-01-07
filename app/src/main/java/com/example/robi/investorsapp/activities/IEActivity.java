@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.robi.investorsapp.R;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //@AILayout(R.layout.activity_main)
-public class IEActivity extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener{
+public class IEActivity extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener, IECategoryAdapter.ItemClickListener {
     int wallet_position = 0;
     //@AIView(R.id.activity_main_rfal)
     private RapidFloatingActionLayout rfaLayout;
@@ -90,12 +91,12 @@ public class IEActivity extends AppCompatActivity implements RapidFloatingAction
                 rfaContent
         ).build();
     }
-
+    RecyclerView rvCategory;
     private void init_recyclerView(int position) {
 
-        RecyclerView rvCategory = findViewById(R.id.recycleView);
+        rvCategory = findViewById(R.id.recycleView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(IEActivity.this);
-        IECategoryAdapter ieCategoryAdapter = new IECategoryAdapter(this,MainActivity.wallets.get(position));
+        IECategoryAdapter ieCategoryAdapter = new IECategoryAdapter(this,MainActivity.wallets.get(position),this);
         rvCategory.setAdapter(ieCategoryAdapter);
         rvCategory.setLayoutManager(layoutManager);
     }
@@ -124,5 +125,20 @@ public class IEActivity extends AppCompatActivity implements RapidFloatingAction
             IEActivity.this.startActivity(myIntent);
         }
         rfabHelper.toggleContent();
+    }
+    int status = 0;
+    @Override
+    public void onItemClick(View view, int position) {
+//        if(view.getVisibility()==View.GONE)
+//        {
+//            view.setVisibility(View.VISIBLE);
+//        }
+//        else {
+//            view.setVisibility(View.GONE);
+//        }
+        rvCategory.getAdapter();
+        //rvCategory.item;
+        Toast.makeText(this,"CLICKED",Toast.LENGTH_SHORT);
+        System.out.println("__________________________________________________");
     }
 }

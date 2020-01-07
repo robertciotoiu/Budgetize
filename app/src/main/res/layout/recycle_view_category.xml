@@ -5,7 +5,9 @@
     android:layout_height="wrap_content"
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp">
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    >
 
     <RelativeLayout
         android:id="@+id/relative_layout"
@@ -57,6 +59,6 @@
 
         android:layout_below="@+id/relative_layout"
         android:layout_marginTop="60dp"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="5dp"/>
 
 </androidx.cardview.widget.CardView>

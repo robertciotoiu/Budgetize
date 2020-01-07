@@ -28,6 +28,7 @@ public class Adapter extends PagerAdapter {
     private LayoutInflater layoutInflater;
     private Context context;
     private List<View> views;
+    int lastWalletPosition;
 
     @Override
     public int getItemPosition(Object object)
@@ -106,6 +107,8 @@ public class Adapter extends PagerAdapter {
                 view = layoutInflater.inflate(R.layout.page_negative, container, false);
                 walletName = (TextView) view.findViewById(R.id.wallet_name);
                 walletName.setText(wallet.getName());
+                pb = (ProgressBar) view.findViewById(R.id.progressBar);
+                pb.setProgress(percentage,true);
                 b = (Button) view.findViewById(R.id.ie_button);
                 b.setText(ie + "$");
 
@@ -114,6 +117,8 @@ public class Adapter extends PagerAdapter {
                 view = layoutInflater.inflate(R.layout.page_neutral, container, false);
                 walletName = (TextView) view.findViewById(R.id.wallet_name);
                 walletName.setText(wallet.getName());
+                pb = (ProgressBar) view.findViewById(R.id.progressBar);
+                pb.setProgress(percentage,true);
                 b = (Button) view.findViewById(R.id.ie_button);
                 b.setText(ie + "$");
 
@@ -128,13 +133,13 @@ public class Adapter extends PagerAdapter {
         return null;
     }
 
-    private void init_pb_listener(View view, int position) {
+    private void init_pb_listener(View view, final int position) {
         final int p = position;
         ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         progressBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                MainActivity.lastWalletPosition = position;
                 Intent myIntent = new Intent(context, IEActivity.class);
                 myIntent.putExtra("wallet", p); //Optional parameters
                 context.startActivity(myIntent);

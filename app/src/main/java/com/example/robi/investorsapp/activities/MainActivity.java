@@ -1,10 +1,12 @@
 package com.example.robi.investorsapp.activities;
 
 
+import android.app.ActivityOptions;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     Integer[] colors = null;
     public static List<Wallet>  wallets = new ArrayList<Wallet>();
     public static DaoAbstract myDatabase;
+    public static int lastWalletPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
         viewPager.setPadding(0,0,0,0);
+        viewPager.setOffscreenPageLimit(20);
 
 //        Integer[] colors_temp = {
 //                getResources().getColor(R.color.colorAccent),
@@ -124,9 +128,8 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton addWalletFab = (FloatingActionButton) this.findViewById(R.id.add_wallet);
         addWalletFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent myIntent = new Intent(MainActivity.this, CreateWalletActivity.class);
-                //myIntent.putExtra("key", value); //Optional parameters
-                MainActivity.this.startActivity(myIntent);
+
+                startActivity();
             }
         });
 
@@ -138,12 +141,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void startActivity(){
+        lastWalletPosition = viewPager.getCurrentItem();
+        Intent myIntent = new Intent(MainActivity.this, CreateWalletActivity.class);
+        MainActivity.this.startActivity(myIntent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
     private void refresh_wallets()
     {
         wallets.clear();
         wallets.addAll(myDatabase.walletDao().getAllWallets());
         viewPager.setAdapter(adapter);
         refresh_tabs();//to keep the distance between bullets
+        viewPager.setCurrentItem(lastWalletPosition);
 
         if(wallets.isEmpty())
         {

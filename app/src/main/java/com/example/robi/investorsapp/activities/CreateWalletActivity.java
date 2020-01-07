@@ -2,8 +2,13 @@ package com.example.robi.investorsapp.activities;
 
 import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Build;
 import android.os.Bundle;
+import android.transition.Slide;
+import android.view.Gravity;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -16,11 +21,11 @@ public class CreateWalletActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //setAnimation();
         setContentView(R.layout.activity_create_wallet);
 
         init_listeners();
     }
-
 
     public void init_listeners() {
         Button add_button = (Button) this.findViewById(R.id.add_button);
@@ -69,5 +74,11 @@ public class CreateWalletActivity extends AppCompatActivity {
             System.out.println(e.getMessage());
             Toast.makeText(this, "Invalid Financial Goal", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

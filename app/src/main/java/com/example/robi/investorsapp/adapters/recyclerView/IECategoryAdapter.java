@@ -30,10 +30,12 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    public IECategoryAdapter(Context context, Wallet wallet) {
+    public IECategoryAdapter(Context context, Wallet wallet, ItemClickListener mClickListener) {
         this.mInflater = LayoutInflater.from(context);
         this.wallet = wallet;
         this.categoryObjectsList = buildCategoryList();
+
+        this.mClickListener = mClickListener;
     }
 
     private List<CategoryObject> buildCategoryList() {
@@ -44,7 +46,7 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.recycle_view_category, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view,mClickListener);
     }
 
     // binds the data to the TextView in each row
@@ -52,7 +54,7 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, int position) {
         //MainActivity.myDatabase.ieoDao().getIESpecificList();
         CategoryObject categoryObject = categoryObjectsList.get(position);
-        List<IEObject> ieObjectList = MainActivity.myDatabase.ieoDao().getCategorysIE(wallet.getId(),categoryObject.getName());
+        List<IEObject> ieObjectList = MainActivity.myDatabase.categoryDao().getCategorysIE(wallet.getId(),categoryObject.getName());
         //holder.categoryIcon.draw();
         holder.textViewValue.setText(String.valueOf(MainActivity.myDatabase.categoryDao().getCategoryIESUM(categoryObject.getWallet_id(),categoryObject.getName())));//EDIT TO VIEW BASED ON SUM OF ALL IE Objects (ANOTHER VIEW)
         holder.categoryName.setText(categoryObject.getName());
@@ -72,6 +74,7 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
         holder.rvIE.setLayoutManager(layoutManager);
         holder.rvIE.setAdapter(subItemAdapter);
         holder.rvIE.setRecycledViewPool(viewPool);
+
     }
 
     // total number of rows
@@ -79,6 +82,8 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
     public int getItemCount() {
         return categoryObjectsList.size();
     }
+
+
 
 
     // stores and recycles views as they are scrolled off screen
@@ -89,19 +94,26 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
         TextView textViewDescription;
         RecyclerView rvIE;
 
-        ViewHolder(View itemView) {
+        ItemClickListener itemClickListener;
+
+
+        public ViewHolder(View itemView,ItemClickListener itemClickListener ) {
             super(itemView);
             categoryIcon = itemView.findViewById(R.id.category_icon);
             textViewValue = itemView.findViewById(R.id.text_view_value);
             categoryName = itemView.findViewById(R.id.text_view_category_name);
             textViewDescription = itemView.findViewById(R.id.text_view_description);
             rvIE = itemView.findViewById(R.id.subRview);
+            this.itemClickListener = itemClickListener;
+
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            if (itemClickListener != null)
+                itemClickListener.onItemClick(view, getAdapterPosition());
+
         }
     }
 
@@ -111,7 +123,7 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
     }
 
     // allows clicks events to be caught
-    void setClickListener(ItemClickListener itemClickListener) {
+    public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 
