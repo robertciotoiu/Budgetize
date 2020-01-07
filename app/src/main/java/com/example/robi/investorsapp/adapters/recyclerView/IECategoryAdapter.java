@@ -34,7 +34,6 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
         this.mInflater = LayoutInflater.from(context);
         this.wallet = wallet;
         this.categoryObjectsList = buildCategoryList();
-
         this.mClickListener = mClickListener;
     }
 

@@ -15,6 +15,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.activities.IEActivity;
+import com.example.robi.investorsapp.activities.IEActivityDiegodobelo;
 import com.example.robi.investorsapp.activities.MainActivity;
 import com.example.robi.investorsapp.database.wallet.Wallet;
 
@@ -140,7 +141,7 @@ public class Adapter extends PagerAdapter {
             @Override
             public void onClick(View v) {
                 MainActivity.lastWalletPosition = position;
-                Intent myIntent = new Intent(context, IEActivity.class);
+                Intent myIntent = new Intent(context, IEActivityDiegodobelo.class);
                 myIntent.putExtra("wallet", p); //Optional parameters
                 context.startActivity(myIntent);
             }

@@ -136,8 +136,13 @@ public class IEActivity extends AppCompatActivity implements RapidFloatingAction
 //        else {
 //            view.setVisibility(View.GONE);
 //        }
-        rvCategory.getAdapter();
+        //rvCategory.getAdapter()
         //rvCategory.item;
+        view.setVisibility(View.GONE);
+        //view.setAlpha(0);
+        view.refreshDrawableState();
+        //view.
+        view.animate();
         Toast.makeText(this,"CLICKED",Toast.LENGTH_SHORT);
         System.out.println("__________________________________________________");
     }
