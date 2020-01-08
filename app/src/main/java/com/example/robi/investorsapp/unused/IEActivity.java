@@ -1,18 +1,19 @@
-package com.example.robi.investorsapp.activities;
+package com.example.robi.investorsapp.unused;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.robi.investorsapp.R;
+import com.example.robi.investorsapp.activities.createActivities.CreateCategoryActivity;
+import com.example.robi.investorsapp.activities.createActivities.CreateIEActivity;
+import com.example.robi.investorsapp.activities.MainActivity;
 import com.example.robi.investorsapp.adapters.recyclerView.IECategoryAdapter;
-import com.example.robi.investorsapp.database.wallet.Wallet;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout;
@@ -96,7 +97,7 @@ public class IEActivity extends AppCompatActivity implements RapidFloatingAction
 
         rvCategory = findViewById(R.id.recycleView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(IEActivity.this);
-        IECategoryAdapter ieCategoryAdapter = new IECategoryAdapter(this,MainActivity.wallets.get(position),this);
+        IECategoryAdapter ieCategoryAdapter = new IECategoryAdapter(this, MainActivity.wallets.get(position),this);
         rvCategory.setAdapter(ieCategoryAdapter);
         rvCategory.setLayoutManager(layoutManager);
     }

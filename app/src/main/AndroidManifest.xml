@@ -10,10 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".activities.IEActivityDiegodobelo"></activity>
-        <activity android:name=".activities.CreateCategoryActivity" />
-        <activity android:name=".activities.CreateIEActivity" />
-        <activity android:name=".activities.IEActivity" />
-        <activity android:name=".activities.CreateWalletActivity" />
+        <activity android:name=".activities.createActivities.CreateCategoryActivity" />
+        <activity android:name=".activities.createActivities.CreateIEActivity" />
+        <activity android:name=".unused.IEActivity" />
+        <activity android:name=".activities.createActivities.CreateWalletActivity" />
         <activity android:name=".activities.InsideWalletActivity" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>

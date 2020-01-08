@@ -14,12 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.robi.investorsapp.R;
-import com.example.robi.investorsapp.activities.IEActivity;
 import com.example.robi.investorsapp.activities.IEActivityDiegodobelo;
 import com.example.robi.investorsapp.activities.MainActivity;
 import com.example.robi.investorsapp.database.wallet.Wallet;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 

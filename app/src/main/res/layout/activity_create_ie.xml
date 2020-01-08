@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.CreateIEActivity">
+    tools:context=".activities.createActivities.CreateIEActivity">
 
     <Button
         android:id="@+id/create_ie_add_button"

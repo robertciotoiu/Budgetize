@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.robi.investorsapp.expandingview.ExpandingItem android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/wallet_name_ie_screen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="Wallet Name"
+        android:textColor="#000000"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        />
+</LinearLayout>
+</com.example.robi.investorsapp.expandingview.ExpandingItem>

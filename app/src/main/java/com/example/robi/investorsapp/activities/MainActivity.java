@@ -1,17 +1,13 @@
 package com.example.robi.investorsapp.activities;
 
 
-import android.app.ActivityOptions;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.Image;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +17,7 @@ import androidx.room.Room;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.robi.investorsapp.R;
+import com.example.robi.investorsapp.activities.createActivities.CreateWalletActivity;
 import com.example.robi.investorsapp.adapters.viewpager.Adapter;
 import com.example.robi.investorsapp.database.DaoAbstract;
 import com.example.robi.investorsapp.database.wallet.Wallet;

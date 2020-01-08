@@ -1,4 +1,4 @@
-package com.example.robi.investorsapp.activities;
+package com.example.robi.investorsapp.activities.createActivities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.robi.investorsapp.R;
+import com.example.robi.investorsapp.activities.MainActivity;
 import com.example.robi.investorsapp.database.category.CategoryObject;
 
 public class CreateCategoryActivity extends AppCompatActivity {

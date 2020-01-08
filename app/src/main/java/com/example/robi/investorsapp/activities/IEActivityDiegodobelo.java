@@ -1,20 +1,27 @@
 package com.example.robi.investorsapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.diegodobelo.expandingview.ExpandingItem;
-import com.diegodobelo.expandingview.ExpandingList;
 import com.example.robi.investorsapp.R;
+import com.example.robi.investorsapp.activities.createActivities.CreateCategoryActivity;
+import com.example.robi.investorsapp.activities.createActivities.CreateIEActivity;
 import com.example.robi.investorsapp.database.category.CategoryObject;
 import com.example.robi.investorsapp.database.ie.IEObject;
 import com.example.robi.investorsapp.database.wallet.Wallet;
+import com.example.robi.investorsapp.expandingview.ExpandingItem;
+import com.example.robi.investorsapp.expandingview.ExpandingList;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout;
@@ -132,24 +139,31 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
     }
 
     private void populateLists() {
+        ExpandingItem first_item = mExpandingList.createNewItem(R.layout.first_ie_item);
+        if(first_item!=null)
+        {
+            ((TextView)first_item.findViewById(R.id.wallet_name_ie_screen)).setText(wallet.getName());
+        }
         for(CategoryObject categoryObject:categoryObjectsList) {
             addItem(categoryObject);
         }
     }
 
     private void addItem(CategoryObject categoryObject) {
-        final ExpandingItem item = mExpandingList.createNewItem(R.layout.expanding_layout);
-
+        double ie_value = MainActivity.myDatabase.categoryDao().getCategoryIESUM(categoryObject.getWallet_id(),categoryObject.getName());
+        final ExpandingItem item = getCorrectItem(ie_value);
         if(item!=null)
         {
-            item.setIndicatorColorRes(R.color.positiveBackgroundColor);
-            item.setIndicatorIconRes(R.drawable.house_icon);
+            //setAllColors(ie_value);
+            item.setIndicatorColor(Color.WHITE);
+            //item.setIndicatorColorRes(getIconIndicatorColor(ie_value));//R.color.positiveBackgroundColor);
+            item.setIndicatorIcon(getIcon(ie_value));//R.drawable.house_icon);
             List<IEObject> ieObjectList = MainActivity.myDatabase.categoryDao().getCategorysIE(wallet.getId(),categoryObject.getName());
 
             //1. ImageView category_icon
-            ((TextView)item.findViewById(R.id.text_view_value)).setText(String.valueOf(MainActivity.myDatabase.categoryDao().getCategoryIESUM(categoryObject.getWallet_id(),categoryObject.getName())));
-            ((TextView)item.findViewById(R.id.text_view_category_name)).setText(categoryObject.getName());
-            ((TextView)item.findViewById(R.id.text_view_description)).setText(categoryObject.getDescription());
+            ((TextView)item.findViewById(R.id.text_view_value_white)).setText(String.valueOf(ie_value));
+            ((TextView)item.findViewById(R.id.text_view_category_name_white)).setText(categoryObject.getName());
+            ((TextView)item.findViewById(R.id.text_view_description_white)).setText(categoryObject.getDescription());
 
 
             item.createSubItems(ieObjectList.size());
@@ -158,19 +172,25 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                 //Let's get the created sub item by its index
                 final View view = item.getSubItemView(i);
 
+//                if(i== item.getSubItemsCount()-1) {
+//                    RelativeLayout layout = view.findViewById(R.id.layout_subitem);
+//                    ViewGroup.LayoutParams params = layout.getLayoutParams();
+//                    params.height = 300;
+//                    view.setLayoutParams(params);
+//                }
                 //Let's set some values in
                 configureSubItem(item, view, ieObjectList.get(i));
             }
 
-            item.findViewById(R.id.add_more_sub_items).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //launch create Category activity
-                    Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateIEActivity.class);
-                    myIntent.putExtra("wallet", wallet_position); //Optional parameters
-                    IEActivityDiegodobelo.this.startActivity(myIntent);
-                }
-            });
+//            item.findViewById(R.id.add_more_sub_items).setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    //launch create Category activity
+//                    Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateIEActivity.class);
+//                    myIntent.putExtra("wallet", wallet_position); //Optional parameters
+//                    IEActivityDiegodobelo.this.startActivity(myIntent);
+//                }
+//            });
 
             item.findViewById(R.id.remove_item).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -181,13 +201,93 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         }
     }
 
+    private void setAllColors(double ie) {
+        RelativeLayout lLayout = (RelativeLayout) findViewById(R.id.expanding_item_id);
+        TextView value = (TextView) findViewById(R.id.text_view_value);
+        TextView description = (TextView) findViewById(R.id.text_view_category_name);
+        TextView name = (TextView) findViewById(R.id.text_view_category_name);
+
+        if(ie>0)
+        {
+            lLayout.setBackgroundColor(getResources().getColor(R.color.positiveBackgroundColor));
+            value.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
+            description.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
+            name.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
+        }
+        else if(ie<0)
+        {
+            lLayout.setBackgroundColor(getResources().getColor(R.color.negativeBackgroundColor));
+            value.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
+            description.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
+            name.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
+        }
+        else
+        {
+            lLayout.setBackgroundColor(getResources().getColor(R.color.neutralBackgroundColor));
+            value.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
+            description.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
+            name.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
+        }
+    }
+
+    private ExpandingItem getCorrectItem(double ie_value) {
+        if(ie_value>0)
+        {
+            return mExpandingList.createNewItem(R.layout.expanding_layout_positive);
+        }else if(ie_value<0)
+        {
+            return mExpandingList.createNewItem(R.layout.expanding_layout_negative);
+        }
+        else
+        {
+            return mExpandingList.createNewItem(R.layout.expanding_layout_neutral);
+        }
+
+    }
+
+
+    private Drawable getIcon(double ie) {
+        //have to return icon id
+        Drawable unwrappedDrawable = AppCompatResources.getDrawable(this, R.drawable.house_icon);
+        Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
+        if(ie>0)
+        {
+            DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.positiveBackgroundColor));
+        }
+        else if(ie<0)
+        {
+            DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.negativeBackgroundColor));
+        }
+        else
+        {
+            DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.neutralBackgroundColor));
+        }
+
+        return wrappedDrawable;
+    }
+
+    private int getIconIndicatorColor(double ie) {
+        //have to return icon's indicator color
+        if(ie>0)
+        {
+           return R.color.positiveBackgroundColor;
+        }
+        else if(ie<0)
+        {
+            return R.color.negativeBackgroundColor;
+        }
+        else
+        {
+            return R.color.neutralBackgroundColor;
+        }
+    }
 
     private void configureSubItem(final ExpandingItem item, final View view, IEObject ieObject) {
         //subItemViewHolder.ieIcon.setText(ieObject.getSubItemTitle()); //to be implemented
-        ((TextView) view.findViewById(R.id.text_view_ie_value)).setText(String.valueOf(ieObject.amount));
-        ((TextView) view.findViewById(R.id.text_view_title)).setText(String.valueOf(ieObject.name));
-        ((TextView) view.findViewById(R.id.text_view_ie_description)).setText("TO BE IMPLEMENTED");
-        view.findViewById(R.id.remove_sub_item).setOnClickListener(new View.OnClickListener() {
+        ((TextView) view.findViewById(R.id.text_view_ie_value_white)).setText(String.valueOf(ieObject.amount));
+        ((TextView) view.findViewById(R.id.text_view_title_white)).setText(String.valueOf(ieObject.name));
+        //((TextView) view.findViewById(R.id.text_view_ie_description_white)).setText("TO BE IMPLEMENTED");
+        view.findViewById(R.id.remove_sub_item_white).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 item.removeSubItem(view);

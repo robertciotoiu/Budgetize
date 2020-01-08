@@ -4,10 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.IEActivityDiegodobelo">
+    tools:context=".activities.IEActivityDiegodobelo"
+    android:fitsSystemWindows="true"
+    android:background="@android:color/background_light"
+    >
 
-    <com.diegodobelo.expandingview.ExpandingList
+    <com.example.robi.investorsapp.expandingview.ExpandingList
         android:id="@+id/expanding_list_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        />
 </RelativeLayout>
