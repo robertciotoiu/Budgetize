@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".activities.createActivities.CreateIEActivity">
 
+
+
     <Button
         android:id="@+id/create_ie_add_button"
         android:layout_width="wrap_content"
@@ -43,7 +45,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/create_ie_name" />
 
-    <EditText
+    <!--EditText
         android:id="@+id/create_ie_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,8 +56,19 @@
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/create_ie_amount" />
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_amount" /-->
 
+    <Spinner
+        android:id="@+id/create_ie_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_amount"
+
+        />
 
     <Switch
         android:id="@+id/create_ie_switch"

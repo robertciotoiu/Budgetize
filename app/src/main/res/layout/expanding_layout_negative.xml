@@ -14,6 +14,7 @@
 <com.example.robi.investorsapp.expandingview.ExpandingItem
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/expanding_item_id_negative"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"

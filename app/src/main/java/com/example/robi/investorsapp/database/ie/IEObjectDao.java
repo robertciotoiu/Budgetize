@@ -19,5 +19,5 @@ public interface IEObjectDao {
     public List<IEObject> getIESpecificList(String category);//get all ie objects from a given category
 
     @Query("DELETE FROM incomes_expenses WHERE wallet_id=:walletID AND id=:ieID")
-    public void deleteWallet(long walletID, long ieID);
+    public void deleteIE(long walletID, long ieID);
 }

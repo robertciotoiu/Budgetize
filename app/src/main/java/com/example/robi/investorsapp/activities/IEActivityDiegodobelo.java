@@ -1,9 +1,11 @@
 package com.example.robi.investorsapp.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -31,6 +33,8 @@ import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloating
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.robi.investorsapp.activities.MainActivity.wallets;
+
 public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
 
     private ExpandingList mExpandingList  = null;
@@ -52,13 +56,21 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mExpandingList.removeAllViews();
+        populateLists();
+    }
+
     private void init() {
         Bundle bundle = getIntent().getExtras();
         if(bundle.get("wallet")!=null)
         {
             wallet_position = (int) bundle.get("wallet");
         }
-        wallet = MainActivity.wallets.get(wallet_position);
+        init_floatingPointButton();
+        wallet = wallets.get(wallet_position);
         categoryObjectsList = buildCategoryList();
         mExpandingList = findViewById(R.id.expanding_list_main);
     }
@@ -79,7 +91,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                 .setWrapper(0)
         );
         items.add(new RFACLabelItem<Integer>()
-                .setLabel("I/E")
+                .setLabel("Category")
                 .setResId(R.drawable.category_icon_test)
                 .setIconNormalColor(0xff056f00)
                 .setIconPressedColor(0xff0d5302)
@@ -87,7 +99,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                 .setWrapper(1)
         );
         items.add(new RFACLabelItem<Integer>()
-                .setLabel("Category")
+                .setLabel("I/E")
                 .setResId(R.drawable.income_expense_test_icon)
                 .setIconNormalColor(0xff056f00)
                 .setIconPressedColor(0xff0d5302)
@@ -117,14 +129,14 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
     @Override
     public void onRFACItemIconClick(int position, RFACLabelItem item) {
         Toast.makeText(this, "clicked icon: " + position, Toast.LENGTH_SHORT).show();
-        if(position==1)
+        if(position==2)
         {
             //launch create IE activity
             Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateIEActivity.class);
             myIntent.putExtra("wallet", wallet_position); //Optional parameters
             IEActivityDiegodobelo.this.startActivity(myIntent);
         }
-        else if(position==2)
+        else if(position==1)
         {
             //launch create Category activity
             Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateCategoryActivity.class);
@@ -149,7 +161,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         }
     }
 
-    private void addItem(CategoryObject categoryObject) {
+    private void addItem(final CategoryObject categoryObject) {
         double ie_value = MainActivity.myDatabase.categoryDao().getCategoryIESUM(categoryObject.getWallet_id(),categoryObject.getName());
         final ExpandingItem item = getCorrectItem(ie_value);
         if(item!=null)
@@ -179,7 +191,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 //                    view.setLayoutParams(params);
 //                }
                 //Let's set some values in
-                configureSubItem(item, view, ieObjectList.get(i));
+                configureSubItem(item, view, ieObjectList.get(i),categoryObject);
             }
 
 //            item.findViewById(R.id.add_more_sub_items).setOnClickListener(new View.OnClickListener() {
@@ -195,10 +207,51 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
             item.findViewById(R.id.remove_item).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mExpandingList.removeItem(item);
+                    removeItemClickListener(categoryObject.getName(), item);
                 }
             });
         }
+    }
+
+    private void removeItemClickListener(final String categoryName,final ExpandingItem expandingItem) {
+        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE: {
+                        try {
+                            MainActivity.myDatabase.categoryDao().deleteCategory(wallet.getId(),categoryName);
+                            refresh_wallet();
+                            Toast.makeText(IEActivityDiegodobelo.this, "Category Deleted", Toast.LENGTH_SHORT).show();
+                            mExpandingList.removeItem(expandingItem);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println(e.getMessage());
+                            Toast toast = Toast.makeText(IEActivityDiegodobelo.this, "Unable to delete the Category", Toast.LENGTH_SHORT);
+                            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+                            v.setTextColor(Color.RED);
+                            toast.show();
+                        }
+
+
+                        //Yes button clicked
+                        break;
+                    }
+
+                    case DialogInterface.BUTTON_NEGATIVE: {
+                        //No button clicked
+                        break;
+                    }
+                }
+            }
+
+            private void refresh_wallet() {
+
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want do DELETE permanently this Category?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
     }
 
     private void setAllColors(double ie) {
@@ -282,16 +335,75 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         }
     }
 
-    private void configureSubItem(final ExpandingItem item, final View view, IEObject ieObject) {
+    private void configureSubItem(final ExpandingItem item, final View view, final IEObject ieObject, final CategoryObject categoryObject) {
         //subItemViewHolder.ieIcon.setText(ieObject.getSubItemTitle()); //to be implemented
-        ((TextView) view.findViewById(R.id.text_view_ie_value_white)).setText(String.valueOf(ieObject.amount));
+        if(ieObject.type==1)
+        {
+            ((TextView) view.findViewById(R.id.text_view_ie_value_white)).setText("-"+String.valueOf(ieObject.amount));
+        }else{
+            ((TextView) view.findViewById(R.id.text_view_ie_value_white)).setText(String.valueOf(ieObject.amount));
+        }
         ((TextView) view.findViewById(R.id.text_view_title_white)).setText(String.valueOf(ieObject.name));
         //((TextView) view.findViewById(R.id.text_view_ie_description_white)).setText("TO BE IMPLEMENTED");
         view.findViewById(R.id.remove_sub_item_white).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                item.removeSubItem(view);
+                removeSubItemClickListener(ieObject.getId(),item,view,categoryObject);
             }
         });
     }
+
+    private void removeSubItemClickListener(final long ieID, final ExpandingItem expandingItem, final View view,final CategoryObject categoryObject) {
+        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE: {
+                        try {
+                            MainActivity.myDatabase.ieoDao().deleteIE(wallet.getId(),ieID);
+                            Toast.makeText(IEActivityDiegodobelo.this, "I/E Deleted", Toast.LENGTH_SHORT).show();
+                            expandingItem.removeSubItem(view);
+                            refresh_category(expandingItem,view,categoryObject);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println(e.getMessage());
+                            Toast toast = Toast.makeText(IEActivityDiegodobelo.this, "Unable to delete the I/E", Toast.LENGTH_SHORT);
+                            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+                            v.setTextColor(Color.RED);
+                            toast.show();
+                        }
+                        //Yes button clicked
+                        break;
+                    }
+
+                    case DialogInterface.BUTTON_NEGATIVE: {
+                        //No button clicked
+                        break;
+                    }
+                }
+            }
+            private void refresh_category(ExpandingItem expandingItem, View view, CategoryObject categoryObject) {
+                double ieValue = MainActivity.myDatabase.categoryDao().getCategoryIESUM(wallet.getId(), categoryObject.getName());
+                expandingItem.setIndicatorIcon(getIcon(ieValue));
+
+                if(ieValue>0)
+                {
+                    expandingItem.setBackgroundResource(R.drawable.item_shape_positive);
+                }else if(ieValue<0)
+                {
+                    expandingItem.setBackgroundResource(R.drawable.item_shape_negative);
+                }
+                else
+                {
+                    expandingItem.setBackgroundResource(R.drawable.item_shape_neutral);
+                }
+                TextView value = (TextView)expandingItem.findViewById(R.id.text_view_value_white);
+                value.setText(String.valueOf(ieValue));
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want do DELETE permanently this I/E?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
+
 }

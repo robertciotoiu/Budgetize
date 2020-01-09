@@ -187,6 +187,17 @@ public class ExpandingItem extends RelativeLayout {
      */
     private OnItemStateChanged mListener;
 
+    private int layoutID;
+
+    public void setLayoutID(int layoutId) {
+        this.layoutID = layoutId;
+    }
+
+    public int getLayoutID()
+    {
+        return layoutID;
+    }
+
     /**
      * Interface to notify item state changed.
      */

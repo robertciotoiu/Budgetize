@@ -15,9 +15,14 @@ package com.example.robi.investorsapp.expandingview;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+
+import com.example.robi.investorsapp.R;
+import com.example.robi.investorsapp.activities.IEActivityDiegodobelo;
 
 /**
  * Created by diego on 5/9/16.
@@ -28,6 +33,7 @@ public class ExpandingList extends ScrollView {
      * Member variable to hold the items.
      */
     private LinearLayout mContainer;
+    Context context;
 
     /**
      * The constructor.
@@ -36,6 +42,7 @@ public class ExpandingList extends ScrollView {
      */
     public ExpandingList(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         mContainer = new LinearLayout(context);
         mContainer.setOrientation(LinearLayout.VERTICAL);
         addView(mContainer);
@@ -55,6 +62,7 @@ public class ExpandingList extends ScrollView {
      * @return The created item.
      */
     public ExpandingItem createNewItem(int layoutId) {
+
         LayoutInflater inflater = LayoutInflater.from(getContext());
         ViewGroup item = (ViewGroup) inflater.inflate(layoutId, this, false);
         if (item instanceof ExpandingItem) {
@@ -64,6 +72,18 @@ public class ExpandingList extends ScrollView {
             return expandingItem;
         }
         throw new RuntimeException("The layout id not an instance of com.diegodobelo.expandinganimlib.ExpandingItem");
+    }
+
+    public void replaceItem(final ExpandingItem item)
+    {
+        View C = item.findViewById(R.id.expanding_item_id_positive);
+        ViewGroup parent = (ViewGroup) C.getParent();
+        int index = parent.indexOfChild(C);
+        parent.removeView(C);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        C = inflater.inflate(R.layout.expanding_layout_negative,parent,false);
+        parent.addView(C,index);
+
     }
 
     /**

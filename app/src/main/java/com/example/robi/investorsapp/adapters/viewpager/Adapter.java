@@ -1,6 +1,7 @@
 package com.example.robi.investorsapp.adapters.viewpager;
 
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -93,10 +94,21 @@ public class Adapter extends PagerAdapter {
 
             if (ie > 0) {
                 view = layoutInflater.inflate(R.layout.page_positive, container, false);
+                //views.add(view);
+//                if(views.get(position)!=null)
+//                {
+//                    views.add(position,view);
+//                }
+//                else
+//                {
+//                    views.remove(position);
+//                    views.add(position,view);
+//                }
                 walletName = (TextView) view.findViewById(R.id.wallet_name);
                 walletName.setText(wallet.getName());
                 pb = (ProgressBar) view.findViewById(R.id.progressBar);
                 pb.setProgress(percentage,true);
+
                 b = (Button) view.findViewById(R.id.ie_button);
                 b.setText("+" + ie + "$");
 
@@ -117,6 +129,7 @@ public class Adapter extends PagerAdapter {
                 walletName.setText(wallet.getName());
                 pb = (ProgressBar) view.findViewById(R.id.progressBar);
                 pb.setProgress(percentage,true);
+                ObjectAnimator progressAnimator = ObjectAnimator.ofInt(pb, "progress", 10000, 0);
                 b = (Button) view.findViewById(R.id.ie_button);
                 b.setText(ie + "$");
 

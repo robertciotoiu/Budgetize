@@ -1,6 +1,7 @@
 package com.example.robi.investorsapp.activities;
 
 
+import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,11 +9,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.PrimaryKey;
 import androidx.room.Room;
 import androidx.viewpager.widget.ViewPager;
 
@@ -99,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int i) {
-
             }
         });
 
@@ -206,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+        builder.setMessage("Are you sure you want do DELETE permanently this Wallet?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
     }
 
