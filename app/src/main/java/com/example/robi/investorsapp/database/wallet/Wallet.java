@@ -5,7 +5,9 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Entity(tableName = "wallets")
 public class Wallet {
@@ -15,6 +17,11 @@ public class Wallet {
         this.name = name;
         this.financialGoal = financialGoal;
         this.financialStatus = financialStatus;
+
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM");//dd/MM/yyyy
+        Date now = new Date();
+        String strDate = sdfDate.format(now);
+        this.lastDate = strDate;
     }
 
     @PrimaryKey
@@ -30,6 +37,17 @@ public class Wallet {
     private double financialStatus;//view of current status of the wallet
     //private int ArrayList<IncomeObj> incomesArr;
     //private int ArrayList<ExpenseObj> expenseArr;
+
+    @ColumnInfo(name = "latest_income_update")
+    private String lastDate;
+
+    public String getLastDate() {
+        return lastDate;
+    }
+
+    public void setLastDate(String lastDate) {
+        this.lastDate = lastDate;
+    }
 
     //we need a view which calculate ie
 

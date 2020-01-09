@@ -27,7 +27,10 @@ import com.example.robi.investorsapp.database.wallet.Wallet;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -47,8 +50,40 @@ public class MainActivity extends AppCompatActivity {
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         myDatabase = Room.databaseBuilder(getApplicationContext(),DaoAbstract.class,"walletDB").allowMainThreadQueries().build();
+        try {
+            doDateJob();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         init_screen();
 
+    }
+
+    private void doDateJob() throws ParseException {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM");//dd/MM/yyyy
+        Date date1 = new Date();
+        String strDate = sdfDate.format(date1);
+        String strdate2 = myDatabase.walletDao().getLatestDate();
+
+
+        if(strdate2!=null) {
+
+
+            date1 = sdfDate.parse(strDate);
+
+            Date date2 = sdfDate.parse(strdate2);
+
+            if (date1.compareTo(date2) > 0)
+            {
+                List<Wallet> wallets = myDatabase.walletDao().getAllWallets();
+
+                for(Wallet w:wallets)
+                {
+                    myDatabase.walletDao().financialStatusUpdate(w.getId(),sdfDate.format(date1));
+                }
+            }
+
+        }
     }
 
     @Override
