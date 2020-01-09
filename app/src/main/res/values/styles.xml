@@ -23,4 +23,12 @@
         <item name="android:activityCloseEnterAnimation">@anim/slide_in_left</item>
         <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
     </style>
+
+    <style name="ThemeOverlay.MySwitch" parent="">
+        <item name="android:colorControlActivated">@color/negativeBackgroundColor</item>
+        <item name="android:colorControlNormal">@color/positiveBackgroundColor</item>
+        <item name="colorSwitchThumbNormal">@color/positiveBackgroundColor</item>
+        <item name="android:colorForeground">@color/positiveBackgroundColor</item>
+    </style>
+
 </resources>
