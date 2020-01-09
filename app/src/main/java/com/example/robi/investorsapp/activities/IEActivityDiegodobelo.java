@@ -50,8 +50,12 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_iediegodobelo);
+        Bundle bundle = getIntent().getExtras();
+        if(bundle.get("wallet")!=null)
+        {
+            wallet_position = (int) bundle.get("wallet");
+        }
         init();
-
         populateLists();
 
     }
@@ -60,15 +64,11 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
     protected void onResume() {
         super.onResume();
         mExpandingList.removeAllViews();
+        init();
         populateLists();
     }
 
     private void init() {
-        Bundle bundle = getIntent().getExtras();
-        if(bundle.get("wallet")!=null)
-        {
-            wallet_position = (int) bundle.get("wallet");
-        }
         init_floatingPointButton();
         wallet = wallets.get(wallet_position);
         categoryObjectsList = buildCategoryList();
@@ -122,13 +122,13 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 
     @Override
     public void onRFACItemLabelClick(int position, RFACLabelItem item) {
-        Toast.makeText(this, "clicked label: " + position, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "clicked label: " + position, Toast.LENGTH_SHORT).show();
         rfabHelper.toggleContent();
     }
 
     @Override
     public void onRFACItemIconClick(int position, RFACLabelItem item) {
-        Toast.makeText(this, "clicked icon: " + position, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "clicked icon: " + position, Toast.LENGTH_SHORT).show();
         if(position==2)
         {
             //launch create IE activity
