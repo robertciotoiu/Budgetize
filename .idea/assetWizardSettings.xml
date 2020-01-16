@@ -47,8 +47,8 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="C:\Users\Robi\Desktop\house_icon.png" />
-                                      <entry key="outputName" value="house_icon" />
+                                      <entry key="imageAsset" value="E:\Projects\MSA\repo\monitor-analytic-icon.png" />
+                                      <entry key="outputName" value="analytic_icon" />
                                       <entry key="theme" value="HOLO_DARK" />
                                       <entry key="themeColor" value="ffffff" />
                                     </map>

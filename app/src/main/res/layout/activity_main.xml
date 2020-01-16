@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/base_layout"
+    android:fitsSystemWindows="true"
     tools:context=".activities.MainActivity"
     >
 
@@ -110,8 +111,18 @@
         android:clipToPadding="false"
         android:foregroundGravity="center"
         android:overScrollMode="never">
-
     </androidx.viewpager.widget.ViewPager>
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:background="@drawable/analytic_imageview_border"
+            android:scaleType="fitCenter"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="0dp"
+            android:backgroundTint="@android:color/transparent"
+            app:srcCompat="@drawable/monitor_analytic_icon" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabDots"
