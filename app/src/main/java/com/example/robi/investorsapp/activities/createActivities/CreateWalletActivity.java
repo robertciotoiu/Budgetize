@@ -1,21 +1,16 @@
 package com.example.robi.investorsapp.activities.createActivities;
 
-import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.transition.Slide;
-import android.view.Gravity;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.activities.MainActivity;
-import com.example.robi.investorsapp.database.wallet.Wallet;
+import com.example.robi.investorsapp.localdatabase.entities.wallet.Wallet;
 
 public class CreateWalletActivity extends AppCompatActivity {
 
@@ -37,7 +32,7 @@ public class CreateWalletActivity extends AppCompatActivity {
             }
         });
 
-        //MainActivity.wallets.add(new Wallet();
+        //MainOAuthActivity.wallets.add(new Wallet();
     }
 
     private void createWallet() {
@@ -68,7 +63,7 @@ public class CreateWalletActivity extends AppCompatActivity {
                 Toast.makeText(this, "Wallet failed to be added", Toast.LENGTH_SHORT).show();
             }
 
-            this.finish(); //closes this activity and return to MainActivity.java
+            this.finish(); //closes this activity and return to MainOAuthActivity.java
         }
         catch(Exception e) {
             e.printStackTrace();

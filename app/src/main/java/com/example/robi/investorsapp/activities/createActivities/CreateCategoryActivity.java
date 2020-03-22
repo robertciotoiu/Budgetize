@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.activities.MainActivity;
-import com.example.robi.investorsapp.database.category.CategoryObject;
+import com.example.robi.investorsapp.localdatabase.entities.category.CategoryObject;
 
 public class CreateCategoryActivity extends AppCompatActivity {
     int wallet_position = 0;
@@ -39,7 +39,7 @@ public class CreateCategoryActivity extends AppCompatActivity {
             }
         });
 
-        //MainActivity.wallets.add(new Wallet();
+        //MainOAuthActivity.wallets.add(new Wallet();
     }
 
     private void createCategory() {
@@ -63,7 +63,7 @@ public class CreateCategoryActivity extends AppCompatActivity {
                 Toast.makeText(this, "Category failed to be added", Toast.LENGTH_SHORT).show();
             }
 
-            this.finish(); //closes this activity and return to MainActivity.java
+            this.finish(); //closes this activity and return to MainOAuthActivity.java
         }
         catch(Exception e) {
             e.printStackTrace();

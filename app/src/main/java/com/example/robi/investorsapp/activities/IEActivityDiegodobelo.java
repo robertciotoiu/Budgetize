@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,11 +18,11 @@ import android.widget.Toast;
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.activities.createActivities.CreateCategoryActivity;
 import com.example.robi.investorsapp.activities.createActivities.CreateIEActivity;
-import com.example.robi.investorsapp.database.category.CategoryObject;
-import com.example.robi.investorsapp.database.ie.IEObject;
-import com.example.robi.investorsapp.database.wallet.Wallet;
-import com.example.robi.investorsapp.expandingview.ExpandingItem;
-import com.example.robi.investorsapp.expandingview.ExpandingList;
+import com.example.robi.investorsapp.localdatabase.entities.category.CategoryObject;
+import com.example.robi.investorsapp.localdatabase.entities.ie.IEObject;
+import com.example.robi.investorsapp.localdatabase.entities.wallet.Wallet;
+import com.example.robi.investorsapp.APIs.expandingviewAPI.ExpandingItem;
+import com.example.robi.investorsapp.APIs.expandingviewAPI.ExpandingList;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout;
@@ -37,7 +36,7 @@ import static com.example.robi.investorsapp.activities.MainActivity.wallets;
 
 public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
 
-    private ExpandingList mExpandingList  = null;
+    private ExpandingList mExpandingList = null;
     int wallet_position = 0;
     private RapidFloatingActionLayout rfaLayout;
     private RapidFloatingActionButton rfaBtn;
@@ -51,8 +50,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_iediegodobelo);
         Bundle bundle = getIntent().getExtras();
-        if(bundle.get("wallet")!=null)
-        {
+        if (bundle.get("wallet") != null) {
             wallet_position = (int) bundle.get("wallet");
         }
         init();
@@ -129,15 +127,12 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
     @Override
     public void onRFACItemIconClick(int position, RFACLabelItem item) {
         //Toast.makeText(this, "clicked icon: " + position, Toast.LENGTH_SHORT).show();
-        if(position==2)
-        {
+        if (position == 2) {
             //launch create IE activity
             Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateIEActivity.class);
             myIntent.putExtra("wallet", wallet_position); //Optional parameters
             IEActivityDiegodobelo.this.startActivity(myIntent);
-        }
-        else if(position==1)
-        {
+        } else if (position == 1) {
             //launch create Category activity
             Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateCategoryActivity.class);
             myIntent.putExtra("wallet", wallet_position); //Optional parameters
@@ -152,35 +147,32 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 
     private void populateLists() {
         ExpandingItem first_item = mExpandingList.createNewItem(R.layout.first_ie_item);
-        if(first_item!=null)
-        {
-            ((TextView)first_item.findViewById(R.id.wallet_name_ie_screen)).setText(wallet.getName());
+        if (first_item != null) {
+            ((TextView) first_item.findViewById(R.id.wallet_name_ie_screen)).setText(wallet.getName());
         }
-        for(CategoryObject categoryObject:categoryObjectsList) {
+        for (CategoryObject categoryObject : categoryObjectsList) {
             addItem(categoryObject);
         }
     }
 
     private void addItem(final CategoryObject categoryObject) {
-        double ie_value = MainActivity.myDatabase.categoryDao().getCategoryIESUM(categoryObject.getWallet_id(),categoryObject.getName());
+        double ie_value = MainActivity.myDatabase.categoryDao().getCategoryIESUM(categoryObject.getWallet_id(), categoryObject.getName());
         final ExpandingItem item = getCorrectItem(ie_value);
-        if(item!=null)
-        {
+        if (item != null) {
             //setAllColors(ie_value);
             item.setIndicatorColor(Color.WHITE);
             //item.setIndicatorColorRes(getIconIndicatorColor(ie_value));//R.color.positiveBackgroundColor);
             item.setIndicatorIcon(getIcon(ie_value));//R.drawable.house_icon);
-            List<IEObject> ieObjectList = MainActivity.myDatabase.categoryDao().getCategorysIE(wallet.getId(),categoryObject.getName());
+            List<IEObject> ieObjectList = MainActivity.myDatabase.categoryDao().getCategorysIE(wallet.getId(), categoryObject.getName());
 
             //1. ImageView category_icon
-            ((TextView)item.findViewById(R.id.text_view_value_white)).setText(String.valueOf(ie_value));
-            ((TextView)item.findViewById(R.id.text_view_category_name_white)).setText(categoryObject.getName());
-            ((TextView)item.findViewById(R.id.text_view_description_white)).setText(categoryObject.getDescription());
+            ((TextView) item.findViewById(R.id.text_view_value_white)).setText(String.valueOf(ie_value));
+            ((TextView) item.findViewById(R.id.text_view_category_name_white)).setText(categoryObject.getName());
+            ((TextView) item.findViewById(R.id.text_view_description_white)).setText(categoryObject.getDescription());
 
 
             item.createSubItems(ieObjectList.size());
-            for(int i = 0 ;i<item.getSubItemsCount();i++)
-            {
+            for (int i = 0; i < item.getSubItemsCount(); i++) {
                 //Let's get the created sub item by its index
                 final View view = item.getSubItemView(i);
 
@@ -191,7 +183,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 //                    view.setLayoutParams(params);
 //                }
                 //Let's set some values in
-                configureSubItem(item, view, ieObjectList.get(i),categoryObject);
+                configureSubItem(item, view, ieObjectList.get(i), categoryObject);
             }
 
 //            item.findViewById(R.id.add_more_sub_items).setOnClickListener(new View.OnClickListener() {
@@ -213,14 +205,14 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         }
     }
 
-    private void removeItemClickListener(final String categoryName,final ExpandingItem expandingItem) {
+    private void removeItemClickListener(final String categoryName, final ExpandingItem expandingItem) {
         final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE: {
                         try {
-                            MainActivity.myDatabase.categoryDao().deleteCategory(wallet.getId(),categoryName);
+                            MainActivity.myDatabase.categoryDao().deleteCategory(wallet.getId(), categoryName);
                             refresh_wallet();
                             Toast.makeText(IEActivityDiegodobelo.this, "Category Deleted", Toast.LENGTH_SHORT).show();
                             mExpandingList.removeItem(expandingItem);
@@ -260,22 +252,17 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         TextView description = (TextView) findViewById(R.id.text_view_category_name);
         TextView name = (TextView) findViewById(R.id.text_view_category_name);
 
-        if(ie>0)
-        {
+        if (ie > 0) {
             lLayout.setBackgroundColor(getResources().getColor(R.color.positiveBackgroundColor));
             value.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
             description.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
             name.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
-        }
-        else if(ie<0)
-        {
+        } else if (ie < 0) {
             lLayout.setBackgroundColor(getResources().getColor(R.color.negativeBackgroundColor));
             value.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
             description.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
             name.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
-        }
-        else
-        {
+        } else {
             lLayout.setBackgroundColor(getResources().getColor(R.color.neutralBackgroundColor));
             value.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
             description.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
@@ -284,15 +271,11 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
     }
 
     private ExpandingItem getCorrectItem(double ie_value) {
-        if(ie_value>0)
-        {
+        if (ie_value > 0) {
             return mExpandingList.createNewItem(R.layout.expanding_layout_positive);
-        }else if(ie_value<0)
-        {
+        } else if (ie_value < 0) {
             return mExpandingList.createNewItem(R.layout.expanding_layout_negative);
-        }
-        else
-        {
+        } else {
             return mExpandingList.createNewItem(R.layout.expanding_layout_neutral);
         }
 
@@ -303,16 +286,11 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         //have to return icon id
         Drawable unwrappedDrawable = AppCompatResources.getDrawable(this, R.drawable.house_icon);
         Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
-        if(ie>0)
-        {
+        if (ie > 0) {
             DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.positiveBackgroundColor));
-        }
-        else if(ie<0)
-        {
+        } else if (ie < 0) {
             DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.negativeBackgroundColor));
-        }
-        else
-        {
+        } else {
             DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.neutralBackgroundColor));
         }
 
@@ -321,26 +299,20 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 
     private int getIconIndicatorColor(double ie) {
         //have to return icon's indicator color
-        if(ie>0)
-        {
-           return R.color.positiveBackgroundColor;
-        }
-        else if(ie<0)
-        {
+        if (ie > 0) {
+            return R.color.positiveBackgroundColor;
+        } else if (ie < 0) {
             return R.color.negativeBackgroundColor;
-        }
-        else
-        {
+        } else {
             return R.color.neutralBackgroundColor;
         }
     }
 
     private void configureSubItem(final ExpandingItem item, final View view, final IEObject ieObject, final CategoryObject categoryObject) {
         //subItemViewHolder.ieIcon.setText(ieObject.getSubItemTitle()); //to be implemented
-        if(ieObject.type==1)
-        {
-            ((TextView) view.findViewById(R.id.text_view_ie_value_white)).setText("-"+String.valueOf(ieObject.amount));
-        }else{
+        if (ieObject.type == 1) {
+            ((TextView) view.findViewById(R.id.text_view_ie_value_white)).setText("-" + String.valueOf(ieObject.amount));
+        } else {
             ((TextView) view.findViewById(R.id.text_view_ie_value_white)).setText(String.valueOf(ieObject.amount));
         }
         ((TextView) view.findViewById(R.id.text_view_title_white)).setText(String.valueOf(ieObject.name));
@@ -348,22 +320,22 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         view.findViewById(R.id.remove_sub_item_white).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeSubItemClickListener(ieObject.getId(),item,view,categoryObject);
+                removeSubItemClickListener(ieObject.getId(), item, view, categoryObject);
             }
         });
     }
 
-    private void removeSubItemClickListener(final long ieID, final ExpandingItem expandingItem, final View view,final CategoryObject categoryObject) {
+    private void removeSubItemClickListener(final long ieID, final ExpandingItem expandingItem, final View view, final CategoryObject categoryObject) {
         final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE: {
                         try {
-                            MainActivity.myDatabase.ieoDao().deleteIE(wallet.getId(),ieID);
+                            MainActivity.myDatabase.ieoDao().deleteIE(wallet.getId(), ieID);
                             Toast.makeText(IEActivityDiegodobelo.this, "I/E Deleted", Toast.LENGTH_SHORT).show();
                             expandingItem.removeSubItem(view);
-                            refresh_category(expandingItem,view,categoryObject);
+                            refresh_category(expandingItem, view, categoryObject);
                         } catch (Exception e) {
                             e.printStackTrace();
                             System.out.println(e.getMessage());
@@ -382,22 +354,19 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                     }
                 }
             }
+
             private void refresh_category(ExpandingItem expandingItem, View view, CategoryObject categoryObject) {
                 double ieValue = MainActivity.myDatabase.categoryDao().getCategoryIESUM(wallet.getId(), categoryObject.getName());
                 expandingItem.setIndicatorIcon(getIcon(ieValue));
 
-                if(ieValue>0)
-                {
+                if (ieValue > 0) {
                     expandingItem.setBackgroundResource(R.drawable.item_shape_positive);
-                }else if(ieValue<0)
-                {
+                } else if (ieValue < 0) {
                     expandingItem.setBackgroundResource(R.drawable.item_shape_negative);
-                }
-                else
-                {
+                } else {
                     expandingItem.setBackgroundResource(R.drawable.item_shape_neutral);
                 }
-                TextView value = (TextView)expandingItem.findViewById(R.id.text_view_value_white);
+                TextView value = (TextView) expandingItem.findViewById(R.id.text_view_value_white);
                 value.setText(String.valueOf(ieValue));
             }
         };

@@ -9,7 +9,7 @@
     android:background="@android:color/background_light"
     >
 
-    <com.example.robi.investorsapp.expandingview.ExpandingList
+    <com.example.robi.investorsapp.APIs.expandingviewAPI.ExpandingList
         android:id="@+id/expanding_list_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

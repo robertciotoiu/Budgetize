@@ -10,13 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.robi.investorsapp.R;
-import com.example.robi.investorsapp.database.ie.IEObject;
-
-import org.w3c.dom.Text;
+import com.example.robi.investorsapp.localdatabase.entities.ie.IEObject;
 
 import java.util.List;
 
-public class IEAdapter extends RecyclerView.Adapter<IEAdapter.SubViewHolder>{
+public class IEAdapter extends RecyclerView.Adapter<IEAdapter.SubViewHolder> {
     private List<IEObject> ieObjectList;
 
     IEAdapter(List<IEObject> subItemList) {

@@ -17,8 +17,8 @@ import android.widget.Toast;
 
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.activities.MainActivity;
-import com.example.robi.investorsapp.database.category.CategoryObject;
-import com.example.robi.investorsapp.database.ie.IEObject;
+import com.example.robi.investorsapp.localdatabase.entities.category.CategoryObject;
+import com.example.robi.investorsapp.localdatabase.entities.ie.IEObject;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class CreateIEActivity extends AppCompatActivity {
             }
         });
 
-        //MainActivity.wallets.add(new Wallet();
+        //MainOAuthActivity.wallets.add(new Wallet();
     }
 
     private void createIE() {
@@ -86,7 +86,7 @@ public class CreateIEActivity extends AppCompatActivity {
                 Toast.makeText(this, "IE failed to be added", Toast.LENGTH_SHORT).show();
             }
 
-            this.finish(); //closes this activity and return to MainActivity.java
+            this.finish(); //closes this activity and return to MainOAuthActivity.java
         }
         catch(Exception e) {
             e.printStackTrace();

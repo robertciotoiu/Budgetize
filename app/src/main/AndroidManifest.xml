@@ -2,23 +2,56 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.robi.investorsapp">
 
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:usesCleartextTraffic="true"
+
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".activities.IEActivityDiegodobelo"></activity>
+        <activity android:name=".adapters.gridlistview.GridListViewAdapter">
+
+        </activity>
+        <activity android:name=".activities.createActivities.SelectBank"></activity>
+        <activity android:name=".activities.LinkedBankAccounts" />
+        <activity android:name=".activities.createActivities.HandleLinkedBankAccount">
+        </activity>
+        <activity android:name=".activities.IEActivityDiegodobelo" />
         <activity android:name=".activities.createActivities.CreateCategoryActivity" />
         <activity android:name=".activities.createActivities.CreateIEActivity" />
         <activity android:name=".unused.IEActivity" />
         <activity android:name=".activities.createActivities.CreateWalletActivity" />
         <activity android:name=".activities.InsideWalletActivity" />
+        <activity
+            android:name="com.example.robi.investorsapp.APIs.oauth1.activity.OAuthActivity"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name="com.example.robi.investorsapp.APIs.oauth1.activity.AuthenticateActivity"
+            android:noHistory="true"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- You will want to set customAppProtocol to something unique to avoid having Android
+                give the user more than one app to pick from to handle the oauth callback -->
+                <data android:scheme="@string/customAppProtocol"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.robi.investorsapp.APIs.oauth1.activity.MainOAuthActivity"
+            android:label="@string/app_name" >
+        </activity>
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

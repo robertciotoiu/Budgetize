@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.activities.MainActivity;
-import com.example.robi.investorsapp.database.category.CategoryObject;
-import com.example.robi.investorsapp.database.ie.IEObject;
-import com.example.robi.investorsapp.database.wallet.Wallet;
+import com.example.robi.investorsapp.localdatabase.entities.category.CategoryObject;
+import com.example.robi.investorsapp.localdatabase.entities.ie.IEObject;
+import com.example.robi.investorsapp.localdatabase.entities.wallet.Wallet;
 
 import java.util.List;
 
@@ -45,17 +45,17 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.recycle_view_category, parent, false);
-        return new ViewHolder(view,mClickListener);
+        return new ViewHolder(view, mClickListener);
     }
 
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        //MainActivity.myDatabase.ieoDao().getIESpecificList();
+        //MainOAuthActivity.myDatabase.ieoDao().getIESpecificList();
         CategoryObject categoryObject = categoryObjectsList.get(position);
-        List<IEObject> ieObjectList = MainActivity.myDatabase.categoryDao().getCategorysIE(wallet.getId(),categoryObject.getName());
+        List<IEObject> ieObjectList = MainActivity.myDatabase.categoryDao().getCategorysIE(wallet.getId(), categoryObject.getName());
         //holder.categoryIcon.draw();
-        holder.textViewValue.setText(String.valueOf(MainActivity.myDatabase.categoryDao().getCategoryIESUM(categoryObject.getWallet_id(),categoryObject.getName())));//EDIT TO VIEW BASED ON SUM OF ALL IE Objects (ANOTHER VIEW)
+        holder.textViewValue.setText(String.valueOf(MainActivity.myDatabase.categoryDao().getCategoryIESUM(categoryObject.getWallet_id(), categoryObject.getName())));//EDIT TO VIEW BASED ON SUM OF ALL IE Objects (ANOTHER VIEW)
         holder.categoryName.setText(categoryObject.getName());
         holder.textViewDescription.setText(categoryObject.getDescription());
 
@@ -83,8 +83,6 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
     }
 
 
-
-
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView categoryIcon;
@@ -96,7 +94,7 @@ public class IECategoryAdapter extends RecyclerView.Adapter<IECategoryAdapter.Vi
         ItemClickListener itemClickListener;
 
 
-        public ViewHolder(View itemView,ItemClickListener itemClickListener ) {
+        public ViewHolder(View itemView, ItemClickListener itemClickListener) {
             super(itemView);
             categoryIcon = itemView.findViewById(R.id.category_icon);
             textViewValue = itemView.findViewById(R.id.text_view_value);
