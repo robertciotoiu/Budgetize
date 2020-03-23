@@ -1,6 +1,10 @@
 package com.example.robi.investorsapp.adapters.gridlistview;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -49,12 +53,18 @@ public class GridListViewAdapter extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setBankAccountsFromServer();
+        try {
+            setBankAccountsFromServer();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         listview = new ListView(this);
         listview.setDivider(null);
         setContentView(listview);
         addBanks();
-        listadapter = new SimplestDemoAdadpter(getApplicationContext(),this ,
+        listadapter = new SimplestDemoAdadpter(getApplicationContext(), this,
                 MAX_CARDS);
         listadapter.addItemsInGrid(dataList);
         addHeaderFooters();
@@ -62,50 +72,10 @@ public class GridListViewAdapter extends Activity {
     }
 
     @SuppressLint("StaticFieldLeak")
-    private void setBankAccountsFromServer() {
-        try {
-            banks.addAll(new AsyncTask<Void, Void, ArrayList<Bank>>() {
-                public ArrayList<Bank> banks;
-                @Override
-                /**
-                 * @return A String containing the json representing the available banks, or an error message
-                 */
-                protected ArrayList<Bank> doInBackground(Void... params) {
-                    try {
-                        ArrayList<Bank> banks = new ArrayList<Bank>();
-                        JSONObject banksJson = OBPRestClient.getBanksJson();
-                        Gson gson = new Gson();
-                        JSONArray banksJsonJSONArray= banksJson.getJSONArray("banks");
-                        for(int i= 0;i<banksJsonJSONArray.length();i++){
-                            banks.add(gson.fromJson(banksJsonJSONArray.getJSONObject(i).toString(),Bank.class));
-                            Log.d("BANK:",banks.get(i).toString());
-                        }
-                        this.banks = banks;
-                        return banks;
-                    } catch (ExpiredAccessTokenException e) {
-                        // login again / re-authenticate
-                        redoOAuth();
-                        return null;
-                    } catch (ObpApiCallFailedException e) {
-                        return null;
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }
+    private void setBankAccountsFromServer() throws ExecutionException, InterruptedException {
 
-                public void getBanks(ArrayList<Bank> banks) {
-                    this.banks = banks;
-                }
-
-                @Override
-                protected void onPostExecute(ArrayList<Bank> banks) {
-                    super.onPostExecute(banks);
-                }
-            }.execute().get());
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        banks = new ArrayList<Bank>();
+        banks.addAll(new GetAllBanksClass().execute().get());
 
         //OLD WAY
 //        new AsyncTask<Void, Void, String>() {
@@ -125,7 +95,47 @@ public class GridListViewAdapter extends Activity {
 //        }.execute();
     }
 
-    public ArrayList<Bank> getAllBanks(){
+    private class GetAllBanksClass extends AsyncTask<Void, Void, ArrayList<Bank>> {
+
+        public ArrayList<Bank> banks = new ArrayList<Bank>();
+
+        @Override
+        /**
+         * @return A String containing the json representing the available banks, or an error message
+         */
+        protected ArrayList<Bank> doInBackground(Void... params) {
+            try {
+                JSONObject banksJson = OBPRestClient.getBanksJson();
+                Gson gson = new Gson();
+                JSONArray banksJsonJSONArray = banksJson.getJSONArray("banks");
+                for (int i = 0; i < banksJsonJSONArray.length(); i++) {
+                    banks.add(gson.fromJson(banksJsonJSONArray.getJSONObject(i).toString(), Bank.class));
+                    Log.d("BANK:", banks.get(i).toString());
+                }
+                return banks;
+            } catch (ExpiredAccessTokenException e) {
+                // login again / re-authenticate
+                redoOAuth();
+                return null;
+            } catch (ObpApiCallFailedException e) {
+                return null;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        public void getBanks(ArrayList<Bank> banks) {
+            this.banks = banks;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Bank> banks) {
+            super.onPostExecute(banks);
+        }
+    }
+
+    public ArrayList<Bank> getAllBanks() {
         return banks;
     }
 
@@ -172,7 +182,7 @@ public class GridListViewAdapter extends Activity {
         dataList = new ArrayList<Item>();
         // Generate some dummy data.
         for (int i = 0; i < banks.size(); i++) {
-            dataList.add(new Item("",i,banks.get(i).getLogo()));
+            dataList.add(new Item("", i, banks.get(i).getLogo()));
         }
     }
 
@@ -217,7 +227,7 @@ class Item {
 // having to call findViewById each time on list scroll.)
 
 class ViewHolder {
-    TextView bankImgLink;
+    //TextView bankImgLink;
 }
 
 // Now that our data class & ViewHolder class are ready lets bind each data
@@ -273,7 +283,7 @@ class SimplestDemoAdadpter extends ListGridAdapter<Item, ViewHolder> {
     Context activityContext;
     int position = 0;
 
-    public SimplestDemoAdadpter(Context context,Context activityContext, int totalCardsInRow) {
+    public SimplestDemoAdadpter(Context context, Context activityContext, int totalCardsInRow) {
         super(context, totalCardsInRow);
         this.activityContext = activityContext;
     }
@@ -286,56 +296,95 @@ class SimplestDemoAdadpter extends ListGridAdapter<Item, ViewHolder> {
         cardView.setMinimumHeight(cardwidth);
         // Now create card view holder.
         ViewHolder viewHolder = new ViewHolder();
-        viewHolder.bankImgLink = (TextView) cardView.findViewById(R.id.name);
+        //viewHolder.bankImgLink = (TextView) cardView.findViewById(R.id.name);
         Bitmap bankLogo = null;
         try {
-            bankLogo = new DownloadImageTask().execute(viewHolder.bankImgLink.getText().toString()).get();
+            //bankLogo = new DownloadImageTask().execute(((GridListViewAdapter)this.activityContext).getAllBanks().get(position++).getLogo()).get();
+            bankLogo = new DownloadImageTask().execute("http://goo.gl/oaDMo9").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        cardView.setBackground(new BitmapDrawable(bankLogo));
+        //Log.d("LOGO",viewHolder.bankImgLink.getText().toString());
+        cardView.setBackground(new BitmapDrawable(activityContext.getResources(),bankLogo));
 
         return new Card<ViewHolder>(cardView, viewHolder);
     }
+
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         @Override
         protected Bitmap doInBackground(String... links) {
-            String urldisplay = links[0];
-            Bitmap mIcon11 = null;
+//            String urldisplay = links[0];
+//            Bitmap mIcon11 = null;
+//            try {
+//                InputStream in = new java.net.URL(urldisplay).openStream();
+//                mIcon11 = BitmapFactory.decodeStream(in);
+//            } catch (Exception e) {
+//                Log.e("Error", e.getMessage());
+//                e.printStackTrace();
+//            }
+//            return mIcon11;
+            boolean retry = true;
+            int nrOfRetries = 0;
+            Bitmap bitmap = null;
+            while(retry)
             try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
+                URL url = new URL("http://goo.gl/oaDMo9");
+                InputStream in = url.openConnection().getInputStream();
+                BufferedInputStream bis = new BufferedInputStream(in,1024*8);
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+                int len=0;
+                byte[] buffer = new byte[1024];
+                while((len = bis.read(buffer)) != -1){
+                    out.write(buffer, 0, len);
+                }
+                out.close();
+                bis.close();
+
+                byte[] data = out.toByteArray();
+                bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                if(bitmap!=null || nrOfRetries == 1){
+                    retry = false;
+                }
+                else{
+                    nrOfRetries++;
+                }
+            }
+            catch (IOException e) {
+                if(nrOfRetries==1) {
+                    retry = false;
+                } else {
+                    nrOfRetries++;
+                }
                 e.printStackTrace();
             }
-            return mIcon11;
+            return bitmap;
         }
     }
 
     @Override
     protected void setCardView(CardDataHolder<Item> cardDataHolder,
                                ViewHolder cardViewHolder) {
-        Item item = cardDataHolder.getData();
-        cardViewHolder.bankImgLink.setText(item.getBankImg());
+//        Item item = cardDataHolder.getData();
+//        cardViewHolder.bankImgLink.setText(item.getBankImg());
     }
 
     @Override
     protected void onCardClicked(Item cardData) {
-        startActivity(LinkedBankAccounts.class,cardData);
+        startActivity(LinkedBankAccounts.class, cardData);
 
         Toast.makeText(getContext(),
                 "Card click " + cardData.getPositionText(), Toast.LENGTH_LONG)
                 .show();
     }
 
-    private void startActivity(Class targetClass,Item cardData) {
+    private void startActivity(Class targetClass, Item cardData) {
         Intent myIntent = new Intent();
-        myIntent.putExtra("BANK_NAME",cardData.getBankName());
-        ((GridListViewAdapter)activityContext).setResult(Activity.RESULT_OK,myIntent);
-        ((GridListViewAdapter)activityContext).finish();
+        myIntent.putExtra("BANK_NAME", cardData.getBankName());
+        ((GridListViewAdapter) activityContext).setResult(Activity.RESULT_OK, myIntent);
+        ((GridListViewAdapter) activityContext).finish();
     }
 
     private final int TEXT_VIEW_CLICK_ID = 0;
@@ -343,10 +392,9 @@ class SimplestDemoAdadpter extends ListGridAdapter<Item, ViewHolder> {
     @Override
     protected void registerChildrenViewClickEvents(ViewHolder cardViewHolder,
                                                    ChildViewsClickHandler childViewsClickHandler) {
-        childViewsClickHandler.registerChildViewForClickEvent(
-                cardViewHolder.bankImgLink, TEXT_VIEW_CLICK_ID);
+//        childViewsClickHandler.registerChildViewForClickEvent(
+//                cardViewHolder.bankImgLink, TEXT_VIEW_CLICK_ID);
     }
-
 
 
     //Disabled
