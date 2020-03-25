@@ -1,21 +1,31 @@
 package com.example.robi.investorsapp.activities;
 
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.room.Room;
 import androidx.viewpager.widget.ViewPager;
 
@@ -24,6 +34,9 @@ import com.example.robi.investorsapp.activities.createActivities.CreateWalletAct
 import com.example.robi.investorsapp.adapters.viewpager.WalletViewPagerAdapter;
 import com.example.robi.investorsapp.localdatabase.DaoAbstract;
 import com.example.robi.investorsapp.localdatabase.entities.wallet.Wallet;
+import com.example.robi.investorsapp.services.DoOAuthService;
+import com.example.robi.investorsapp.services.DownloadBankImagesService;
+import com.example.robi.investorsapp.services.RetrieveBanksService;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -45,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
     GoogleSignInAccount account = null;
     GoogleSignInClient mGoogleSignInClient = null;
 
+    //OBP
+    boolean obpOAuthOK = false;
+
     ViewPager viewPager;
     WalletViewPagerAdapter adapter;
     TextView introText;
@@ -59,11 +75,134 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(mMessageReceiver,
+                        new IntentFilter("my-integer"));
         init_login();
         getLocalDB();
         doJobs();
         init_screen();
+        askForPermissions();
+        startServices();
+    }
+    final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+    private void askForPermissions() {
+            // Here, thisActivity is the current activity
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                // Permission is not granted
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    // Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+                } else {
+                    // No explanation needed; request the permission
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
+            } else {
+                // Permission has already been granted
+            }
+        }
+
+    @Override
+    protected void onPause() {
+        // Unregister since the activity is not visible
+        LocalBroadcastManager.getInstance(this)
+                .unregisterReceiver(mMessageReceiver);
+        super.onPause();
+    }
+
+    // Handling messages from Services
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            deactivateLoader();
+            // Extract data included in the Intent
+            //int yourInteger = intent.getIntExtra("message",-1/*default value*/);
+            String serviceResponse = intent.getStringExtra("message");
+
+            if(serviceResponse!=null){
+                if(serviceResponse.contentEquals("needAuth")) {
+                    showBankAccountNeedActions();
+                }else if(serviceResponse.contentEquals("Authorized")){
+                    Log.d("Authorized successfull","!");
+                    obpOAuthOK = true;
+                    getAllBanksService();
+                }else if(serviceResponse.contentEquals("BanksAdded")) {
+                    Log.d("GetBanks successfull","!");
+                    syncAllImagesService();
+                }else if(serviceResponse.contentEquals("BanksNOTAdded")) {
+                    Log.d("GetBanks NOT successfull","!");
+                }else if(serviceResponse.contentEquals("syncImagesCompleted")){
+                    Log.d("syncImages Completed","!");
+                }
+            }else{
+                Log.d("Programming error in "+this.getClass().getName()+" ","EMPTY RESPONSE FROM "+intent.getClass().getName());
+            }
+        }
+    };
+
+    private void showBankAccountNeedActions() {
+        ImageButton bankAccounts = (ImageButton) this.findViewById(R.id.bank_accounts_button);
+        bankAccounts.setImageResource(R.drawable.account_action_to_take);
+    }
+
+    //ORDER OF SERVICES:
+
+    //1st Service
+    private void startServices() {
+        //1.Check if Auth available
+        checkOBPOAuthStatus();
+        // and save/delete image logos
+    }
+
+    //2nd Service
+    private void getAllBanksService() {
+        if(obpOAuthOK){
+            //if it is available we can download banks
+            Intent serviceIntent = new Intent(this, RetrieveBanksService.class);
+            serviceIntent.putExtra("getAllBanks",true);
+            startService(serviceIntent);
+        }
+    }
+
+    //3nd Service
+    private void syncAllImagesService() {
+        Intent serviceIntent = new Intent(this, DownloadBankImagesService.class);
+        serviceIntent.putExtra("syncImages",true);
+        startService(serviceIntent);
+    }
+
+    private void checkOBPOAuthStatus() {
+        Intent serviceIntent = new Intent(this, DoOAuthService.class);
+        serviceIntent.putExtra("checkStatus",true);
+        startService(serviceIntent);
+    }
+
+    private void doOBPOAuth() {
+        Intent serviceIntent = new Intent(this, DoOAuthService.class);
+        serviceIntent.putExtra("doLogin",true);
+        activateLoader();
+        startService(serviceIntent);
+    }
+
+    private void activateLoader(){
+        ProgressBar accLoader = (ProgressBar) findViewById(R.id.progressAccountLoad);
+        accLoader.setVisibility(View.VISIBLE);
+    }
+    private void deactivateLoader(){
+        ProgressBar accLoader = (ProgressBar) findViewById(R.id.progressAccountLoad);
+        accLoader.setVisibility(View.GONE);
     }
 
     private void init_login() {
@@ -258,7 +397,12 @@ public class MainActivity extends AppCompatActivity {
         ImageButton bankAccounts = (ImageButton) this.findViewById(R.id.bank_accounts_button);
         bankAccounts.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivity(LinkedBankAccounts.class);
+                if(obpOAuthOK) {
+                    startActivity(LinkedBankAccounts.class);
+                }else{
+                    //need to do the OAUTH
+                    doOBPOAuth();
+                }
             }
         });
     }

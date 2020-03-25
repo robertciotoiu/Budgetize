@@ -233,8 +233,7 @@ public class AuthenticateActivity extends Activity {
 				return false;
 			} else {
 				String verifierCode = s[0];
-				boolean accessTokenSet = OBPRestClient.getAndSetAccessToken(
-						callingActivity, verifierCode);
+				boolean accessTokenSet = OBPRestClient.getAndSetAccessToken(callingActivity, verifierCode);
 				return accessTokenSet;
 			}
 		}

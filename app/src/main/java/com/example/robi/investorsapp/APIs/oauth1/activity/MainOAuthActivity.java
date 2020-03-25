@@ -222,6 +222,7 @@ public class MainOAuthActivity extends Activity {
 
 	private TextView privateAccountsJsonView = null;
 
+	@SuppressLint("StaticFieldLeak")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -229,53 +230,7 @@ public class MainOAuthActivity extends Activity {
 
 		privateAccountsJsonView = (TextView) findViewById(R.id.private_accounts_json);
 
-		// Request the banks available from the API
-		new AsyncTask<Void, Void, ArrayList<Bank>>() {
 
-			@Override
-			/**
-			 * @return A String containing the json representing the available banks, or an error message
-			 */
-			protected ArrayList<Bank> doInBackground(Void... params) {
-				try {
-					ArrayList<Bank> banks = new ArrayList<Bank>();
-					JSONObject banksJson = OBPRestClient.getBanksJson();
-					Gson gson = new Gson();
-					JSONArray banksJsonJSONArray= banksJson.getJSONArray("banks");
-					for(int i= 0;i<banksJsonJSONArray.length();i++){
-						banks.add(gson.fromJson(banksJsonJSONArray.getJSONObject(i).toString(),Bank.class));
-						Log.d("BANK:",banks.get(i).toString());
-					}
-
-
-//					Iterator<String> iterator = banksJson.keys();
-//					ArrayList<String> banks = new ArrayList<String>();
-//					int i = 0;
-//					while(iterator.hasNext())
-//					{
-//						banks.add(iterator.next());
-//						Log.d("BANK: ", banks.get(i++));
-//					}
-//					banksJson.names();
-					//ArrayList<Bank> bankArrayList = gson.fromJson(banksJson.toString(),Bank.class);
-					return banks;
-				} catch (ExpiredAccessTokenException e) {
-					// login again / re-authenticate
-					redoOAuth();
-					return null;
-				} catch (ObpApiCallFailedException e) {
-					return null;
-				} catch (JSONException e) {
-					e.printStackTrace();
-					return null;
-				}
-			}
-
-//			@Override
-//			protected void onPostExecute(String result) {
-//				privateAccountsJsonView.setText(result);
-//			}
-		}.execute();
 	}
 
 	private void redoOAuth() {

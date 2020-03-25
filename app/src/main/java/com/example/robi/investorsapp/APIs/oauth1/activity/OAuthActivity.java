@@ -235,10 +235,10 @@ public class OAuthActivity extends Activity {
 //			throw new RuntimeException("Setup required! See OAuthActivity.java");
 
 		// Start the main activity if we can get a token we saved earlier
-		if (OBPRestClient.setAccessTokenFromSharedPrefs(this))
-			startMainActivity();
-		else
-			getNewAccessToken();
+//		if (OBPRestClient.setAccessTokenFromSharedPrefs(this))
+//			startMainActivity();
+//		else
+//			getNewAccessToken();
 	}
 
 	private void startMainActivity() {
@@ -262,7 +262,7 @@ public class OAuthActivity extends Activity {
 
 		private final String LOG_TAG = getClass().getName();
 		private Activity callingActivity;
-		
+
 		private AuthorizeTask(Activity act) {
 			this.callingActivity = act;
 		}

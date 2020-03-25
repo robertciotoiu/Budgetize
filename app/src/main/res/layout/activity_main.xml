@@ -18,7 +18,14 @@
         android:alpha="45">
 
 
-
+        <ProgressBar
+            android:id="@+id/progressAccountLoad"
+            style="?android:attr/progressBarStyle"
+            android:visibility="gone"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
 
         <TextView
             android:id="@+id/intro_text"
@@ -115,6 +122,7 @@
         android:clipToPadding="false"
         android:foregroundGravity="center"
         android:overScrollMode="never">
+
     </androidx.viewpager.widget.ViewPager>
 
         <ImageButton

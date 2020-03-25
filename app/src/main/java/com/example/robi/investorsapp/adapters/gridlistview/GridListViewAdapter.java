@@ -1,9 +1,9 @@
 package com.example.robi.investorsapp.adapters.gridlistview;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -14,9 +14,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -31,11 +33,17 @@ import com.example.robi.investorsapp.APIs.oauth1.activity.OAuthActivity;
 import com.example.robi.investorsapp.APIs.oauth1.lib.ExpiredAccessTokenException;
 import com.example.robi.investorsapp.APIs.oauth1.lib.OBPRestClient;
 import com.example.robi.investorsapp.APIs.oauth1.lib.ObpApiCallFailedException;
+import com.example.robi.investorsapp.ApplicationObj;
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.activities.LinkedBankAccounts;
 import com.example.robi.investorsapp.rest.model.Bank;
+import com.example.robi.investorsapp.services.utils.BasicImageDownloader;
 import com.google.gson.Gson;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +53,7 @@ public class GridListViewAdapter extends Activity {
     private ListView listview;
     private ArrayList<Item> dataList;
     private SimplestDemoAdadpter listadapter;
-    private ArrayList<Bank> banks;
+    private ArrayList<Bank> banks = new ArrayList<Bank>();
 
 
     private final int MAX_CARDS = 3;
@@ -53,13 +61,14 @@ public class GridListViewAdapter extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            setBankAccountsFromServer();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            setBankAccountsFromServer();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        banks.addAll(((ApplicationObj)getApplicationContext()).banks);
         listview = new ListView(this);
         listview.setDivider(null);
         setContentView(listview);
@@ -70,7 +79,7 @@ public class GridListViewAdapter extends Activity {
         addHeaderFooters();
         listview.setAdapter(listadapter);
     }
-
+/*
     @SuppressLint("StaticFieldLeak")
     private void setBankAccountsFromServer() throws ExecutionException, InterruptedException {
 
@@ -94,7 +103,9 @@ public class GridListViewAdapter extends Activity {
 //            }
 //        }.execute();
     }
+    */
 
+/*
     private class GetAllBanksClass extends AsyncTask<Void, Void, ArrayList<Bank>> {
 
         public ArrayList<Bank> banks = new ArrayList<Bank>();
@@ -102,7 +113,7 @@ public class GridListViewAdapter extends Activity {
         @Override
         /**
          * @return A String containing the json representing the available banks, or an error message
-         */
+
         protected ArrayList<Bank> doInBackground(Void... params) {
             try {
                 JSONObject banksJson = OBPRestClient.getBanksJson();
@@ -115,7 +126,7 @@ public class GridListViewAdapter extends Activity {
                 return banks;
             } catch (ExpiredAccessTokenException e) {
                 // login again / re-authenticate
-                redoOAuth();
+                //redoOAuth();
                 return null;
             } catch (ObpApiCallFailedException e) {
                 return null;
@@ -138,12 +149,12 @@ public class GridListViewAdapter extends Activity {
     public ArrayList<Bank> getAllBanks() {
         return banks;
     }
-
-    private void redoOAuth() {
-        OBPRestClient.clearAccessToken(this);
-        Intent oauthActivity = new Intent(this, OAuthActivity.class);
-        startActivity(oauthActivity);
-    }
+*/
+//    private void redoOAuth() {
+//        OBPRestClient.clearAccessToken(this);
+//        Intent oauthActivity = new Intent(this, OAuthActivity.class);
+//        startActivity(oauthActivity);
+//    }
 
     private void addHeaderFooters() {
         final int cardSpacing = listadapter.getCardSpacing();
@@ -282,12 +293,17 @@ class SimplestDemoAdadpter extends ListGridAdapter<Item, ViewHolder> {
     private final int SELECTED_BANK = 0;
     Context activityContext;
     int position = 0;
-
+    File fileLocation = new File(Environment.getExternalStorageDirectory()
+            + "/Android/data/"
+            + ApplicationObj.getAppContext().getPackageName()
+            + "/BankIcons");
+    File[] files = fileLocation.listFiles();
     public SimplestDemoAdadpter(Context context, Context activityContext, int totalCardsInRow) {
         super(context, totalCardsInRow);
         this.activityContext = activityContext;
-    }
 
+    }
+//TODO: now we have the banks here, just we need to retrieve files from the folder and add them here.
     @Override
     protected Card<ViewHolder> getNewCard(int cardwidth) {
         // Create card through XML (can be created programmatically as well.)
@@ -298,69 +314,76 @@ class SimplestDemoAdadpter extends ListGridAdapter<Item, ViewHolder> {
         ViewHolder viewHolder = new ViewHolder();
         //viewHolder.bankImgLink = (TextView) cardView.findViewById(R.id.name);
         Bitmap bankLogo = null;
-        try {
-            //bankLogo = new DownloadImageTask().execute(((GridListViewAdapter)this.activityContext).getAllBanks().get(position++).getLogo()).get();
-            bankLogo = new DownloadImageTask().execute("http://goo.gl/oaDMo9").get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        //Log.d("LOGO",viewHolder.bankImgLink.getText().toString());
-        cardView.setBackground(new BitmapDrawable(activityContext.getResources(),bankLogo));
 
+        if(position < files.length)
+        {
+                bankLogo = BasicImageDownloader.readFromDisk(files[position++]);
+                if(bankLogo == null){
+                    cardView.setBackgroundColor(Color.BLACK);
+                } else{
+                    cardView.setBackground(new BitmapDrawable(activityContext.getResources(),bankLogo));
+                }
+        }
         return new Card<ViewHolder>(cardView, viewHolder);
+        //String bankLogoURL = ((GridListViewAdapter)this.activityContext).getAllBanks().get(position++).getLogo();
+        //Log.d("LOGO",viewHolder.bankImgLink.getText().toString());
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         @Override
-        protected Bitmap doInBackground(String... links) {
-//            String urldisplay = links[0];
-//            Bitmap mIcon11 = null;
-//            try {
-//                InputStream in = new java.net.URL(urldisplay).openStream();
-//                mIcon11 = BitmapFactory.decodeStream(in);
-//            } catch (Exception e) {
-//                Log.e("Error", e.getMessage());
-//                e.printStackTrace();
-//            }
-//            return mIcon11;
-            boolean retry = true;
-            int nrOfRetries = 0;
-            Bitmap bitmap = null;
-            while(retry)
+        protected Bitmap doInBackground(String... imageUrls) {
+            String imageUrl = imageUrls[0];
+            return downloadImageViaDefaultHttpConnection(imageUrl);
+        }
+
+//        @Override
+//        protected void onPostExecute(Bitmap downloadedBitmap) {
+//            super.onPostExecute(downloadedBitmap);
+//            handleImageResult(downloadedBitmap);
+//        }
+
+        private Bitmap downloadImageViaDefaultHttpConnection(String imageUrl) {
+            Bitmap imageBitmap = null;
             try {
-                URL url = new URL("http://goo.gl/oaDMo9");
-                InputStream in = url.openConnection().getInputStream();
-                BufferedInputStream bis = new BufferedInputStream(in,1024*8);
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                DefaultHttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(imageUrl);
 
-                int len=0;
-                byte[] buffer = new byte[1024];
-                while((len = bis.read(buffer)) != -1){
-                    out.write(buffer, 0, len);
-                }
-                out.close();
-                bis.close();
+                HttpResponse httpResponse = httpClient.execute(httpGet);
+                InputStream imgStream = httpResponse.getEntity().getContent();
+                imageBitmap = BitmapFactory.decodeStream(imgStream);
 
-                byte[] data = out.toByteArray();
-                bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                if(bitmap!=null || nrOfRetries == 1){
-                    retry = false;
-                }
-                else{
-                    nrOfRetries++;
-                }
+            } catch (ClientProtocolException e) {
+                Log.d("Eroare download imagine: ",e.toString());
+            } catch (IOException e) {
+                Log.d("Eroare download imagine: ",e.toString());
             }
-            catch (IOException e) {
-                if(nrOfRetries==1) {
-                    retry = false;
-                } else {
-                    nrOfRetries++;
-                }
+
+            return imageBitmap;
+
+        }
+
+        private Bitmap downloadImageViaHttpUrlConnection(String imageUrl) {
+            Bitmap bitmap = null;
+            try {
+                URL url = new URL(imageUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                bitmap = BitmapFactory.decodeStream(input);
+
+            }catch (Exception e) {
                 e.printStackTrace();
             }
+
             return bitmap;
+        }
+
+        private Bitmap handleImageResult(Bitmap downloadedBitmap) {
+            if(downloadedBitmap != null) {
+                return downloadedBitmap;
+            }
+            return null;
         }
     }
 

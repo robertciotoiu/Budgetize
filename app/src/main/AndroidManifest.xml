@@ -4,8 +4,11 @@
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".ApplicationObj"
         android:usesCleartextTraffic="true"
 
         android:allowBackup="true"
@@ -55,6 +58,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name="com.example.robi.investorsapp.services.DownloadBankImagesService" />
+        <service android:name="com.example.robi.investorsapp.services.DoOAuthService"><intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <!-- You will want to set customAppProtocol to something unique to avoid having Android
+            give the user more than one app to pick from to handle the oauth callback -->
+            <data android:scheme="@string/customAppProtocol"/>
+        </intent-filter></service>
+        <service android:name="com.example.robi.investorsapp.services.RetrieveBanksService" ><intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <!-- You will want to set customAppProtocol to something unique to avoid having Android
+            give the user more than one app to pick from to handle the oauth callback -->
+            <data android:scheme="@string/customAppProtocol"/>
+        </intent-filter></service>
 
         <meta-data
             android:name="preloaded_fonts"
