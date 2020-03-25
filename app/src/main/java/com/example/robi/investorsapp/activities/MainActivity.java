@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.room.Room;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.robi.investorsapp.ApplicationObj;
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.activities.createActivities.CreateWalletActivity;
 import com.example.robi.investorsapp.adapters.viewpager.WalletViewPagerAdapter;
@@ -46,6 +48,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -87,7 +93,17 @@ public class MainActivity extends AppCompatActivity {
     }
     final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private void askForPermissions() {
-            // Here, thisActivity is the current activity
+        //delete all
+        File dir = new File(Environment.getExternalStorageDirectory()
+                + "/Android/data/"
+                + ApplicationObj.getAppContext().getPackageName()
+                + "/BankIcons");
+        try {
+            FileUtils.deleteDirectory(dir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Here, thisActivity is the current activity
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {

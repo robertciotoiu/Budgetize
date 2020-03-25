@@ -54,6 +54,11 @@ public class GridListViewAdapter extends Activity {
     private ArrayList<Item> dataList;
     private SimplestDemoAdadpter listadapter;
     private ArrayList<Bank> banks = new ArrayList<Bank>();
+    File fileLocation = new File(Environment.getExternalStorageDirectory()
+            + "/Android/data/"
+            + ApplicationObj.getAppContext().getPackageName()
+            + "/BankIcons");
+    File[] files = fileLocation.listFiles();
 
 
     private final int MAX_CARDS = 3;
@@ -74,7 +79,7 @@ public class GridListViewAdapter extends Activity {
         setContentView(listview);
         addBanks();
         listadapter = new SimplestDemoAdadpter(getApplicationContext(), this,
-                MAX_CARDS);
+                MAX_CARDS,files);
         listadapter.addItemsInGrid(dataList);
         addHeaderFooters();
         listview.setAdapter(listadapter);
@@ -187,7 +192,6 @@ public class GridListViewAdapter extends Activity {
         ((TextView) view.findViewById(R.id.name)).setText(text);
         return view;
     }
-
     //TODO: Implement to get supported bank list from server!!!
     private void addBanks() {
         dataList = new ArrayList<Item>();
@@ -293,14 +297,11 @@ class SimplestDemoAdadpter extends ListGridAdapter<Item, ViewHolder> {
     private final int SELECTED_BANK = 0;
     Context activityContext;
     int position = 0;
-    File fileLocation = new File(Environment.getExternalStorageDirectory()
-            + "/Android/data/"
-            + ApplicationObj.getAppContext().getPackageName()
-            + "/BankIcons");
-    File[] files = fileLocation.listFiles();
-    public SimplestDemoAdadpter(Context context, Context activityContext, int totalCardsInRow) {
+    File[] files = null;
+    public SimplestDemoAdadpter(Context context, Context activityContext, int totalCardsInRow, File[] files) {
         super(context, totalCardsInRow);
         this.activityContext = activityContext;
+        this.files = files;
 
     }
 //TODO: now we have the banks here, just we need to retrieve files from the folder and add them here.
