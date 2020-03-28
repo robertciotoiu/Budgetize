@@ -6,7 +6,6 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
@@ -17,22 +16,13 @@ import com.example.robi.investorsapp.APIs.viewpagerforbankaccounts.CardFragmentP
 import com.example.robi.investorsapp.APIs.viewpagerforbankaccounts.CardItem;
 import com.example.robi.investorsapp.APIs.viewpagerforbankaccounts.CardPagerAdapter;
 import com.example.robi.investorsapp.APIs.viewpagerforbankaccounts.ShadowTransformer;
-import com.example.robi.investorsapp.rest.utils.AppConstants;
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.adapters.gridlistview.GridListViewAdapter;
-import com.example.robi.investorsapp.rest.utils.HttpUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-import okhttp3.Response;
-
 public class LinkedBankAccounts extends AppCompatActivity implements View.OnClickListener,
-        CompoundButton.OnCheckedChangeListener{
+        CompoundButton.OnCheckedChangeListener {
     private final int SELECTED_BANK = 0;
 
     private SparseArray<String> currentBankStatus;
@@ -65,10 +55,9 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
         //requestStatusAccounts();
     }
 
-    private ArrayList<String> getBankNames(SparseArray<String> currentBankStatus)
-    {
+    private ArrayList<String> getBankNames(SparseArray<String> currentBankStatus) {
         ArrayList<String> bankNames = new ArrayList<String>();
-        for(int i = 0; i < currentBankStatus.size(); i++) {
+        for (int i = 0; i < currentBankStatus.size(); i++) {
             int key = currentBankStatus.keyAt(i);
             // get the object by the key.
             bankNames.add(currentBankStatus.valueAt(key));
@@ -119,14 +108,13 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
 
     }
 
-    public LinkedBankAccounts getActivityContext()
-    {
+    public LinkedBankAccounts getActivityContext() {
         return this;
     }
 
     public void startActivity(Class targetClass) {
         Intent myIntent = new Intent(this, targetClass);
-        this.startActivityForResult(myIntent,SELECTED_BANK);
+        this.startActivityForResult(myIntent, SELECTED_BANK);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
@@ -149,10 +137,10 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
     }
 
     private void addNewCard(String selectedBank) {
-        if(!mCardAdapter.existCardItem(selectedBank)) {
-            mCardAdapter.addCardItem(new CardItem(selectedBank,selectedBank));
+        if (!mCardAdapter.existCardItem(selectedBank)) {
+            mCardAdapter.addCardItem(new CardItem(selectedBank, selectedBank));
             mViewPager.setAdapter(mCardAdapter);
-        }else{
+        } else {
             Toast.makeText(this,
                     "ERROR: Bank already added", Toast.LENGTH_LONG)
                     .show();
@@ -173,8 +161,8 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
 //        mCardAdapter.addCardItem(new CardItem(R.string.jpmc_title, R.string.jpmc_description));
 //        mCardAdapter.addCardItem(new CardItem(R.string.citi_title, R.string.citi_description));
         mCardAdapter.addCardItem(new CardItem("Citibank", "Citibank"));
-        mCardAdapter.addCardItem(new CardItem("ING","ING"));
-        mCardAdapter.addCardItem(new CardItem("Banca Transilvania","Banca Transilvania"));
+        mCardAdapter.addCardItem(new CardItem("ING", "ING"));
+        mCardAdapter.addCardItem(new CardItem("Banca Transilvania", "Banca Transilvania"));
         mCardAdapter.addCardItem(new CardItem("Santander", "Santander"));
         mCardAdapter.addCardItem(new CardItem("JP Morgan Chase", "JP Morgan Chase"));
         mFragmentCardAdapter = new CardFragmentPagerAdapter(getSupportFragmentManager(),

@@ -37,4 +37,7 @@
     <string name="private_accounts_label">Private accounts json:</string>
     <string name="private_accounts_json_loading">Loading…</string>
     <string name="authenticating">Authenticating…</string>
+
+    <!-- Google sign-in -->
+    <string name="server_client_id">303651643981-94fdb3hltvfkapfef1e4fnsmgsnggdad.apps.googleusercontent.com</string>
 </resources>

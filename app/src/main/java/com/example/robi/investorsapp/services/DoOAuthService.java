@@ -119,6 +119,7 @@ public class DoOAuthService extends Service {
                  * to be handled in AuthenticateActivity.
                  */
                 Intent browser = new Intent(Intent.ACTION_VIEW);
+                browser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 browser.setData(authUri);
 
                 callingService.startActivity(browser);
