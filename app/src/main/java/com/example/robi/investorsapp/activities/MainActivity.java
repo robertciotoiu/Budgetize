@@ -13,9 +13,12 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -26,6 +29,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -49,27 +54,34 @@ import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.skydoves.elasticviews.ElasticButton;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
+
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 import okhttp3.Call;
 import okhttp3.FormBody;
@@ -102,7 +114,13 @@ public class MainActivity extends AppCompatActivity {
                     getAllBanksService();
                 } else if (serviceResponse.contentEquals("BanksAdded")) {
                     Log.d("GetBanks successfull", "!");
+//                    Thread synchAllImagesThread = new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
                     syncAllImagesService();
+//                        }
+//                    });
+//                    synchAllImagesThread.start();
                 } else if (serviceResponse.contentEquals("BanksNOTAdded")) {
                     Log.d("GetBanks NOT successfull", "!");
                 } else if (serviceResponse.contentEquals("syncImagesCompleted")) {
@@ -118,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     private String serverBaseLink = "http://79.118.0.37:8080/";
     public String sessionID = null;
 
-    //google sign in
+    //Google Sign In
     GoogleSignInAccount account = null;
     GoogleSignInClient mGoogleSignInClient = null;
     public String googleSignInTokenID = null;
@@ -132,6 +150,15 @@ public class MainActivity extends AppCompatActivity {
     TextView introText;
     ImageView introArrow;
 
+    //Biometric app authorization
+    private Executor executor;
+    private BiometricPrompt biometricPrompt;
+    private BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Biometric login for my app")
+            .setSubtitle("Log in using your biometric credential")
+            .setNegativeButtonText("Use account password")
+            .build();
+
     //public variables across the application
     public static DaoAbstract myDatabase;//through this variable we communicate with local room database(SQL LITE)
     public static List<Wallet> wallets = new ArrayList<Wallet>();
@@ -141,6 +168,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //app authentication
+        try {
+            appAuthorization();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         setContentView(R.layout.activity_main);
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(mMessageReceiver,
@@ -151,6 +184,11 @@ public class MainActivity extends AppCompatActivity {
         init_screen();
         askForPermissions();
         startServices();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -167,17 +205,91 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    //Biometric app Authorization
+    private void appAuthorization() throws Exception {
+        BiometricManager biometricManager = BiometricManager.from(this);
+        switch (biometricManager.canAuthenticate()) {
+            case BiometricManager.BIOMETRIC_SUCCESS:
+                Log.d("MY_APP_TAG", "App can authenticate using biometrics.");
+                biometricLogin();
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
+                Log.e("MY_APP_TAG", "No biometric features available on this device.");
+                throw new Exception("No biometrics available");//should handle with other type of authorization(passcode)
+            case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
+                Log.e("MY_APP_TAG", "Biometric features are currently unavailable.");
+                throw new Exception("No biometrics available");//should handle with other type of authorization(passcode)
+            case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
+                Log.e("MY_APP_TAG", "The user hasn't associated " +
+                        "any biometric credentials with their account.");
+                throw new Exception("No biometrics available");
+        }
+    }
+
+    private void biometricLogin() {
+        executor = ContextCompat.getMainExecutor(this);
+        biometricPrompt = new BiometricPrompt(MainActivity.this,
+                executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode,
+                                              @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                Toast.makeText(getApplicationContext(),
+                        "Authentication error: " + errString, Toast.LENGTH_SHORT)
+                        .show();
+                biometricPrompt.cancelAuthentication();
+                authUpdateUI(false);
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(
+                    @NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                Toast.makeText(getApplicationContext(),
+                        "Authentication succeeded!", Toast.LENGTH_SHORT).show();
+                authUpdateUI(true);
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                Toast.makeText(getApplicationContext(), "Authentication failed",
+                        Toast.LENGTH_SHORT)
+                        .show();
+                biometricPrompt.cancelAuthentication();
+                authUpdateUI(false);
+            }
+        });
+        // Prompt appears when user clicks "Log in".
+        // Consider integrating with the keystore to unlock cryptographic operations,
+        // if needed by your app.
+        biometricPrompt.authenticate(promptInfo);
+    }
+
+    private void authUpdateUI(boolean status) {
+        RelativeLayout screenLayout = this.findViewById(R.id.main_screen_layout);
+        RelativeLayout authLayout = this.findViewById(R.id.auth_layout);
+        if (status) {
+            authLayout.setVisibility(View.GONE);
+            screenLayout.setVisibility(View.VISIBLE);
+        } else {
+            screenLayout.setVisibility(View.GONE);
+            authLayout.setVisibility(View.VISIBLE);
+        }
+
+    }
+
     private void askForPermissions() {
         //delete all
         File dir = new File(Environment.getExternalStorageDirectory()
                 + "/Android/data/"
                 + ApplicationObj.getAppContext().getPackageName()
                 + "/BankIcons");
-        try {
-            FileUtils.deleteDirectory(dir);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            FileUtils.deleteDirectory(dir);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -259,20 +371,30 @@ public class MainActivity extends AppCompatActivity {
         accLoader.setVisibility(View.GONE);
     }
 
+    //OBP
+    private void revokeOBPAccess() {
+
+    }
+
     //INITIALIZERS:
 
     private void init_listeners() {
+        //biometric auth button
+        Button biometricLoginButton = this.findViewById(R.id.biometric_LOGIN);
+        biometricLoginButton.setOnClickListener(view -> {
+            biometricPrompt.authenticate(promptInfo);
+        });
+
         //ADD WALLET FAB
-        final FloatingActionButton addWalletFab = (FloatingActionButton) this.findViewById(R.id.add_wallet);
+        final ElasticButton addWalletFab = (ElasticButton) this.findViewById(R.id.add_wallet);
         addWalletFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 startActivity(CreateWalletActivity.class);
             }
         });
 
         //REMOVE WALLET FAB
-        final FloatingActionButton removeWalletFab = (FloatingActionButton) this.findViewById(R.id.remove_wallet);
+        final ElasticButton removeWalletFab = (ElasticButton) this.findViewById(R.id.remove_wallet);
         removeWalletFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 createDialogClickListener();
@@ -409,10 +531,10 @@ public class MainActivity extends AppCompatActivity {
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        if((account = GoogleSignIn.getLastSignedInAccount(this))!=null){
+        if ((account = GoogleSignIn.getLastSignedInAccount(this)) != null) {
             googleSignInTokenID = account.getIdToken();
             updateUI(account);
-        }else{
+        } else {
             //do nothing
         }
     }
@@ -439,7 +561,9 @@ public class MainActivity extends AppCompatActivity {
         try {
             account = completedTask.getResult(ApiException.class);
             googleSignInTokenID = account.getIdToken();
-            serverValidateUser();//we send to validate user on our server and to obtain SessionID
+            //we send to validate user on our server and to obtain SessionID
+            Thread synchAllImagesThread = new Thread(this::serverValidateUser);
+            synchAllImagesThread.start();
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -471,6 +595,7 @@ public class MainActivity extends AppCompatActivity {
             // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             //TODO: send ID Token to server and validate
+
             handleSignInResultWithToken(task);
         } else if (requestCode == 9002) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -523,6 +648,7 @@ public class MainActivity extends AppCompatActivity {
                 revokeAccess();
             }
         });
+        revokeOBPAccess();
     }
 
     private void revokeAccess() {
@@ -567,23 +693,27 @@ public class MainActivity extends AppCompatActivity {
                     signOut();
                 } else {
                     sessionID = responseBody;
-                    updateUI(account);
+                    MainActivity.this.runOnUiThread(() -> {
+                        updateUI(account);
+                        Log.d("UI thread", "I am the UI thread");
+                    });
                 }
             }
-        }).execute(googleSignInTokenID);
+        },googleSignInTokenID).doInBackground();
     }
 
     public interface OnTaskCompleted {
         void onTaskCompleted(String responseBody);
     }
 
-    class ValidateUserTask extends AsyncTask<String, Void, String> {
-
+    class ValidateUserTask {
+        String googleSignInTokenID;
         private Exception exception;
         OnTaskCompleted listener;
 
-        public ValidateUserTask(OnTaskCompleted listener) {
+        public ValidateUserTask(OnTaskCompleted listener,String googleSignInTokenID) {
             this.listener = listener;
+            this.googleSignInTokenID = googleSignInTokenID;
         }
 
         protected String doInBackground(String... urls) {
@@ -599,7 +729,7 @@ public class MainActivity extends AppCompatActivity {
                         .build();
                 Call call = client.newCall(request);
                 Response response = call.execute();
-                return response.body().string();
+                onPostExecute(response.body().string());
             } catch (ClientProtocolException e) {
                 Log.e("TokenIDtoServer", "Error sending ID token to backend.", e);
             } catch (IOException e) {
@@ -607,7 +737,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return null;
         }
-
         protected void onPostExecute(String response) {
             // TODO: check this.exception
             // TODO: do something with the feed

@@ -204,12 +204,14 @@ import android.widget.Toast;
 
 import com.example.robi.investorsapp.APIs.oauth1.lib.OBPRestClient;
 import com.example.robi.investorsapp.R;
+import com.example.robi.investorsapp.unused.MainOAuthActivity;
 
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 
+//TODO: I think it is safe to remove this class
 public class OAuthActivity extends Activity {
 
 	@Override

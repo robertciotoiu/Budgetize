@@ -4,7 +4,7 @@
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -39,6 +39,7 @@
             android:name="com.example.robi.investorsapp.APIs.oauth1.activity.AuthenticateActivity"
             android:noHistory="true"
             android:launchMode="singleInstance">
+            <!--This Activity is responsible to intercept OBP OAuth response-->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -49,7 +50,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.robi.investorsapp.APIs.oauth1.activity.MainOAuthActivity"
+            android:name="com.example.robi.investorsapp.unused.MainOAuthActivity"
             android:label="@string/app_name" >
         </activity>
         <activity android:name=".activities.MainActivity">

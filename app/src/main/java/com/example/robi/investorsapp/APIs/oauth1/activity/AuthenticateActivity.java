@@ -203,7 +203,11 @@ import android.widget.Toast;
 
 import com.example.robi.investorsapp.APIs.oauth1.lib.OBPRestClient;
 import com.example.robi.investorsapp.R;
+import com.example.robi.investorsapp.activities.MainActivity;
 
+/**
+ * @AuthenticateActivity is responsible to intercept OBP OAuth response, after the bank browser login
+ */
 public class AuthenticateActivity extends Activity {
 
 	@Override
@@ -257,7 +261,7 @@ public class AuthenticateActivity extends Activity {
 	}
 
 	private void launchMainActivity() {
-		Intent mainActivity = new Intent(this, MainOAuthActivity.class);
+		Intent mainActivity = new Intent(this, MainActivity.class);
 		startActivity(mainActivity);
 		finish();
 	}

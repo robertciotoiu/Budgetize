@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:drawable="@drawable/ic_add_black_84dp"
+        android:width="50dp"
+        android:height="50dp"
+        android:gravity="center"
+        />
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="50dp" />
+            <solid android:color="#00800000" />
+        </shape>
+    </item>
+
+    <!--top, dark, inner shadow-->
+    <item
+        android:bottom="@dimen/depth">
+        <shape android:shape="rectangle">
+            <corners android:radius="50dp" />
+            <solid android:color="#1A000000" />
+        </shape>
+    </item>
+
+    <!--bottom, light, outer glow-->
+    <item
+        android:top="@dimen/depth">
+        <shape android:shape="rectangle">
+            <corners android:radius="50dp" />
+            <solid android:color="#4DFFFFFF" />
+        </shape>
+    </item>
+
+    <!--your color-->
+    <item
+        android:top="@dimen/depth"
+        android:bottom="@dimen/depth">
+        <shape android:shape="rectangle">
+            <corners android:radius="60dp" />
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+</layer-list >

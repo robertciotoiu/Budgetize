@@ -16,11 +16,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,13 +77,13 @@ public class GridListViewAdapter extends Activity {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-        banks.addAll(((ApplicationObj)getApplicationContext()).banks);
+        banks.addAll(((ApplicationObj) getApplicationContext()).banks);
         listview = new ListView(this);
         listview.setDivider(null);
         setContentView(listview);
         addBanks();
         listadapter = new SimplestDemoAdadpter(getApplicationContext(), this,
-                MAX_CARDS,files);
+                MAX_CARDS, files);
         listadapter.addItemsInGrid(dataList);
         addHeaderFooters();
         listview.setAdapter(listadapter);
@@ -192,12 +196,13 @@ public class GridListViewAdapter extends Activity {
         ((TextView) view.findViewById(R.id.name)).setText(text);
         return view;
     }
+
     //TODO: Implement to get supported bank list from server!!!
     private void addBanks() {
         dataList = new ArrayList<Item>();
         // Generate some dummy data.
         for (int i = 0; i < banks.size(); i++) {
-            dataList.add(new Item("", i, banks.get(i).getLogo()));
+            dataList.add(new Item(banks.get(i).getFull_name() != null ? banks.get(i).getFull_name() : "null", i, banks.get(i).getLogo()));
         }
     }
 
@@ -242,7 +247,7 @@ class Item {
 // having to call findViewById each time on list scroll.)
 
 class ViewHolder {
-    //TextView bankImgLink;
+    TextView bankName;
 }
 
 // Now that our data class & ViewHolder class are ready lets bind each data
@@ -298,38 +303,95 @@ class SimplestDemoAdadpter extends ListGridAdapter<Item, ViewHolder> {
     Context activityContext;
     int position = 0;
     File[] files = null;
+
     public SimplestDemoAdadpter(Context context, Context activityContext, int totalCardsInRow, File[] files) {
         super(context, totalCardsInRow);
         this.activityContext = activityContext;
         this.files = files;
 
     }
-//TODO: now we have the banks here, just we need to retrieve files from the folder and add them here.
+
+    //TODO: now we have the banks here, just we need to retrieve files from the folder and add them here.
     @Override
     protected Card<ViewHolder> getNewCard(int cardwidth) {
+        int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64, activityContext.getResources().getDisplayMetrics());
         // Create card through XML (can be created programmatically as well.)
         View cardView = getLayoutInflater().inflate(
                 R.layout.simple_card_layout, null);
-        cardView.setMinimumHeight(cardwidth);
-        // Now create card view holder.
-        ViewHolder viewHolder = new ViewHolder();
-        //viewHolder.bankImgLink = (TextView) cardView.findViewById(R.id.name);
+        ImageView imgView = (ImageView) cardView.findViewById(R.id.card_bank_img);
         Bitmap bankLogo = null;
-
-        if(position < files.length)
-        {
-                bankLogo = BasicImageDownloader.readFromDisk(files[position++]);
-                if(bankLogo == null){
-                    cardView.setBackgroundColor(Color.BLACK);
-                } else{
-                    cardView.setBackground(new BitmapDrawable(activityContext.getResources(),bankLogo));
-                }
+        cardView.setBackgroundColor(Color.TRANSPARENT);
+        if (position < files.length) {
+            bankLogo = BasicImageDownloader.readFromDisk(files[position++]);
+            if (bankLogo == null) {
+                imgView.setBackgroundColor(Color.BLACK);
+            } else {
+                imgView.setImageBitmap(bankLogo);
+            }
         }
+        ViewHolder viewHolder = new ViewHolder();
+        viewHolder.bankName = cardView.findViewById(R.id.card_bank_textview);
         return new Card<ViewHolder>(cardView, viewHolder);
-        //String bankLogoURL = ((GridListViewAdapter)this.activityContext).getAllBanks().get(position++).getLogo();
-        //Log.d("LOGO",viewHolder.bankImgLink.getText().toString());
     }
 
+    @Override
+    protected void setCardView(CardDataHolder<Item> cardDataHolder,
+                               ViewHolder cardViewHolder) {
+        Item item = cardDataHolder.getData();
+        cardViewHolder.bankName.setText(item.getBankName());
+    }
+
+    //TODO: Implement the functionality when a bank is selected
+    @Override
+    protected void onCardClicked(Item cardData) {
+        startActivity(LinkedBankAccounts.class, cardData);
+
+        Toast.makeText(getContext(),
+                "Card click " + cardData.getPositionText(), Toast.LENGTH_LONG)
+                .show();
+    }
+
+    private void startActivity(Class targetClass, Item cardData) {
+        Intent myIntent = new Intent();
+        myIntent.putExtra("BANK_NAME", cardData.getBankName());
+        ((GridListViewAdapter) activityContext).setResult(Activity.RESULT_OK, myIntent);
+        ((GridListViewAdapter) activityContext).finish();
+    }
+
+    private final int TEXT_VIEW_CLICK_ID = 0;
+
+    //Not used anymore as we don't use inner childs
+    @Override
+    protected void registerChildrenViewClickEvents(ViewHolder cardViewHolder,
+                                                   ChildViewsClickHandler childViewsClickHandler) {
+//        childViewsClickHandler.registerChildViewForClickEvent(
+//                cardViewHolder.bankImgLink, TEXT_VIEW_CLICK_ID);
+    }
+
+    //Not used anymore as we don't use inner childs
+    @Override
+    protected void onChildViewClicked(View clickedChildView, Item cardData,
+                                      int eventId) {
+
+//        if (eventId == TEXT_VIEW_CLICK_ID) {
+//            Toast.makeText(getContext(),
+//                    "TextView click " + cardData.getPositionText(),
+//                    Toast.LENGTH_LONG).show();
+//        }
+    }
+
+    // OPTIONAL SETUP
+    @Override
+    public int getCardSpacing() {
+        return (2 * super.getCardSpacing());
+    }
+
+    @Override
+    protected void setRowView(View rowView, int arg1) {
+        rowView.setBackgroundColor(0x000000);//getContext().getResources().getColor(R.color.positiveBackgroundColor));
+    }
+
+    //Not used anymore
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         @Override
         protected Bitmap doInBackground(String... imageUrls) {
@@ -354,9 +416,9 @@ class SimplestDemoAdadpter extends ListGridAdapter<Item, ViewHolder> {
                 imageBitmap = BitmapFactory.decodeStream(imgStream);
 
             } catch (ClientProtocolException e) {
-                Log.d("Eroare download imagine: ",e.toString());
+                Log.d("Eroare download imagine: ", e.toString());
             } catch (IOException e) {
-                Log.d("Eroare download imagine: ",e.toString());
+                Log.d("Eroare download imagine: ", e.toString());
             }
 
             return imageBitmap;
@@ -373,7 +435,7 @@ class SimplestDemoAdadpter extends ListGridAdapter<Item, ViewHolder> {
                 InputStream input = connection.getInputStream();
                 bitmap = BitmapFactory.decodeStream(input);
 
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -381,69 +443,11 @@ class SimplestDemoAdadpter extends ListGridAdapter<Item, ViewHolder> {
         }
 
         private Bitmap handleImageResult(Bitmap downloadedBitmap) {
-            if(downloadedBitmap != null) {
+            if (downloadedBitmap != null) {
                 return downloadedBitmap;
             }
             return null;
         }
-    }
-
-    @Override
-    protected void setCardView(CardDataHolder<Item> cardDataHolder,
-                               ViewHolder cardViewHolder) {
-//        Item item = cardDataHolder.getData();
-//        cardViewHolder.bankImgLink.setText(item.getBankImg());
-    }
-
-    @Override
-    protected void onCardClicked(Item cardData) {
-        startActivity(LinkedBankAccounts.class, cardData);
-
-        Toast.makeText(getContext(),
-                "Card click " + cardData.getPositionText(), Toast.LENGTH_LONG)
-                .show();
-    }
-
-    private void startActivity(Class targetClass, Item cardData) {
-        Intent myIntent = new Intent();
-        myIntent.putExtra("BANK_NAME", cardData.getBankName());
-        ((GridListViewAdapter) activityContext).setResult(Activity.RESULT_OK, myIntent);
-        ((GridListViewAdapter) activityContext).finish();
-    }
-
-    private final int TEXT_VIEW_CLICK_ID = 0;
-
-    @Override
-    protected void registerChildrenViewClickEvents(ViewHolder cardViewHolder,
-                                                   ChildViewsClickHandler childViewsClickHandler) {
-//        childViewsClickHandler.registerChildViewForClickEvent(
-//                cardViewHolder.bankImgLink, TEXT_VIEW_CLICK_ID);
-    }
-
-
-    //Disabled
-    @Override
-    protected void onChildViewClicked(View clickedChildView, Item cardData,
-                                      int eventId) {
-
-//        if (eventId == TEXT_VIEW_CLICK_ID) {
-//            Toast.makeText(getContext(),
-//                    "TextView click " + cardData.getPositionText(),
-//                    Toast.LENGTH_LONG).show();
-//        }
-    }
-
-    // OPTIONAL SETUP
-
-    @Override
-    public int getCardSpacing() {
-        return (2 * super.getCardSpacing());
-    }
-
-    @Override
-    protected void setRowView(View rowView, int arg1) {
-        rowView.setBackgroundColor(getContext().getResources().getColor(
-                R.color.positiveBackgroundColor));
     }
 
 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.example.robi.investorsapp.ApplicationObj;
 import com.example.robi.investorsapp.rest.model.Bank;
+import com.example.robi.investorsapp.services.DownloadBankImagesService;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,14 +36,21 @@ public class BasicImageDownloader {
     private Set<String> mUrlsInProgress = new HashSet<>();
     private final String TAG = this.getClass().getSimpleName();
     Context applicationContext = null;
-    File fileLocation = new File(Environment.getExternalStorageDirectory()
-            + "/Android/data/"
-            + ApplicationObj.getAppContext().getPackageName()
-            + "/BankIcons");
+    File fileLocation;
 
     public BasicImageDownloader(@NonNull OnImageLoaderListener listener) {
         this.mImageLoaderListener = listener;
         this.applicationContext = applicationContext;
+
+        if(isExternalStorageWritable()) {
+            fileLocation = new File(Environment.getExternalStorageDirectory()
+                    + "/Android/data/"
+                    + ApplicationObj.getAppContext().getPackageName()
+                    + "/BankIcons");
+        }else{
+            fileLocation = new File(ApplicationObj.getAppContext().getFilesDir()
+                    + "/BankIcons");
+        }
     }
 
     public interface OnImageLoaderListener {
@@ -144,9 +153,9 @@ public class BasicImageDownloader {
 
             @Override
             protected void onPostExecute(Bitmap result) {
-                if (result == null) {
+                if (result == null){// || result.getByteCount()==0) {
                     Log.e(TAG, "factory returned a null result");
-                    mImageLoaderListener.onError(new ImageError("downloaded file could not be decoded as bitmap")
+                    mImageLoaderListener.onError(new ImageError("downloaded file could not be decoded as bitmap"+imageUrl)
                             .setErrorCode(ImageError.ERROR_DECODE_FAILED));
                 } else {
                     Log.d(TAG, "download complete, " + result.getByteCount() +
@@ -156,7 +165,7 @@ public class BasicImageDownloader {
                 mUrlsInProgress.remove(imageUrl);
                 System.gc();
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.execute();
     }
 
     public interface OnBitmapSaveListener {
@@ -164,11 +173,9 @@ public class BasicImageDownloader {
         void onBitmapSaveError(ImageError error);
     }
 
-
     public static void writeToDisk(@NonNull final File imageFile, @NonNull final Bitmap image,
                                    @NonNull final OnBitmapSaveListener listener,
                                    @NonNull final Bitmap.CompressFormat format, boolean shouldOverwrite) {
-
         if (imageFile.isDirectory()) {
             listener.onBitmapSaveError(new ImageError("the specified path points to a directory, " +
                     "should be a file").setErrorCode(ImageError.ERROR_IS_DIRECTORY));
@@ -214,6 +221,7 @@ public class BasicImageDownloader {
             protected Void doInBackground(Void... params) {
                 FileOutputStream fos = null;
                 try {
+                    //MediaScannerConnection.scanFile(ApplicationObj.getAppContext(), new String[]  {imageFile.getPath()} , new String[]{"image/*"}, null);
                     fos = new FileOutputStream(imageFile);
                     image.compress(format, 100, fos);
                 } catch (IOException e) {
@@ -242,6 +250,10 @@ public class BasicImageDownloader {
                 listener.onBitmapSaved();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private boolean isExternalStorageWritable() {
+        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED;
     }
 
     public static Bitmap readFromDisk(@NonNull File imageFile) {

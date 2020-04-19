@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Copyright 2014-present Biraj Patel
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-       http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
--->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_main_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="6dp" >
+    android:background="@drawable/card_bank_logo_shape">
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/card_bank_logo_shape"
+        android:paddingTop="10dp"
+        android:paddingBottom="5dp"
+        >
+
+    <ImageView
+        android:id="@+id/card_bank_img"
+        android:layout_width="95dp"
+        android:layout_height="95dp"
+        android:scaleType="fitXY"
+        android:padding="10dp"
+    />
+    <TextView
+        android:id="@+id/card_bank_textview"
+        android:layout_marginStart="5dp"
+        android:layout_width="85dp"
+        android:layout_height="24dp"
+        android:textAlignment="center"
+        android:fontFamily="@font/open_sans_semibold"
+        android:layout_marginTop="95dp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeMaxTextSize="100sp"
+        android:autoSizeStepGranularity="2sp"
+        />
+    </RelativeLayout>
     <!--TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
@@ -30,4 +45,4 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@android:color/black" /-->
 
-</LinearLayout>
+</androidx.cardview.widget.CardView>

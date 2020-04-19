@@ -7,4 +7,6 @@
 
     <!--Card View for Bank Accounts-->
     <dimen name="card_padding">60dp</dimen>
+
+    <dimen name="depth">1dp</dimen>
 </resources>

@@ -13,9 +13,7 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
-import com.example.robi.investorsapp.APIs.oauth1.activity.MainOAuthActivity;
 import com.example.robi.investorsapp.APIs.oauth1.activity.OAuthActivity;
-import com.example.robi.investorsapp.activities.MainActivity;
 import com.example.robi.investorsapp.rest.utils.AppConstants;
 import com.example.robi.investorsapp.R;
 import com.example.robi.investorsapp.rest.utils.HttpUtils;

@@ -8,10 +8,8 @@ import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.robi.investorsapp.ApplicationObj;
@@ -21,8 +19,12 @@ import com.example.robi.investorsapp.services.utils.BasicImageDownloader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DownloadBankImagesService extends Service {
+    private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
     private final IBinder binder = (IBinder) new LocalBinder();
     // Random number generator
     private final Random mGenerator = new Random();
@@ -52,18 +54,38 @@ public class DownloadBankImagesService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // TODO Auto-generated method stub
         if (intent.getBooleanExtra("syncImages", false)) {
-            doSynch();
+            doSync();
         }
         return super.onStartCommand(intent, flags, startId);
     }
+    /*
+    This service must start on onCreate MainActivity to prepare the GridListViewAdapter.java in advance!
+    0.Make the OAuth
+    1.Get All banks available from OBP API.
+    2.Check in the img folder all the icons ids and add/remove the differences
+    2.1.Add the new files: Save the filename using name = Bank.id
+    2.2.Remove the photos of the ids not in the list retriev from OBP API
+    3.Done.
+     */
 
-    private void doSynch() {
+//    @Override
+//    public int onStartCommand(Intent intent, int flags, int startId) {
+//        // TODO Auto-generated method stub
+//
+//        sendMessage();
+//        return super.onStartCommand(intent, flags, startId);
+//    }
+
+    // Send an Intent with an action named "custom-event-name". The Intent
+    // sent should
+    // be received by the ReceiverActivity.
+    protected void doSync() {
         File folder = new File(fileLocation.getPath());
         boolean success = true;
         if (!folder.exists()) {
             success = folder.mkdirs();
         }
-        Log.d("SUCCES MAKING THE DIRS?",success+"!");
+        Log.d("SUCCES MAKING THE DIRS?", success + "!");
         final ArrayList<Bank> banks = new ArrayList<Bank>();
         banks.addAll(((ApplicationObj) getApplicationContext()).banks);
         for (int i = 0; i < banks.size(); i++) {
@@ -91,6 +113,7 @@ public class DownloadBankImagesService extends Service {
                         @Override
                         public void onBitmapSaved() {
                             //Toast.makeText(ImageActivity.this, "Image saved as: " + myImageFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                            Log.d("SAVED","IMAGE SAVED TO LOCATION:"+myImageFile.getAbsolutePath());
                         }
 
                         @Override
@@ -99,43 +122,44 @@ public class DownloadBankImagesService extends Service {
                                     error.getMessage());
                             error.printStackTrace();
                         }
-
-
                     }, mFormat, false);
                 }
             });
             if (downloader.readFromDisk(file) == null) {
-                downloader.download(banks.get(i).getLogo(), true);
+                String logoUrl = banks.get(i).getLogo();
+                if (logoUrl != null && !logoUrl.contentEquals("")) {
+                    executor.execute(new DownloadTask(downloader, logoUrl, true));
+                    //downloader.download(logoUrl, true);
+                }
             }
         }
         sendMessage("syncImagesCompleted");
     }
-    /*
-    This service must start on onCreate MainActivity to prepare the GridListViewAdapter.java in advance!
-    0.Make the OAuth
-    1.Get All banks available from OBP API.
-    2.Check in the img folder all the icons ids and add/remove the differences
-    2.1.Add the new files: Save the filename using name = Bank.id
-    2.2.Remove the photos of the ids not in the list retriev from OBP API
-    3.Done.
-     */
 
-//    @Override
-//    public int onStartCommand(Intent intent, int flags, int startId) {
-//        // TODO Auto-generated method stub
-//
-//        sendMessage();
-//        return super.onStartCommand(intent, flags, startId);
-//    }
 
-        // Send an Intent with an action named "custom-event-name". The Intent
-        // sent should
-        // be received by the ReceiverActivity.
-        private void sendMessage (String message) {
-            Log.d("sender", "Broadcasting message");
-            Intent intent = new Intent("my-integer");
-            // You can also include some extra data.
-            intent.putExtra("message", message);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    private void sendMessage(String message) {
+        Log.d("sender", "Broadcasting message");
+        Intent intent = new Intent("my-integer");
+        // You can also include some extra data.
+        intent.putExtra("message", message);
+        LocalBroadcastManager.getInstance(DownloadBankImagesService.this).sendBroadcast(intent);
+    }
+
+
+    private class DownloadTask implements Runnable {
+        BasicImageDownloader downloader;
+        String logoUrl;
+        boolean displayProgress;
+
+        public DownloadTask(BasicImageDownloader downloader, String logoUrl, boolean displayProgress) {
+            this.displayProgress = displayProgress;
+            this.downloader = downloader;
+            this.logoUrl = logoUrl;
+        }
+
+        @Override
+        public void run() {
+            downloader.download(logoUrl, displayProgress);
         }
     }
+}
