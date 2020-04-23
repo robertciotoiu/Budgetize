@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.robi.investorsapp">
+    package="com.example.robi.budgetize">
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
     <application
         android:name=".ApplicationObj"
@@ -17,26 +18,24 @@
         android:roundIcon="@mipmap/app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".adapters.gridlistview.GridListViewAdapter">
+        <activity android:name=".ui.adapters.gridlistview.AvailableBanksActivity">
 
         </activity>
-        <activity android:name=".activities.createActivities.SelectBank"></activity>
-        <activity android:name=".activities.LinkedBankAccounts" />
-        <activity android:name=".activities.createActivities.HandleLinkedBankAccount">
-        </activity>
-        <activity android:name=".activities.IEActivityDiegodobelo" />
-        <activity android:name=".activities.createActivities.CreateCategoryActivity" />
-        <activity android:name=".activities.createActivities.CreateIEActivity" />
+        <activity android:name=".ui.activities.createActivities.SelectBank"></activity>
+        <activity android:name=".ui.activities.LinkedBankAccounts" />
+        <activity android:name=".ui.activities.IEActivityDiegodobelo" />
+        <activity android:name=".ui.activities.createActivities.CreateCategoryActivity" />
+        <activity android:name=".ui.activities.createActivities.CreateIEActivity" />
         <activity android:name=".unused.IEActivity" />
-        <activity android:name=".activities.createActivities.CreateWalletActivity" />
-        <activity android:name=".activities.InsideWalletActivity" />
+        <activity android:name=".ui.activities.createActivities.CreateWalletActivity" />
+        <activity android:name=".ui.activities.InsideWalletActivity" />
         <activity
-            android:name="com.example.robi.investorsapp.APIs.oauth1.activity.OAuthActivity"
+            android:name=".backend.APIs.oauth1.activity.OAuthActivity"
             android:noHistory="true"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
-            android:name="com.example.robi.investorsapp.APIs.oauth1.activity.AuthenticateActivity"
+            android:name=".backend.APIs.oauth1.activity.AuthenticateActivity"
             android:noHistory="true"
             android:launchMode="singleInstance">
             <!--This Activity is responsible to intercept OBP OAuth response-->
@@ -50,18 +49,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.robi.investorsapp.unused.MainOAuthActivity"
+            android:name=".unused.MainOAuthActivity"
             android:label="@string/app_name" >
         </activity>
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <service android:name="com.example.robi.investorsapp.services.DownloadBankImagesService" />
-        <service android:name="com.example.robi.investorsapp.services.DoOAuthService"><intent-filter>
+        <service android:name=".backend.services.DownloadBankImagesService" />
+        <service android:name=".backend.services.DoOAuthService"><intent-filter>
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
@@ -69,7 +68,7 @@
             give the user more than one app to pick from to handle the oauth callback -->
             <data android:scheme="@string/customAppProtocol"/>
         </intent-filter></service>
-        <service android:name="com.example.robi.investorsapp.services.RetrieveBanksService" ><intent-filter>
+        <service android:name=".backend.services.RetrieveBanksService" ><intent-filter>
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
