@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.viewmodels;
+package com.example.robi.budgetize.backend.viewmodels;
 
 import android.app.Application;
 
@@ -19,6 +19,8 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     private final DataRepository repository;
     private final MutableLiveData<List<Wallet>> mObservableWallets = new MutableLiveData<>();
     private final MutableLiveData<List<CategoryObject>> mObservableCategories = new MutableLiveData<>();
+    private final MutableLiveData<List<IEObject>> mObservableIEs = new MutableLiveData<>();
+    public boolean onFirstCreation = false;
 
 
     public MainActivityViewModel(@NonNull Application application, DataRepository repository) {
@@ -27,6 +29,8 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
         repository.addListener(this);
         //mObservableWallets = repository.getWallets();
     }
+
+
 
 
     @NonNull
@@ -52,6 +56,12 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
         mObservableCategories.postValue(categoryObjects);
     }
 
+    @Override
+    public void onIEDataChanged(List<IEObject> ieObjects) {
+        //TODO modify data here before "sending" it to the UI
+        mObservableIEs.postValue(ieObjects);
+    }
+
     public LiveData<List<Wallet>> getAllWallets() {
         return repository.getAllWallets();
     }
@@ -61,7 +71,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     }
 
     public LiveData<List<CategoryObject>> getAllCategories() {
-        return mObservableCategories;
+        return repository.getAllCategories();
     }
 
     public long addCategory(CategoryObject categoryObject) {
@@ -107,5 +117,10 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     public List<IEObject> getCategorysIE(long walletID, String name) {
         return repository.getCategorysIE(walletID,name);
     }
+
+    public LiveData<List<IEObject>> getAllIE(){
+        return repository.getAllIE();
+    }
+
 
 }

@@ -7,8 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ui.activities.MainActivity"
-    >
+    tools:context=".ui.activities.MainActivity">
+
     <RelativeLayout
         android:id="@+id/auth_layout"
         android:layout_width="match_parent"
@@ -28,22 +28,12 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:visibility="gone"
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/main_screen_layout"
         android:background="@color/positiveBackgroundColor"
         android:alpha="45">
-
-
-        <ProgressBar
-            android:id="@+id/progressAccountLoad"
-            style="?android:attr/progressBarStyle"
-            android:visibility="gone"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_width="100dp"
-            android:layout_height="100dp" />
 
         <TextView
             android:id="@+id/intro_text"
@@ -79,6 +69,7 @@
             android:visibility="invisible"
             app:srcCompat="@drawable/intro_arrow_white" />
 
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
@@ -88,6 +79,7 @@
         android:overScrollMode="never">
 
     </androidx.viewpager.widget.ViewPager>
+
 
         <com.skydoves.elasticviews.ElasticButton
             android:background="@drawable/ic_add_white"
@@ -151,6 +143,19 @@
             android:visibility="gone"
             app:srcCompat="@drawable/bankaccounts" />
 
+        <ProgressBar
+            android:id="@+id/progressAccountLoad"
+            style="?android:attr/progressBarStyle"
+            android:visibility="gone"
+            android:layout_width="100dip"
+            android:layout_height="100dip"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="100dp"
+            android:layout_centerHorizontal="true"
+            android:elevation="30dp"
+            android:translationZ="30dp"
+            />
+
         <ImageButton
             android:id="@+id/settings_button"
             android:layout_width="60dp"
@@ -170,13 +175,8 @@
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="40dp"
-
-
         app:tabMaxWidth="10dp"
-
         app:tabMinWidth="10dp"
-
-
         app:tabBackground="@drawable/tab_selector"
         app:tabGravity="center"
         app:tabIndicatorHeight="0dp"/>

@@ -9,9 +9,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
-import com.example.robi.budgetize.viewmodels.MainActivityViewModel;
+import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
+import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModelFactory;
 
 public class CreateWalletActivity extends AppCompatActivity {
 
@@ -21,7 +23,7 @@ public class CreateWalletActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mainActivityViewModel =  new ViewModelProvider(this
-                , ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication()))
+                , new MainActivityViewModelFactory((ApplicationObj) this.getApplication()))
                 .get(MainActivityViewModel.class);
         //setAnimation();
         setContentView(R.layout.activity_create_wallet);

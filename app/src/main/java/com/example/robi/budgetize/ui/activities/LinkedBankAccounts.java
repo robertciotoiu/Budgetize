@@ -17,7 +17,6 @@ import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksCardFragmentPag
 import com.example.robi.budgetize.backend.APIs.viewpagerforbankaccounts.CardItem;
 import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksCardPagerAdapter;
 import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksShadowTransformer;
-import com.example.robi.budgetize.ui.adapters.gridlistview.AvailableBanksActivity;
 
 import java.util.ArrayList;
 

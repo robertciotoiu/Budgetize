@@ -12,7 +12,7 @@ import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.MainActivity;
-import com.example.robi.budgetize.viewmodels.MainActivityViewModel;
+import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 
 import java.util.List;
 

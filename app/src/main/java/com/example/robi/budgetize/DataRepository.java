@@ -50,7 +50,8 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
         ObservableIE.addSource(mDatabase.ieoDao().getAllIE(),
                 ieObjects -> {
                 if(mDatabase.getDatabaseCreated().getValue()!=null)
-                    ObservableIE.postValue(ieObjects);
+                    if(listener!=null)
+                        listener.onIEDataChanged(ieObjects);
                 });
     }
 
@@ -178,6 +179,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
     public interface OnDataChangedRepositoryListener{
         void onWalletDataChanged(List<Wallet> walletList);
         void onCategoryDataChanged(List<CategoryObject> categoryObjects);
+        void onIEDataChanged(List<IEObject> ieObjects);
     }
 
     public void addListener(OnDataChangedRepositoryListener listener){

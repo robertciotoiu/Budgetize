@@ -5,6 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.activities.createActivities.CreateWalletActivity">
+    <ProgressBar
+        android:id="@+id/progressAccountLoad"
+        style="?android:attr/progressBarStyle"
+        android:visibility="visible"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:indeterminate="true"
+        />
 
     <Button
         android:id="@+id/add_button"

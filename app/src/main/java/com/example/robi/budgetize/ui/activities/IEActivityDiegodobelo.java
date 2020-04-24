@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,8 +30,8 @@ import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.createActivities.CreateCategoryActivity;
 import com.example.robi.budgetize.ui.activities.createActivities.CreateIEActivity;
-import com.example.robi.budgetize.viewmodels.MainActivityViewModel;
-import com.example.robi.budgetize.viewmodels.MainActivityViewModelFactory;
+import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
+import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModelFactory;
 import com.google.gson.Gson;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
@@ -40,38 +41,41 @@ import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloating
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener, LifecycleObserver {
-
-    private static List<CategoryObject> categoryObjectsList;
     private ExpandingList mExpandingList = null;
     long walletID = 0;
     private Wallet wallet;
     private RapidFloatingActionLayout rfaLayout;
     private RapidFloatingActionButton rfaBtn;
     private RapidFloatingActionHelper rfabHelper;
+    private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
 
     private MainActivityViewModel mainActivityViewModel;
+
+    private static List<CategoryObject> categoryObjectsList = new ArrayList<CategoryObject>();
     private Observer<List<CategoryObject>> categoryListObsever;
-    private List<CategoryObject> categoryObjects = new ArrayList<>();
+
+    private static List<IEObject> ieObjects = new ArrayList<IEObject>();
+    private Observer<List<IEObject>> ieListObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_iediegodobelo);
+        mExpandingList = findViewById(R.id.expanding_list_main);
 
         mainActivityViewModel =  new ViewModelProvider(this
                 , new MainActivityViewModelFactory((ApplicationObj) this.getApplication()))
                 .get(MainActivityViewModel.class);
-
         Bundle bundle = getIntent().getExtras();
-        if (bundle.get("wallet_id") != null) {
-            walletID = (long) bundle.get("wallet_id");
-        }
         if(bundle.get("wallet")!=null){
             Gson gson = new Gson();
             String walletAsString = (String) bundle.get("wallet");
             this.wallet = gson.fromJson(walletAsString, Wallet.class);
+            walletID = wallet.getId();
         }
         init();
         populateLists();
@@ -80,11 +84,6 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void handleOnResume(){
-        //refresh_wallets();
-        //viewPager.registerDataSetObserver();
-        mExpandingList.removeAllViews();
-        init();
-        populateLists();
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
@@ -100,12 +99,19 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
             @Override
             public void onChanged(List<CategoryObject> categoryObjects) {
                 IEActivityDiegodobelo.categoryObjectsList.addAll(categoryObjects);
+                mExpandingList.removeAllViews();
+                populateLists();
             }
         };//categoryObjects::addAll;
         mainActivityViewModel.getAllCategoriesOfAWallet(walletID).observe(this, categoryListObsever);
 
-        //categoryObjectsList = buildCategoryList().getValue();
-        mExpandingList = findViewById(R.id.expanding_list_main);
+        ieListObserver = new Observer<List<IEObject>>() {
+            @Override
+            public void onChanged(List<IEObject> ieObjects) {
+                IEActivityDiegodobelo.ieObjects.addAll(ieObjects);
+            }
+        };
+        mainActivityViewModel.getAllIE().observe(this,ieListObserver);
     }
 
     private void init_floatingPointButton() {
@@ -186,30 +192,34 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
             ((TextView) first_item.findViewById(R.id.wallet_name_ie_screen)).setText(wallet.getName());//TODO
         }
         for (CategoryObject categoryObject : categoryObjectsList) {
-            addItem(categoryObject);
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    addItem(categoryObject);
+                }
+            });
         }
     }
 
     private void addItem(final CategoryObject categoryObject) {
         double ie_value = mainActivityViewModel.getCategoryIESUM(categoryObject.getWallet_id(), categoryObject.getName());
-        final ExpandingItem item = getCorrectItem(ie_value);
-        if (item != null) {
-            //setAllColors(ie_value);
-            item.setIndicatorColor(Color.WHITE);
-            //item.setIndicatorColorRes(getIconIndicatorColor(ie_value));//R.color.positiveBackgroundColor);
-            item.setIndicatorIcon(getIcon(ie_value));//R.drawable.house_icon);
-            List<IEObject> ieObjectList = mainActivityViewModel.getCategorysIE(walletID, categoryObject.getName());
+        List<IEObject> ieObjectList = mainActivityViewModel.getCategorysIE(walletID, categoryObject.getName());
 
-            //1. ImageView category_icon
-            ((TextView) item.findViewById(R.id.text_view_value_white)).setText(String.valueOf(ie_value));
-            ((TextView) item.findViewById(R.id.text_view_category_name_white)).setText(categoryObject.getName());
-            ((TextView) item.findViewById(R.id.text_view_description_white)).setText(categoryObject.getDescription());
-
-
-            item.createSubItems(ieObjectList.size());
-            for (int i = 0; i < item.getSubItemsCount(); i++) {
-                //Let's get the created sub item by its index
-                final View view = item.getSubItemView(i);
+        IEActivityDiegodobelo.this.runOnUiThread(() -> {
+            final ExpandingItem item = getCorrectItem(ie_value);
+            if (item != null) {
+                //setAllColors(ie_value);
+                item.setIndicatorColor(Color.WHITE);
+                //item.setIndicatorColorRes(getIconIndicatorColor(ie_value));//R.color.positiveBackgroundColor);
+                item.setIndicatorIcon(getIcon(ie_value));//R.drawable.house_icon);
+                //1. ImageView category_icon
+                ((TextView) item.findViewById(R.id.text_view_value_white)).setText(String.valueOf(ie_value));
+                ((TextView) item.findViewById(R.id.text_view_category_name_white)).setText(categoryObject.getName());
+                ((TextView) item.findViewById(R.id.text_view_description_white)).setText(categoryObject.getDescription());
+                item.createSubItems(ieObjectList.size());
+                for (int i = 0; i < item.getSubItemsCount(); i++) {
+                    //Let's get the created sub item by its index
+                    final View view = item.getSubItemView(i);
 
 //                if(i== item.getSubItemsCount()-1) {
 //                    RelativeLayout layout = view.findViewById(R.id.layout_subitem);
@@ -217,9 +227,9 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 //                    params.height = 300;
 //                    view.setLayoutParams(params);
 //                }
-                //Let's set some values in
-                configureSubItem(item, view, ieObjectList.get(i), categoryObject);
-            }
+                    //Let's set some values in
+                    configureSubItem(item, view, ieObjectList.get(i), categoryObject);
+                }
 
 //            item.findViewById(R.id.add_more_sub_items).setOnClickListener(new View.OnClickListener() {
 //                @Override
@@ -231,13 +241,16 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 //                }
 //            });
 
-            item.findViewById(R.id.remove_item).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    removeItemClickListener(categoryObject.getName(), item);
-                }
-            });
-        }
+                item.findViewById(R.id.remove_item).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        removeItemClickListener(categoryObject.getName(), item);
+                    }
+                });
+            }
+            Log.d("UI thread", "I am the UI thread");
+        });
+
     }
 
     private void removeItemClickListener(final String categoryName, final ExpandingItem expandingItem) {

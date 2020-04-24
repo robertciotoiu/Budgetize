@@ -24,7 +24,7 @@ import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.ui.activities.MainActivity;
-import com.example.robi.budgetize.viewmodels.MainActivityViewModel;
+import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,6 @@ public class CreateIEActivity extends AppCompatActivity implements LifecycleObse
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void handleOnResume(){
         categoryListObsever = categoryObjects::addAll;
-
         mainActivityViewModel.getAllCategoriesOfAWallet(walletID).observe(this,categoryListObsever);
     }
 

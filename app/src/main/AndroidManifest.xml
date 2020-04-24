@@ -18,7 +18,7 @@
         android:roundIcon="@mipmap/app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".ui.adapters.gridlistview.AvailableBanksActivity">
+        <activity android:name=".ui.activities.AvailableBanksActivity">
 
         </activity>
         <activity android:name=".ui.activities.createActivities.SelectBank"></activity>

@@ -154,7 +154,6 @@ public class WalletViewPagerAdapter extends PagerAdapter {
                 MainActivity.lastWalletPosition = position;
                 Intent myIntent = new Intent(context, IEActivityDiegodobelo.class);
                 myIntent.putExtra("wallet", walletAsString); //Optional parameters
-                myIntent.putExtra("wallet_id", wallets.get(p).getId()); //Optional parameters
                 context.startActivity(myIntent);
             }
         });

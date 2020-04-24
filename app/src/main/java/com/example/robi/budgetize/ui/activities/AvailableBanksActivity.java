@@ -1,6 +1,7 @@
-package com.example.robi.budgetize.ui.adapters.gridlistview;
+package com.example.robi.budgetize.ui.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -9,6 +10,9 @@ import android.widget.TextView;
 import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.backend.rest.model.Bank;
+import com.example.robi.budgetize.backend.services.DownloadBankImagesService;
+import com.example.robi.budgetize.ui.adapters.gridlistview.AvailableBank;
+import com.example.robi.budgetize.ui.adapters.gridlistview.AvailableBanksAdapter;
 
 import java.util.ArrayList;
 
@@ -76,6 +80,12 @@ public class AvailableBanksActivity extends Activity {
         for (int i = 0; i < banks.size(); i++) {
             dataList.add(new AvailableBank(banks.get(i).getFull_name() != null ? banks.get(i).getFull_name() : "null", i, banks.get(i).getId()));
         }
+    }
+
+    private void syncAllImagesService() {
+        Intent serviceIntent = new Intent(this, DownloadBankImagesService.class);
+        serviceIntent.putExtra("syncImages", true);
+        startService(serviceIntent);
     }
 
 }

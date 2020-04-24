@@ -20,6 +20,7 @@ import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.backend.rest.model.Bank;
 import com.example.robi.budgetize.backend.services.utils.BasicImageDownloader;
+import com.example.robi.budgetize.ui.activities.AvailableBanksActivity;
 import com.example.robi.budgetize.ui.activities.LinkedBankAccounts;
 
 import org.apache.http.HttpResponse;
@@ -34,7 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-class AvailableBanksAdapter extends ListGridAdapter<AvailableBank, AvailableBankViewHolder> {
+public class AvailableBanksAdapter extends ListGridAdapter<AvailableBank, AvailableBankViewHolder> {
     File fileLocation;
     private final int SELECTED_BANK = 0;
     Context activityContext;

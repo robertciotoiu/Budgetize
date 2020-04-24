@@ -1,11 +1,11 @@
 package com.example.robi.budgetize.ui.adapters.gridlistview;
 
-class AvailableBank {
+public class AvailableBank {
     private int position;
     private String bankName;
     private String bankImg;
 
-    protected AvailableBank(String bankName, int position, String bankImg) {
+    public AvailableBank(String bankName, int position, String bankImg) {
         this.bankImg = bankImg;
         this.bankName = bankName;
         this.position = position;

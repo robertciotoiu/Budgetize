@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.viewmodels;
+package com.example.robi.budgetize.backend.viewmodels;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
