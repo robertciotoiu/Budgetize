@@ -66,6 +66,8 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
         return sInstance;
     }
 
+    //CATEGORYDAO
+
     @Override
     public void insertAllCategories(List<CategoryObject> categoryDaos) {
         mDatabase.categoryDao().insertAllCategories(categoryDaos);
@@ -92,6 +94,13 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
     }
 
     @Override
+    public void deleteCategory(long wallet_id, String categoryName) {
+        mDatabase.categoryDao().deleteCategory(wallet_id,categoryName);
+    }
+
+    //IEDAO
+
+    @Override
     public double getCategoryIESUM(long wallet_id, String category_name) {
         return mDatabase.categoryDao().getCategoryIESUM(wallet_id,category_name);
     }
@@ -99,11 +108,6 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
     @Override
     public List<IEObject> getCategorysIE(long wallet_id, String category_name) {
         return mDatabase.categoryDao().getCategorysIE(wallet_id,category_name);
-    }
-
-    @Override
-    public void deleteCategory(long wallet_id, String categoryName) {
-        mDatabase.categoryDao().deleteCategory(wallet_id,categoryName);
     }
 
     @Override
@@ -135,6 +139,8 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
     public void deleteIE(long walletID, long ieID) {
         mDatabase.ieoDao().deleteIE(walletID,ieID);
     }
+
+    //WALLETDAO
 
     @Override
     public void insertAllWallets(List<Wallet> wallets) {

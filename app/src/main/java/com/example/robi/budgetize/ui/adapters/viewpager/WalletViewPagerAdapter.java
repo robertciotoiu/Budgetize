@@ -13,21 +13,26 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Observer;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.robi.budgetize.R;
+import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.IEActivityDiegodobelo;
 import com.example.robi.budgetize.ui.activities.MainActivity;
 import com.google.gson.Gson;
 
 import java.util.List;
+import java.util.Observable;
 
 public class WalletViewPagerAdapter extends PagerAdapter {
 
     private List<Wallet> wallets;
     private LayoutInflater layoutInflater;
     private Context context;
+    private MainActivityViewModel mainActivityViewModel;
+    private Observer<Double> ieListObsever;
     private List<View> views;
     int lastWalletPosition;
 
@@ -64,9 +69,11 @@ public class WalletViewPagerAdapter extends PagerAdapter {
         return view;
     }
 
-    public WalletViewPagerAdapter(List<Wallet> wallets, Context context) {
+    public WalletViewPagerAdapter(List<Wallet> wallets, Context context, MainActivityViewModel mainActivityViewModel) {
         this.wallets = wallets;
         this.context = context;
+        this.mainActivityViewModel = mainActivityViewModel;
+
     }
 
     public Wallet getCurrentWallet(int position) {
@@ -81,7 +88,7 @@ public class WalletViewPagerAdapter extends PagerAdapter {
         //int ie = wallets.get(position).getIE();
         try {
             //TODO: apply mvvm
-            double ie = 3.75;//MainActivity.myDatabase.walletDao().getIE(wallets.get(position).getId());
+            double ie = mainActivityViewModel.getIE(wallets.get(position).getId());
             double financialStatus = wallets.get(position).getFinancialStatus();
             double financialGoal = wallets.get(position).getFinancialGoal();
             int percentage = (int) ((financialStatus / financialGoal) * 100);
@@ -151,7 +158,7 @@ public class WalletViewPagerAdapter extends PagerAdapter {
             public void onClick(View v) {
                 Gson gson = new Gson();
                 String walletAsString = gson.toJson(wallets.get(p));
-                MainActivity.lastWalletPosition = position;
+                mainActivityViewModel.lastWalletPosition = position;
                 Intent myIntent = new Intent(context, IEActivityDiegodobelo.class);
                 myIntent.putExtra("wallet", walletAsString); //Optional parameters
                 context.startActivity(myIntent);

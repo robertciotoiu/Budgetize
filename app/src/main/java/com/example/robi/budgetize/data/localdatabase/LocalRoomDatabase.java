@@ -77,6 +77,7 @@ public abstract class LocalRoomDatabase extends RoomDatabase {
                         });
                     }
                 })
+                .allowMainThreadQueries()
                 //.addMigrations(MIGRATION_1_2)
                 .build();
     }

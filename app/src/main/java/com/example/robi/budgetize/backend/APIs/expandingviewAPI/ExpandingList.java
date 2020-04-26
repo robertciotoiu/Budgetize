@@ -109,7 +109,7 @@ public class ExpandingList extends ScrollView {
      * Method to remove an item.
      * @param item The item to be removed.
      */
-    public void removeItem(final ExpandingItem item) {
+    public void removeView(final ExpandingItem item) {
         mContainer.removeView(item);
     }
 

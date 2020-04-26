@@ -26,9 +26,7 @@
         <activity android:name=".ui.activities.IEActivityDiegodobelo" />
         <activity android:name=".ui.activities.createActivities.CreateCategoryActivity" />
         <activity android:name=".ui.activities.createActivities.CreateIEActivity" />
-        <activity android:name=".unused.IEActivity" />
         <activity android:name=".ui.activities.createActivities.CreateWalletActivity" />
-        <activity android:name=".ui.activities.InsideWalletActivity" />
         <activity
             android:name=".backend.APIs.oauth1.activity.OAuthActivity"
             android:noHistory="true"

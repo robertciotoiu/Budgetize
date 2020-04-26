@@ -21,6 +21,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     private final MutableLiveData<List<CategoryObject>> mObservableCategories = new MutableLiveData<>();
     private final MutableLiveData<List<IEObject>> mObservableIEs = new MutableLiveData<>();
     public boolean onFirstCreation = false;
+    public int lastWalletPosition = 0;
 
 
     public MainActivityViewModel(@NonNull Application application, DataRepository repository) {
@@ -54,12 +55,15 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     public void onCategoryDataChanged(List<CategoryObject> categoryObjects) {
         //TODO modify data here before "sending" it to the UI
         mObservableCategories.postValue(categoryObjects);
+//        mObservableWallets.postValue(repository.getAllWallets().getValue());
     }
 
     @Override
     public void onIEDataChanged(List<IEObject> ieObjects) {
         //TODO modify data here before "sending" it to the UI
         mObservableIEs.postValue(ieObjects);
+//        mObservableWallets.postValue(repository.getAllWallets().getValue());
+//        mObservableCategories.postValue(repository.getAllCategories().getValue());
     }
 
     public LiveData<List<Wallet>> getAllWallets() {
@@ -120,6 +124,10 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
 
     public LiveData<List<IEObject>> getAllIE(){
         return repository.getAllIE();
+    }
+
+    public double getIE(long wallet_id) {
+        return repository.getIE(wallet_id);
     }
 
 

@@ -19,7 +19,7 @@ public interface WalletDao {
     void insertAllWallets(List<Wallet> wallets);
 
     //ADD WALLET
-    @Insert(onConflict = OnConflictStrategy.FAIL)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public long addWallet(Wallet wallet);
 
     //GET WALLET BY ID

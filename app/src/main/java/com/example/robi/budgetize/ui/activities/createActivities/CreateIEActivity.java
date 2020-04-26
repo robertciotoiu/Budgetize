@@ -20,50 +20,81 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
+import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
+import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.MainActivity;
 import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateIEActivity extends AppCompatActivity implements LifecycleObserver {
-    int walletID = 0;
+public class CreateIEActivity extends AppCompatActivity {
+    private static ArrayList<CategoryObject> categoryObjects = new ArrayList<CategoryObject>();
+    Wallet wallet;
+    long wallet_id = 0;
     Spinner spinner;
     private MainActivityViewModel mainActivityViewModel;
     private Observer<List<CategoryObject>> categoryListObsever;
-    private List<CategoryObject> categoryObjects = new ArrayList<>();
+    private Observer<List<CategoryObject>> getCategoryListObsever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_ie);
-        mainActivityViewModel =  new ViewModelProvider(this
-                , ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication()))
-                .get(MainActivityViewModel.class);
-
         Bundle bundle = getIntent().getExtras();
-
-
-        if(bundle.get("wallet")!=null)
-        {
-            walletID = (int) bundle.get("wallet");
-            spinner = init_spinner();
-            init_listeners();
+        if(bundle.get("wallet")!=null) {
+            Gson gson = new Gson();
+            String walletAsString = (String) bundle.get("wallet");
+            this.wallet = gson.fromJson(walletAsString, Wallet.class);
+            wallet_id = wallet.getId();
+            //spinner = init_spinner();
+            //init activity
         }
     }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    public void handleOnResume(){
-        categoryListObsever = categoryObjects::addAll;
-        mainActivityViewModel.getAllCategoriesOfAWallet(walletID).observe(this,categoryListObsever);
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    protected void handleOnDestroy(){
+        mainActivityViewModel.getAllCategoriesOfAWallet(wallet_id).removeObserver(getCategoryListObsever);
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    public void handleOnPause(){
-        mainActivityViewModel.getAllCategoriesOfAWallet(walletID).removeObserver(categoryListObsever);
+    private void init_mvvm() {
+        categoryObjects = new ArrayList<CategoryObject>();
+        mainActivityViewModel =  new ViewModelProvider(this
+                , new MainActivityViewModelFactory((ApplicationObj) this.getApplication()))
+                .get(MainActivityViewModel.class);
+        getCategoryListObsever = new Observer<List<CategoryObject>>() {
+            @Override
+            public void onChanged(List<CategoryObject> categoryObjects) {
+                CreateIEActivity.categoryObjects.addAll(categoryObjects);
+                spinner = init_spinner();
+            }
+        };
+        mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId()).observe(this,getCategoryListObsever);
+
+
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        init_mvvm();
+        init_listeners();
+    }
+
+//    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+//    public void handleOnResume(){
+//
+//        //categoryListObsever = categoryObjects::addAll;
+//        //mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId()).observe(this,categoryListObsever);
+//    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId()).removeObserver(getCategoryListObsever);
     }
 
     public void init_listeners() {
@@ -96,7 +127,7 @@ public class CreateIEActivity extends AppCompatActivity implements LifecycleObse
 
         try{
             ieAmount = Double.parseDouble(IEAmount.getText().toString());
-            long currentWalletID = MainActivity.wallets.get(walletID).getId();
+            long currentWalletID = wallet.getId();
 
             IEObject ieObject = new IEObject(currentWalletID, ieName, ieAmount, ieCategory, ieType);
 
@@ -178,8 +209,8 @@ public class CreateIEActivity extends AppCompatActivity implements LifecycleObse
     }
 
     private String[] getCategories() {
-        long wallet_id = MainActivity.wallets.get(walletID).getId();
-        List<CategoryObject> categoryObjects = mainActivityViewModel.getAllCategoriesOfAWallet(wallet_id).getValue();
+        long wallet_id = wallet.getId();
+        //List<CategoryObject> categoryObjects = mainActivityViewModel.getAllCategoriesOfAWallet(wallet_id).getValue();
         String[] categories = new String[categoryObjects.size()+1];
         categories[0] = "Select Category";
         int i=1;

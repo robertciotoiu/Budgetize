@@ -23,7 +23,7 @@ public class Wallet {
         this.lastDate = strDate;
     }
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     private long id;
 
     @ColumnInfo(name = "wallet_name")

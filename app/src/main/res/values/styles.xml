@@ -6,6 +6,14 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- Activity transitions
+
+        <item name="android:windowActivityTransitions">true</item>
+
+
+        <item name="android:windowEnterTransition">@anim/slide_in_right</item>
+        <item name="android:windowExitTransition">@anim/slide_in_left</item>-->
     </style>
 
     <style name="AppTheme.NoActionBar">

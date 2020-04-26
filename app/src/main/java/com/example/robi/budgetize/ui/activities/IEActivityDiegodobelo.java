@@ -44,9 +44,10 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener, LifecycleObserver {
+public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
     private ExpandingList mExpandingList = null;
     long walletID = 0;
+    boolean firstStart = true;
     private Wallet wallet;
     private RapidFloatingActionLayout rfaLayout;
     private RapidFloatingActionButton rfaBtn;
@@ -66,10 +67,6 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_iediegodobelo);
         mExpandingList = findViewById(R.id.expanding_list_main);
-
-        mainActivityViewModel =  new ViewModelProvider(this
-                , new MainActivityViewModelFactory((ApplicationObj) this.getApplication()))
-                .get(MainActivityViewModel.class);
         Bundle bundle = getIntent().getExtras();
         if(bundle.get("wallet")!=null){
             Gson gson = new Gson();
@@ -77,17 +74,23 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
             this.wallet = gson.fromJson(walletAsString, Wallet.class);
             walletID = wallet.getId();
         }
+        //TODO: solve issue when enter in wallet there is no category/ie!
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        mainActivityViewModel =  new ViewModelProvider(this
+                , new MainActivityViewModelFactory((ApplicationObj) this.getApplication()))
+                .get(MainActivityViewModel.class);
         init();
-        populateLists();
-
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    public void handleOnResume(){
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    public void handleOnPause(){
+    @Override
+    public void onPause(){
+        super.onPause();
+        firstStart=true;
+        depopulateLists();
         mainActivityViewModel.getAllCategories().removeObserver(categoryListObsever);
     }
 
@@ -98,9 +101,12 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         categoryListObsever = new Observer<List<CategoryObject>>() {
             @Override
             public void onChanged(List<CategoryObject> categoryObjects) {
+                IEActivityDiegodobelo.categoryObjectsList.clear();
                 IEActivityDiegodobelo.categoryObjectsList.addAll(categoryObjects);
-                mExpandingList.removeAllViews();
-                populateLists();
+                if(firstStart){
+                    populateLists();
+                    firstStart = false;
+                }
             }
         };//categoryObjects::addAll;
         mainActivityViewModel.getAllCategoriesOfAWallet(walletID).observe(this, categoryListObsever);
@@ -108,10 +114,14 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         ieListObserver = new Observer<List<IEObject>>() {
             @Override
             public void onChanged(List<IEObject> ieObjects) {
+                IEActivityDiegodobelo.ieObjects.clear();
                 IEActivityDiegodobelo.ieObjects.addAll(ieObjects);
             }
         };
+
         mainActivityViewModel.getAllIE().observe(this,ieListObserver);
+
+
     }
 
     private void init_floatingPointButton() {
@@ -167,16 +177,18 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 
     @Override
     public void onRFACItemIconClick(int position, RFACLabelItem item) {
+        Gson gson = new Gson();
+        String walletAsString = gson.toJson(wallet);
         //Toast.makeText(this, "clicked icon: " + position, Toast.LENGTH_SHORT).show();
         if (position == 2) {
             //launch create IE activity
             Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateIEActivity.class);
-            myIntent.putExtra("wallet", walletID); //Optional parameters
+            myIntent.putExtra("wallet", walletAsString); //Optional parameters
             IEActivityDiegodobelo.this.startActivity(myIntent);
         } else if (position == 1) {
             //launch create Category activity
             Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateCategoryActivity.class);
-            myIntent.putExtra("wallet", walletID); //Optional parameters
+            myIntent.putExtra("wallet", walletAsString); //Optional parameters
             IEActivityDiegodobelo.this.startActivity(myIntent);
         }
         rfabHelper.toggleContent();
@@ -199,6 +211,9 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                 }
             });
         }
+    }
+    private void depopulateLists(){
+        mExpandingList.removeAllViews();
     }
 
     private void addItem(final CategoryObject categoryObject) {
@@ -261,9 +276,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                     case DialogInterface.BUTTON_POSITIVE: {
                         try {
                             mainActivityViewModel.deleteCategory(walletID, categoryName);
-                            refresh_wallet();
-                            Toast.makeText(IEActivityDiegodobelo.this, "Category Deleted", Toast.LENGTH_SHORT).show();
-                            mExpandingList.removeItem(expandingItem);
+                            mExpandingList.removeView(expandingItem);
                         } catch (Exception e) {
                             e.printStackTrace();
                             System.out.println(e.getMessage());
@@ -283,10 +296,6 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                         break;
                     }
                 }
-            }
-
-            private void refresh_wallet() {
-
             }
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -318,6 +327,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         }
     }
 
+    //TODO: change it programatically!
     private ExpandingItem getCorrectItem(double ie_value) {
         if (ie_value > 0) {
             return mExpandingList.createNewItem(R.layout.expanding_layout_positive);
@@ -380,9 +390,15 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE: {
                         try {
+                            //TODO:issue here, when we delete one IE, we must removeSubItem() and recalculate category
                             mainActivityViewModel.deleteIE(walletID, ieID);
                             Toast.makeText(IEActivityDiegodobelo.this, "I/E Deleted", Toast.LENGTH_SHORT).show();
                             expandingItem.removeSubItem(view);
+                            recalculateCategorySum(expandingItem, categoryObject);
+//                            mExpandingList.removeAllViews();
+//                            populateLists();
+
+                            //mExpandingList.replaceItem(expandingItem);
                             //refresh_category(expandingItem, view, categoryObject);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -423,6 +439,23 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Are you sure you want do DELETE permanently this I/E?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
+    }
+
+    private void recalculateCategorySum(final ExpandingItem expandingItem, final CategoryObject categoryObject) {
+        double ie_value = mainActivityViewModel.getCategoryIESUM(categoryObject.getWallet_id(), categoryObject.getName());
+        ((TextView) expandingItem.findViewById(R.id.text_view_value_white)).setText(String.valueOf(ie_value));
+        if (ie_value > 0) {
+            expandingItem.setBackground(getResources().getDrawable(R.drawable.item_shape_positive));
+        } else if (ie_value < 0) {
+            expandingItem.setBackground(getResources().getDrawable(R.drawable.item_shape_negative));
+        } else {
+            expandingItem.setBackground(getResources().getDrawable(R.drawable.item_shape_neutral));
+        }
+        expandingItem.setIndicatorIcon(getIcon(ie_value));
+    }
+
+    private void refresh_category(ExpandingItem expandingItem, View view, CategoryObject categoryObject) {
+
     }
 
 }

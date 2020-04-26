@@ -35,7 +35,7 @@ public interface CategoryDao {
 
     //GET IE CALCULATED FOR A CATEGORY
     @Query("SELECT (SELECT DISTINCT COALESCE(SUM(ie.amount),0) AS category_ie FROM incomes_expenses ie WHERE ie.wallet_id = :wallet_id AND ie.category = :category_name AND ie.type=0) - (SELECT DISTINCT COALESCE(SUM(ie.amount),0) AS category_ie FROM incomes_expenses ie WHERE ie.wallet_id = :wallet_id AND ie.category = :category_name AND ie.type=1) AS Difference")
-    public double getCategoryIESUM(long wallet_id,String category_name);
+    public double getCategoryIESUM(long wallet_id, String category_name);
 
     //
     @Query("SELECT DISTINCT ie.id, ie.wallet_id, ie.amount, ie.name,  ie.category,  ie.type FROM wallets w, incomes_expenses ie, categories cat WHERE ie.wallet_id = :wallet_id AND ie.category = :category_name")
