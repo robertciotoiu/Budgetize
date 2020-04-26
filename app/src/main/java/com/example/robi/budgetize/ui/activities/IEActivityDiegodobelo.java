@@ -199,17 +199,21 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 //    }
 
     private void populateLists() {
+        //Display Wallet Name:
         ExpandingItem first_item = mExpandingList.createNewItem(R.layout.first_ie_item);
         if (first_item != null) {
             ((TextView) first_item.findViewById(R.id.wallet_name_ie_screen)).setText(wallet.getName());//TODO
         }
+
+        //Add Categories and IEs
         for (CategoryObject categoryObject : categoryObjectsList) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    addItem(categoryObject);
-                }
-            });
+            addItem(categoryObject);
+//            executor.execute(new Runnable() {
+//                @Override
+//                public void run() {
+//
+//                }
+//            });
         }
     }
     private void depopulateLists(){
@@ -304,23 +308,23 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
     }
 
     private void setAllColors(double ie) {
-        RelativeLayout lLayout = (RelativeLayout) findViewById(R.id.expanding_item_id);
+//        RelativeLayout lLayout = (RelativeLayout) findViewById(R.id.expanding_item_id);
         TextView value = (TextView) findViewById(R.id.text_view_value);
         TextView description = (TextView) findViewById(R.id.text_view_category_name);
         TextView name = (TextView) findViewById(R.id.text_view_category_name);
 
         if (ie > 0) {
-            lLayout.setBackgroundColor(getResources().getColor(R.color.positiveBackgroundColor));
+//            lLayout.setBackgroundColor(getResources().getColor(R.color.positiveBackgroundColor));
             value.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
             description.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
             name.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
         } else if (ie < 0) {
-            lLayout.setBackgroundColor(getResources().getColor(R.color.negativeBackgroundColor));
+//            lLayout.setBackgroundColor(getResources().getColor(R.color.negativeBackgroundColor));
             value.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
             description.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
             name.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
         } else {
-            lLayout.setBackgroundColor(getResources().getColor(R.color.neutralBackgroundColor));
+//            lLayout.setBackgroundColor(getResources().getColor(R.color.neutralBackgroundColor));
             value.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
             description.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
             name.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));

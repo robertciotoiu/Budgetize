@@ -8,24 +8,38 @@
 
         <TextView
             android:id="@+id/text_view_ie_value_white"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/remove_sub_item_white"
+            android:layout_width="20dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="5dp"
             android:layout_marginEnd="4dp"
+            android:layout_toStartOf="@id/remove_sub_item_white"
+            android:layout_toEndOf="@+id/text_view_title_white"
+            android:autoSizeMaxTextSize="15sp"
+            android:autoSizeMinTextSize="1sp"
+            android:autoSizeStepGranularity="1sp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/open_sans_semibold"
             android:text="Value"
-            android:textColor="#FFFFFF"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            android:gravity="center_vertical|right"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="#FFFFFF" />
 
         <TextView
             android:id="@+id/text_view_title_white"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="35dp"
             android:layout_alignParentStart="false"
-            android:textColor="#FFFFFF"
+            android:autoSizeMaxTextSize="15sp"
+            android:autoSizeMinTextSize="1sp"
+            android:autoSizeStepGranularity="1sp"
+            android:autoSizeTextType="uniform"
             android:ellipsize="end"
+            android:fontFamily="@font/open_sans_semibold"
+            android:gravity="center_vertical"
             android:maxLines="1"
             android:text="Category Name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="#FFFFFF" />
 
         <ImageView
             android:id="@+id/remove_sub_item_white"
