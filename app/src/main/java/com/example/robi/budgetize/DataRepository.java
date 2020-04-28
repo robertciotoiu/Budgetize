@@ -2,6 +2,8 @@ package com.example.robi.budgetize;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+
+import com.example.robi.budgetize.backend.rest.model.Bank;
 import com.example.robi.budgetize.data.localdatabase.LocalRoomDatabase;
 import com.example.robi.budgetize.data.localdatabase.dao.CategoryDao;
 import com.example.robi.budgetize.data.localdatabase.dao.IEObjectDao;
@@ -9,6 +11,7 @@ import com.example.robi.budgetize.data.localdatabase.dao.WalletDao;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
+
 import java.util.List;
 
 public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
@@ -22,6 +25,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
     //TODO: MediatorLiveData for IE and Category
 
     private OnDataChangedRepositoryListener listener;
+    private OnBankDataChanged bankDataListener;
 
     private DataRepository(final LocalRoomDatabase database) {
         mDatabase = database;
@@ -79,8 +83,8 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
     }
 
     @Override
-    public LiveData<CategoryObject> getCategoryByName(long wallet_id, String category_name) {
-        return mDatabase.categoryDao().getCategoryByName(wallet_id,category_name);
+    public LiveData<CategoryObject> getCategoryByID(long category_id) {
+        return mDatabase.categoryDao().getCategoryByID(category_id);
     }
 
     @Override
@@ -94,20 +98,28 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
     }
 
     @Override
-    public void deleteCategory(long wallet_id, String categoryName) {
-        mDatabase.categoryDao().deleteCategory(wallet_id,categoryName);
+    public void deleteCategory(long category_id) {
+        if(category_id!=0) {//category_id is 0 when IE doesn't have a category. So we don't want all independent IEs to be deleted at deletion of only one
+            deleteAllIEofACategory(category_id);
+        }
+        mDatabase.categoryDao().deleteCategory(category_id);
     }
 
     //IEDAO
 
     @Override
-    public double getCategoryIESUM(long wallet_id, String category_name) {
-        return mDatabase.categoryDao().getCategoryIESUM(wallet_id,category_name);
+    public double getCategoryIESUM(long category_id) {
+        return mDatabase.categoryDao().getCategoryIESUM(category_id);
     }
 
     @Override
-    public List<IEObject> getCategorysIE(long wallet_id, String category_name) {
-        return mDatabase.categoryDao().getCategorysIE(wallet_id,category_name);
+    public List<IEObject> getCategorysIE(long category_id) {
+        return mDatabase.categoryDao().getCategorysIE(category_id);
+    }
+
+    @Override
+    public LiveData<List<IEObject>> getAllIEofAWalletWithoutCategoriesAssigned(long walletID) {
+        return mDatabase.ieoDao().getAllIEofAWalletWithoutCategoriesAssigned(walletID);
     }
 
     @Override
@@ -126,8 +138,8 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
     }
 
     @Override
-    public LiveData<List<IEObject>> getIESpecificList(long walletID, String category) {
-        return mDatabase.ieoDao().getIESpecificList(walletID, category);
+    public LiveData<List<IEObject>> getIESpecificList(long category_id) {
+        return mDatabase.ieoDao().getIESpecificList(category_id);
     }
 
     @Override
@@ -136,8 +148,13 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
     }
 
     @Override
-    public void deleteIE(long walletID, long ieID) {
-        mDatabase.ieoDao().deleteIE(walletID,ieID);
+    public void deleteIE(long ieID) {
+        mDatabase.ieoDao().deleteIE(ieID);
+    }
+
+    @Override
+    public void deleteAllIEofACategory(long category_id) {
+        mDatabase.ieoDao().deleteAllIEofACategory(category_id);
     }
 
     //WALLETDAO
@@ -187,6 +204,12 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
         void onCategoryDataChanged(List<CategoryObject> categoryObjects);
         void onIEDataChanged(List<IEObject> ieObjects);
     }
+
+    public interface OnBankDataChanged{
+        void onBankDataChanged(List<Bank> bankList);
+    }
+
+    public void addListener(OnBankDataChanged bankDataListener){ this.bankDataListener = bankDataListener;}
 
     public void addListener(OnDataChangedRepositoryListener listener){
         this.listener = listener;

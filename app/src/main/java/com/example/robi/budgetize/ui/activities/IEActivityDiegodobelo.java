@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,23 +14,20 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.APIs.expandingviewAPI.ExpandingItem;
 import com.example.robi.budgetize.backend.APIs.expandingviewAPI.ExpandingList;
+import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
+import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.createActivities.CreateCategoryActivity;
 import com.example.robi.budgetize.ui.activities.createActivities.CreateIEActivity;
-import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
-import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModelFactory;
 import com.google.gson.Gson;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
@@ -43,11 +39,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-
+//TODO: display at the bottom all the IEs without a category
 public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
     private ExpandingList mExpandingList = null;
     long walletID = 0;
     boolean firstStart = true;
+    boolean firstStartOrphane = true;
     private Wallet wallet;
     private RapidFloatingActionLayout rfaLayout;
     private RapidFloatingActionButton rfaBtn;
@@ -59,8 +56,11 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
     private static List<CategoryObject> categoryObjectsList = new ArrayList<CategoryObject>();
     private Observer<List<CategoryObject>> categoryListObsever;
 
+    private static List<IEObject> orphanIEs = new ArrayList<IEObject>();
+    private Observer<List<IEObject>> orphanIEsObserver;
+
     private static List<IEObject> ieObjects = new ArrayList<IEObject>();
-    private Observer<List<IEObject>> ieListObserver;
+//    private Observer<List<IEObject>> ieListObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,18 +86,9 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         init();
     }
 
-    @Override
-    public void onPause(){
-        super.onPause();
-        firstStart=true;
-        depopulateLists();
-        mainActivityViewModel.getAllCategories().removeObserver(categoryListObsever);
-    }
-
-
     private void init() {
         init_floatingPointButton();
-        //Observer
+        //Observers
         categoryListObsever = new Observer<List<CategoryObject>>() {
             @Override
             public void onChanged(List<CategoryObject> categoryObjects) {
@@ -111,17 +102,38 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         };//categoryObjects::addAll;
         mainActivityViewModel.getAllCategoriesOfAWallet(walletID).observe(this, categoryListObsever);
 
-        ieListObserver = new Observer<List<IEObject>>() {
+//        ieListObserver = new Observer<List<IEObject>>() {
+//            @Override
+//            public void onChanged(List<IEObject> ieObjects) {
+//                IEActivityDiegodobelo.ieObjects.clear();
+//                IEActivityDiegodobelo.ieObjects.addAll(ieObjects);
+//            }
+//        };
+//        mainActivityViewModel.getAllIE().observe(this,ieListObserver);
+
+        orphanIEsObserver = new Observer<List<IEObject>>() {
             @Override
-            public void onChanged(List<IEObject> ieObjects) {
-                IEActivityDiegodobelo.ieObjects.clear();
-                IEActivityDiegodobelo.ieObjects.addAll(ieObjects);
+            public void onChanged(List<IEObject> orphanIEs) {
+                IEActivityDiegodobelo.orphanIEs.clear();
+                IEActivityDiegodobelo.orphanIEs.addAll(orphanIEs);
+                if(firstStartOrphane){
+                    addOrphaneCategories();
+                    firstStartOrphane = false;
+                }
+                //addOrphaneCategories();
             }
         };
+        mainActivityViewModel.getAllIEofAWalletWithoutCategoriesAssigned(walletID).observe(IEActivityDiegodobelo.this, orphanIEsObserver);
+    }
 
-        mainActivityViewModel.getAllIE().observe(this,ieListObserver);
-
-
+    @Override
+    public void onPause(){
+        super.onPause();
+        firstStart=true;
+        firstStartOrphane=true;
+        depopulateLists();
+        mainActivityViewModel.getAllIEofAWalletWithoutCategoriesAssigned(walletID).removeObserver(orphanIEsObserver);
+        mainActivityViewModel.getAllCategories().removeObserver(categoryListObsever);
     }
 
     private void init_floatingPointButton() {
@@ -216,13 +228,52 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 //            });
         }
     }
+
+    private void addOrphaneCategories(){
+        Log.d("WTF:",mExpandingList.getItemsCount()+"-ITEM COUNT");
+        for(IEObject orphaneIEObject: orphanIEs){
+            addOrphanItems(orphaneIEObject);
+        }
+    }
+
+    private void addOrphanItems(IEObject orphaneIEObject) {
+        //double ie_value = mainActivityViewModel.getCategoryIESUM(orphaneIEObject.getWallet_id(), orphaneIEObject.getName());
+        //List<IEObject> ieObjectList = mainActivityViewModel.getCategorysIE(walletID, orphaneIEObject.getName());
+
+        IEActivityDiegodobelo.this.runOnUiThread(() -> {
+            final ExpandingItem item;
+            if(orphaneIEObject.type==0) {
+                item  =getCorrectItem(orphaneIEObject.amount);
+            }else{
+                item = getCorrectItem(-orphaneIEObject.amount);
+            }
+            if (item != null) {
+                //setAllColors(ie_value);
+                //item.setIndicatorColor(Color.WHITE);
+                //item.setIndicatorColorRes(getIconIndicatorColor(ie_value));//R.color.positiveBackgroundColor);
+                //item.setIndicatorIcon(getIcon(orphaneIEObject.amount));//R.drawable.house_icon);
+                //1. ImageView category_icon
+                ((TextView) item.findViewById(R.id.text_view_value_white)).setText(String.valueOf(orphaneIEObject.amount));
+                ((TextView) item.findViewById(R.id.text_view_category_name_white)).setText(orphaneIEObject.getName());
+                ((TextView) item.findViewById(R.id.text_view_description_white)).setText("Empty");
+                item.findViewById(R.id.remove_item).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        removeItemClickListener(orphaneIEObject, item);
+                    }
+                });
+            }
+            Log.d("UI thread", "I am the UI thread");
+        });
+    }
+
     private void depopulateLists(){
         mExpandingList.removeAllViews();
     }
 
     private void addItem(final CategoryObject categoryObject) {
-        double ie_value = mainActivityViewModel.getCategoryIESUM(categoryObject.getWallet_id(), categoryObject.getName());
-        List<IEObject> ieObjectList = mainActivityViewModel.getCategorysIE(walletID, categoryObject.getName());
+        double ie_value = mainActivityViewModel.getCategoryIESUM(categoryObject.getCategory_id());
+        List<IEObject> ieObjectList = mainActivityViewModel.getCategorysIE(categoryObject.getCategory_id());
 
         IEActivityDiegodobelo.this.runOnUiThread(() -> {
             final ExpandingItem item = getCorrectItem(ie_value);
@@ -239,7 +290,6 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                 for (int i = 0; i < item.getSubItemsCount(); i++) {
                     //Let's get the created sub item by its index
                     final View view = item.getSubItemView(i);
-
 //                if(i== item.getSubItemsCount()-1) {
 //                    RelativeLayout layout = view.findViewById(R.id.layout_subitem);
 //                    ViewGroup.LayoutParams params = layout.getLayoutParams();
@@ -249,7 +299,6 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                     //Let's set some values in
                     configureSubItem(item, view, ieObjectList.get(i), categoryObject);
                 }
-
 //            item.findViewById(R.id.add_more_sub_items).setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View v) {
@@ -259,28 +308,31 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 //                    IEActivityDiegodobelo.this.startActivity(myIntent);
 //                }
 //            });
-
                 item.findViewById(R.id.remove_item).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        removeItemClickListener(categoryObject.getName(), item);
+                        removeItemClickListener(categoryObject, item);
                     }
                 });
             }
             Log.d("UI thread", "I am the UI thread");
         });
-
     }
 
-    private void removeItemClickListener(final String categoryName, final ExpandingItem expandingItem) {
+    private void removeItemClickListener(Object object, final ExpandingItem expandingItem) {
         final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE: {
                         try {
-                            mainActivityViewModel.deleteCategory(walletID, categoryName);
-                            mExpandingList.removeView(expandingItem);
+                            if(object instanceof IEObject){
+                                mainActivityViewModel.deleteIE(((IEObject)object).getId());
+                                mExpandingList.removeView(expandingItem);
+                            }else {
+                                mainActivityViewModel.deleteCategory(((CategoryObject)object).getCategory_id());
+                                mExpandingList.removeView(expandingItem);
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                             System.out.println(e.getMessage());
@@ -307,31 +359,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                 .setNegativeButton("No", dialogClickListener).show();
     }
 
-    private void setAllColors(double ie) {
-//        RelativeLayout lLayout = (RelativeLayout) findViewById(R.id.expanding_item_id);
-        TextView value = (TextView) findViewById(R.id.text_view_value);
-        TextView description = (TextView) findViewById(R.id.text_view_category_name);
-        TextView name = (TextView) findViewById(R.id.text_view_category_name);
-
-        if (ie > 0) {
-//            lLayout.setBackgroundColor(getResources().getColor(R.color.positiveBackgroundColor));
-            value.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
-            description.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
-            name.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
-        } else if (ie < 0) {
-//            lLayout.setBackgroundColor(getResources().getColor(R.color.negativeBackgroundColor));
-            value.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
-            description.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
-            name.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
-        } else {
-//            lLayout.setBackgroundColor(getResources().getColor(R.color.neutralBackgroundColor));
-            value.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
-            description.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
-            name.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
-        }
-    }
-
-    //TODO: change it programatically!
+    //TODO: refactor and change layout programatically!
     private ExpandingItem getCorrectItem(double ie_value) {
         if (ie_value > 0) {
             return mExpandingList.createNewItem(R.layout.expanding_layout_positive);
@@ -342,7 +370,6 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         }
 
     }
-
 
     private Drawable getIcon(double ie) {
         //have to return icon id
@@ -357,17 +384,6 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         }
 
         return wrappedDrawable;
-    }
-
-    private int getIconIndicatorColor(double ie) {
-        //have to return icon's indicator color
-        if (ie > 0) {
-            return R.color.positiveBackgroundColor;
-        } else if (ie < 0) {
-            return R.color.negativeBackgroundColor;
-        } else {
-            return R.color.neutralBackgroundColor;
-        }
     }
 
     private void configureSubItem(final ExpandingItem item, final View view, final IEObject ieObject, final CategoryObject categoryObject) {
@@ -395,7 +411,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                     case DialogInterface.BUTTON_POSITIVE: {
                         try {
                             //TODO:issue here, when we delete one IE, we must removeSubItem() and recalculate category
-                            mainActivityViewModel.deleteIE(walletID, ieID);
+                            mainActivityViewModel.deleteIE(ieID);
                             Toast.makeText(IEActivityDiegodobelo.this, "I/E Deleted", Toast.LENGTH_SHORT).show();
                             expandingItem.removeSubItem(view);
                             recalculateCategorySum(expandingItem, categoryObject);
@@ -446,7 +462,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
     }
 
     private void recalculateCategorySum(final ExpandingItem expandingItem, final CategoryObject categoryObject) {
-        double ie_value = mainActivityViewModel.getCategoryIESUM(categoryObject.getWallet_id(), categoryObject.getName());
+        double ie_value = mainActivityViewModel.getCategoryIESUM(categoryObject.getCategory_id());
         ((TextView) expandingItem.findViewById(R.id.text_view_value_white)).setText(String.valueOf(ie_value));
         if (ie_value > 0) {
             expandingItem.setBackground(getResources().getDrawable(R.drawable.item_shape_positive));
@@ -456,6 +472,41 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
             expandingItem.setBackground(getResources().getDrawable(R.drawable.item_shape_neutral));
         }
         expandingItem.setIndicatorIcon(getIcon(ie_value));
+    }
+
+    private void setAllColors(double ie) {
+//        RelativeLayout lLayout = (RelativeLayout) findViewById(R.id.expanding_item_id);
+        TextView value = (TextView) findViewById(R.id.text_view_value);
+        TextView description = (TextView) findViewById(R.id.text_view_category_name);
+        TextView name = (TextView) findViewById(R.id.text_view_category_name);
+
+        if (ie > 0) {
+//            lLayout.setBackgroundColor(getResources().getColor(R.color.positiveBackgroundColor));
+            value.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
+            description.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
+            name.setTextColor(getResources().getColor(R.color.positiveBackgroundColor));
+        } else if (ie < 0) {
+//            lLayout.setBackgroundColor(getResources().getColor(R.color.negativeBackgroundColor));
+            value.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
+            description.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
+            name.setTextColor(getResources().getColor(R.color.negativeBackgroundColor));
+        } else {
+//            lLayout.setBackgroundColor(getResources().getColor(R.color.neutralBackgroundColor));
+            value.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
+            description.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
+            name.setTextColor(getResources().getColor(R.color.neutralBackgroundColor));
+        }
+    }
+
+    private int getIconIndicatorColor(double ie) {
+        //have to return icon's indicator color
+        if (ie > 0) {
+            return R.color.positiveBackgroundColor;
+        } else if (ie < 0) {
+            return R.color.negativeBackgroundColor;
+        } else {
+            return R.color.neutralBackgroundColor;
+        }
     }
 
     private void refresh_category(ExpandingItem expandingItem, View view, CategoryObject categoryObject) {

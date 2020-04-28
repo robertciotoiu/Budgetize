@@ -1,7 +1,6 @@
 package com.example.robi.budgetize.ui.adapters.viewpager;
 
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -20,11 +19,9 @@ import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.IEActivityDiegodobelo;
-import com.example.robi.budgetize.ui.activities.MainActivity;
 import com.google.gson.Gson;
 
 import java.util.List;
-import java.util.Observable;
 
 public class WalletViewPagerAdapter extends PagerAdapter {
 
@@ -98,7 +95,6 @@ public class WalletViewPagerAdapter extends PagerAdapter {
             TextView walletName = null;
             ProgressBar pb = null;
 
-
             if (ie > 0) {
                 view = layoutInflater.inflate(R.layout.page_positive, container, false);
                 //views.add(view);
@@ -114,7 +110,7 @@ public class WalletViewPagerAdapter extends PagerAdapter {
                 walletName = (TextView) view.findViewById(R.id.wallet_name);
                 walletName.setText(wallet.getName());
                 pb = (ProgressBar) view.findViewById(R.id.progressBar);
-                pb.setProgress(percentage, true);
+                pb.setProgress(0, true);
 
                 b = (Button) view.findViewById(R.id.ie_button);
                 b.setText("+" + ie + "$");
@@ -125,7 +121,7 @@ public class WalletViewPagerAdapter extends PagerAdapter {
                 walletName = (TextView) view.findViewById(R.id.wallet_name);
                 walletName.setText(wallet.getName());
                 pb = (ProgressBar) view.findViewById(R.id.progressBar);
-                pb.setProgress(percentage, true);
+                pb.setProgress(0, true);
                 b = (Button) view.findViewById(R.id.ie_button);
                 b.setText(ie + "$");
 
@@ -135,8 +131,8 @@ public class WalletViewPagerAdapter extends PagerAdapter {
                 walletName = (TextView) view.findViewById(R.id.wallet_name);
                 walletName.setText(wallet.getName());
                 pb = (ProgressBar) view.findViewById(R.id.progressBar);
-                pb.setProgress(percentage, true);
-                ObjectAnimator progressAnimator = ObjectAnimator.ofInt(pb, "progress", 10000, 0);
+                pb.setProgress(0, true);
+                //ObjectAnimator progressAnimator = ObjectAnimator.ofInt(pb, "progress", 10000, 0);
                 b = (Button) view.findViewById(R.id.ie_button);
                 b.setText(ie + "$");
 
@@ -161,6 +157,7 @@ public class WalletViewPagerAdapter extends PagerAdapter {
                 mainActivityViewModel.lastWalletPosition = position;
                 Intent myIntent = new Intent(context, IEActivityDiegodobelo.class);
                 myIntent.putExtra("wallet", walletAsString); //Optional parameters
+                mainActivityViewModel.lastWalletPosition = position;
                 context.startActivity(myIntent);
             }
         });

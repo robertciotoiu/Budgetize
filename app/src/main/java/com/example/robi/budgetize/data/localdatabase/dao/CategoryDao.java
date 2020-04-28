@@ -22,27 +22,27 @@ public interface CategoryDao {
     public long addCategory(CategoryObject category);
 
     //GET A CATEGORY BY ID
-    @Query("SELECT c.category_name, c.wallet_id, c.description from wallets w, categories c WHERE w.id = :wallet_id AND category_name= :category_name")
-    public LiveData<CategoryObject> getCategoryByName(long wallet_id, String category_name);
+    @Query("SELECT * from categories c WHERE category_id= :category_id")
+    public LiveData<CategoryObject> getCategoryByID(long category_id);
 
     //GET ALL CATEGORIES OF A WALLET
-    @Query("SELECT c.category_name, c.wallet_id, c.description from categories c WHERE wallet_id=:wallet_id")
+    @Query("SELECT * from categories c WHERE wallet_id=:wallet_id")
     public LiveData<List<CategoryObject>> getAllCategoriesOfAWallet(long wallet_id);
 
     //GET ALL CATEGORIES
-    @Query("SELECT c.category_name, c.wallet_id, c.description from categories c")
+    @Query("SELECT * from categories c")
     public LiveData<List<CategoryObject>> getAllCategories();
 
     //GET IE CALCULATED FOR A CATEGORY
-    @Query("SELECT (SELECT DISTINCT COALESCE(SUM(ie.amount),0) AS category_ie FROM incomes_expenses ie WHERE ie.wallet_id = :wallet_id AND ie.category = :category_name AND ie.type=0) - (SELECT DISTINCT COALESCE(SUM(ie.amount),0) AS category_ie FROM incomes_expenses ie WHERE ie.wallet_id = :wallet_id AND ie.category = :category_name AND ie.type=1) AS Difference")
-    public double getCategoryIESUM(long wallet_id, String category_name);
+    @Query("SELECT (SELECT DISTINCT COALESCE(SUM(ie.amount),0) AS category_ie FROM incomes_expenses ie WHERE category_id=:category_id AND ie.type=0) - (SELECT DISTINCT COALESCE(SUM(ie.amount),0) AS category_ie FROM incomes_expenses ie WHERE category_id=:category_id AND ie.type=1) AS Difference")
+    public double getCategoryIESUM(long category_id);
 
     //
-    @Query("SELECT DISTINCT ie.id, ie.wallet_id, ie.amount, ie.name,  ie.category,  ie.type FROM wallets w, incomes_expenses ie, categories cat WHERE ie.wallet_id = :wallet_id AND ie.category = :category_name")
+    @Query("SELECT DISTINCT ie.id, ie.wallet_id, ie.amount, ie.name,  ie.category_id, ie.date, ie.occurrence , ie.type FROM wallets w, incomes_expenses ie, categories cat WHERE ie.category_id = :category_id")
     //@Query("SELECT * from incomes_expenses")
-    public List<IEObject> getCategorysIE(long wallet_id, String category_name);
+    public List<IEObject> getCategorysIE(long category_id);
 
     //DELETE A CATEGORY
-    @Query("DELETE FROM categories where wallet_id = :wallet_id AND category_name=:categoryName")
-    public void deleteCategory(long wallet_id, String categoryName);
+    @Query("DELETE FROM categories where category_id=:category_id;")
+    public void deleteCategory(long category_id);
 }

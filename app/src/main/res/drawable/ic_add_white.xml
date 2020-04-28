@@ -7,14 +7,15 @@
         android:height="50dp"
         android:gravity="center"
         />
-    <item>
+<!--
+<item>
         <shape android:shape="rectangle">
             <corners android:radius="50dp" />
             <solid android:color="#00800000" />
         </shape>
     </item>
 
-    <!--top, dark, inner shadow-->
+    <!-top, dark, inner shadow-
     <item
         android:bottom="@dimen/depth">
         <shape android:shape="rectangle">
@@ -23,7 +24,7 @@
         </shape>
     </item>
 
-    <!--bottom, light, outer glow-->
+    <!-bottom, light, outer glow-
     <item
         android:top="@dimen/depth">
         <shape android:shape="rectangle">
@@ -32,7 +33,7 @@
         </shape>
     </item>
 
-    <!--your color-->
+    <!-your color-
     <item
         android:top="@dimen/depth"
         android:bottom="@dimen/depth">
@@ -41,4 +42,5 @@
             <solid android:color="#00000000" />
         </shape>
     </item>
+    -->
 </layer-list >

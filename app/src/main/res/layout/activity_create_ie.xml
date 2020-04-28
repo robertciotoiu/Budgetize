@@ -16,16 +16,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/create_ie_switch" />
+        app:layout_constraintTop_toBottomOf="@+id/pick_occurence_spinner" />
 
     <EditText
         android:id="@+id/create_ie_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="248dp"
+        android:layout_marginTop="100dp"
         android:ems="10"
-        android:inputType="textPersonName"
         android:hint="IE Name"
+        android:inputType="textPersonName"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,6 +44,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/create_ie_name" />
+
 
     <!--EditText
         android:id="@+id/create_ie_category"
@@ -66,44 +67,74 @@
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/create_ie_amount"
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_amount" />
 
-        />
-
-    <Switch android:theme="@style/ThemeOverlay.MySwitch"
+    <Switch
         android:id="@+id/create_ie_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:text=""
+        android:theme="@style/ThemeOverlay.MySwitch"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/create_ie_category" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/income_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
         android:layout_marginTop="44dp"
         android:text="Income"
+        android:textColor="@color/positiveBackgroundColor"
         app:layout_constraintEnd_toStartOf="@+id/create_ie_switch"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/create_ie_category"
-        android:textColor="@color/positiveBackgroundColor"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_category" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/expense_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
         android:layout_marginEnd="60dp"
         android:text="Expense"
+        android:textColor="@color/negativeBackgroundColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/create_ie_switch"
-        app:layout_constraintTop_toBottomOf="@+id/create_ie_category"
-        android:textColor="@color/negativeBackgroundColor"
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_category" />
+
+    <Button
+        android:id="@+id/pick_ie_date_button"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="92dp"
+        android:layout_marginTop="48dp"
+        android:background="@drawable/pick_date_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_switch" />
+
+    <TextView
+        android:id="@+id/selected_date_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:text="Press Transaction Date"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.13"
+        app:layout_constraintStart_toEndOf="@+id/pick_ie_date_button"
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_switch"
         />
+
+    <Spinner
+        android:id="@+id/pick_occurence_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tooltipText="Select transaction occurrence"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pick_ie_date_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,10 +4,15 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "incomes_expenses")
+@Entity(tableName = "incomes_expenses")//,foreignKeys ={
+//        @ForeignKey(onDelete = CASCADE, entity = CategoryObject.class,
+//                parentColumns = "category_id",childColumns = "category_id")})
+//        , indices = {
+//        @Index("category_id")
+//})
 public class IEObject {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(name = "id")
     private long id;
 
@@ -20,20 +25,36 @@ public class IEObject {
     @ColumnInfo(name = "name")
     public String name;
 
-    @ColumnInfo(name = "category")
-    public String category;
+    @ColumnInfo(name = "category_id")
+    public long category_id;
+
+    @ColumnInfo(name = "date")
+    public String date;
+
+    @ColumnInfo(name = "occurrence")
+    public String occurrence;
 
     //public int icon[];
     @ColumnInfo(name="type")
     public int type;//0 means income, 1 means expense
 
-    public IEObject(long wallet_id,String name, double amount, String category, int type) {
+    public IEObject(long wallet_id,String name, double amount, long category_id, int type, String date, String occurrence) {
         this.id = System.nanoTime();
         this.wallet_id = wallet_id;
         this.name = name;
         this.amount = amount;
-        this.category = category;          //add incomeObj to the choosen category
+        this.category_id = category_id;          //add incomeObj to the choosen category
+
+//        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
+//        Date now = new Date();
+//        String strDate = sdfDate.format(date);
+        this.date = date;
+
+        this.occurrence = occurrence;
+
         this.type = type;
+
+
     }
 
     public long getId() {
@@ -68,12 +89,12 @@ public class IEObject {
         this.name = name;
     }
 
-    public String getCategory() {
-        return category;
+    public long getCategory() {
+        return category_id;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategory(long category_id) {
+        this.category_id = category_id;
     }
 
     public int getType() {

@@ -11,11 +11,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
+import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
-import com.example.robi.budgetize.ui.activities.MainActivity;
-import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -65,7 +64,7 @@ public class CreateCategoryActivity extends AppCompatActivity {
 
             long status = mainActivityViewModel.addCategory(categoryObject);//MainActivity.myDatabase.categoryDao().addCategory(categoryObject);
 
-            if(mainActivityViewModel.getCategoryByName(currentWalletID,categoryName)!=null){//MainActivity.myDatabase.walletDao().getWalletById(status)!=null) {
+            if(mainActivityViewModel.getCategoryByID(categoryObject.getCategory_id())!=null){//MainActivity.myDatabase.walletDao().getWalletById(status)!=null) {
                 Toast.makeText(this, "Category added successfully", Toast.LENGTH_SHORT).show();
             }
             else

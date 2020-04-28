@@ -22,6 +22,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     private final MutableLiveData<List<IEObject>> mObservableIEs = new MutableLiveData<>();
     public boolean onFirstCreation = false;
     public int lastWalletPosition = 0;
+    public boolean onFirstCreationForPBFirstElementAnimation = false;
 
 
     public MainActivityViewModel(@NonNull Application application, DataRepository repository) {
@@ -82,8 +83,8 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
         return repository.addCategory(categoryObject);
     }
 
-    public LiveData<CategoryObject> getCategoryByName(long currentWalletID, String categoryName) {
-        return repository.getCategoryByName(currentWalletID, categoryName);
+    public LiveData<CategoryObject> getCategoryByID(long category_id) {
+        return repository.getCategoryByID(category_id);
     }
 
     public long addWallet(Wallet wallet) {
@@ -106,20 +107,24 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
         return repository.getAllCategoriesOfAWallet(wallet_id);
     }
 
-    public void deleteCategory(long walletID, String categoryName) {
-        repository.deleteCategory(walletID,categoryName);
+    public void deleteCategory(long category_id) {
+        repository.deleteCategory(category_id);
     }
 
-    public void deleteIE(long walletID, long ieID) {
-        repository.deleteIE(walletID,ieID);
+    public void deleteIE(long ieID) {
+        repository.deleteIE(ieID);
     }
 
-    public double getCategoryIESUM(long wallet_id, String name) {
-        return repository.getCategoryIESUM(wallet_id,name);
+    public double getCategoryIESUM(long category_id) {
+        return repository.getCategoryIESUM(category_id);
     }
 
-    public List<IEObject> getCategorysIE(long walletID, String name) {
-        return repository.getCategorysIE(walletID,name);
+    public List<IEObject> getCategorysIE(long category_id) {
+        return repository.getCategorysIE(category_id);
+    }
+
+    public LiveData<List<IEObject>> getAllIEofAWalletWithoutCategoriesAssigned(long walletID){
+        return repository.getAllIEofAWalletWithoutCategoriesAssigned(walletID);
     }
 
     public LiveData<List<IEObject>> getAllIE(){

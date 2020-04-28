@@ -10,9 +10,27 @@
     tools:context=".ui.activities.MainActivity">
 
     <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:backgroundTint="#000000"
+        android:visibility="visible"
+        android:elevation="60dp"
+        android:id="@+id/overlay_layout"
+        >
+        <View
+            android:elevation="50dp"
+            android:id="@+id/overlay_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:backgroundTint="#000000" />
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/auth_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:elevation="1dp"
+        >
 
         <com.skydoves.elasticviews.ElasticButton
             android:background="@drawable/biometric_icon"
@@ -33,7 +51,9 @@
         android:layout_height="match_parent"
         android:id="@+id/main_screen_layout"
         android:background="@color/positiveBackgroundColor"
-        android:alpha="45">
+        android:alpha="45"
+        android:elevation="1dp"
+        >
 
         <TextView
             android:id="@+id/intro_text"
@@ -168,17 +188,18 @@
 
 
         <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabDots"
-        android:layout_width="175dp"
-        android:layout_height="10dp"
-        android:layout_centerInParent="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="40dp"
-        app:tabMaxWidth="10dp"
-        app:tabMinWidth="10dp"
-        app:tabBackground="@drawable/tab_selector"
-        app:tabGravity="center"
-        app:tabIndicatorHeight="0dp"/>
+            android:id="@+id/tabDots"
+            android:layout_width="175dp"
+            android:layout_height="10dp"
+            android:layout_centerInParent="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="40dp"
+            app:tabMaxWidth="10dp"
+            app:tabMinWidth="10dp"
+            app:tabBackground="@drawable/tab_selector"
+            app:tabGravity="center"
+            app:tabIndicatorHeight="0dp"
+            />
         <View
             android:id="@+id/overlay"
             android:layout_width="match_parent"
@@ -189,15 +210,8 @@
             />
     </RelativeLayout>
 
-    <View
-        android:id="@+id/overlay_view"
-        android:layout_width="300dp"
-        android:layout_height="500dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:background="@drawable/settings_template"
-        android:alpha="0.99"
-        android:visibility="gone"
-        />
+
+
+
 
 </RelativeLayout>
