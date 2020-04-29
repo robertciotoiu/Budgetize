@@ -191,106 +191,105 @@
    limitations under the License.
 
  */
-package com.example.robi.budgetize.backend.APIs.oauth1.activity;
+package com.example.robi.budgetize.data.remotedatabase.remote.oauth1.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
 
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.backend.APIs.oauth1.lib.OBPRestClient;
+import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
+import com.example.robi.budgetize.ui.activities.MainActivity;
 
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.exception.OAuthNotAuthorizedException;
-
-//TODO: I think it is safe to remove this class
-public class OAuthActivity extends Activity {
-
+/**
+ * @AuthenticateActivity is responsible to intercept OBP OAuth response, after the bank browser login
+ */
+public class AuthenticateActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_oauth);
+
+		tryToLaunchMainActivity(getIntent());
+
+		setContentView(R.layout.activity_authenticate);
 	}
 
-//	private void startMainActivity() {
-//		Intent intent = new Intent(this, MainOAuthActivity.class);
-//		intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-//		startActivity(intent);
-//	}
+	public void getAccessToken(String verifyCode) {
+		new AccessTokenTask(this).execute(verifyCode);
+	}
 
-	private void getNewAccessToken() {
-		new AuthorizeTask(this).execute();
+	private class AccessTokenTask extends AsyncTask<String, Void, Boolean> {
+
+		private Activity callingActivity;
+		
+		private AccessTokenTask(Activity act) {
+			this.callingActivity = act;
+		}
+		
+		@Override
+		protected Boolean doInBackground(String... s) {
+			if (s.length != 1) {
+				return false;
+			} else {
+				String verifierCode = s[0];
+				boolean accessTokenSet = OBPRestClient.getAndSetAccessToken(callingActivity, verifierCode);
+				return accessTokenSet;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(Boolean success) {
+			if (success) {
+				launchMainActivity();
+			} else
+				Toast.makeText(callingActivity, "Incorrect verification code!",
+						Toast.LENGTH_LONG).show();
+		}
+
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_oauth, menu);
+		getMenuInflater().inflate(R.menu.activity_enter_verifier, menu);
 		return true;
 	}
 
-	private class AuthorizeTask extends AsyncTask<Void, Void, Uri> {
+	private void launchMainActivity() {
+		Intent mainActivity = new Intent(this, MainActivity.class);
+		startActivity(mainActivity);
+		finish();
+	}
 
-		private final String LOG_TAG = getClass().getName();
-		private Activity callingActivity;
-
-		private AuthorizeTask(Activity act) {
-			this.callingActivity = act;
-		}
-
-		@Override
-		protected Uri doInBackground(Void... arg0) {
-			// Get the the url the user should be directed to in order to login
-			try {
-				String urlString = OBPRestClient
-						.getAuthoriseAppUrl(callingActivity);
-				Uri authoriseURI = Uri.parse(urlString);
-				return authoriseURI;
-			} catch (OAuthMessageSignerException e) {
-				Log.w(LOG_TAG, Log.getStackTraceString(e));
-			} catch (OAuthNotAuthorizedException e) {
-				Log.w(LOG_TAG, Log.getStackTraceString(e));
-			} catch (OAuthExpectationFailedException e) {
-				Log.w(LOG_TAG, Log.getStackTraceString(e));
-			} catch (OAuthCommunicationException e) {
-				Log.w(LOG_TAG, Log.getStackTraceString(e));
+	private void tryToLaunchMainActivity(Intent intent) {
+		// Check if we've got the verifier code available
+		Uri data = intent.getData();
+		if (data != null) {
+			String code = data.getQueryParameter("oauth_verifier");
+			if (code != null) {
+				getAccessToken(code);
 			}
-			return null;
+		} else {
+			// Something weird has happened, so we'll try starting the OAuth
+			// cycle again
+			Intent i = new Intent(this, OAuthActivity.class);
+			startActivity(i);
+			finish();
 		}
+	}
 
-		@Override
-		protected void onPostExecute(Uri authUri) {
-			if (authUri != null) {
-				/**
-				 * We have a url to send the user to, so we will open a web
-				 * browser and send them to it. The url we open contains a
-				 * parameter specifying the callback url, which we have set up
-				 * to be handled in AuthenticateActivity.
-				 */
-				Intent browser = new Intent(Intent.ACTION_VIEW);
-				browser.setData(authUri);
-
-				callingActivity.startActivity(browser);
-				callingActivity.finish();
-			} else {
-				showError();
-			}
-
-		}
-
-		private void showError() {
-			String OAUTH_ERROR = callingActivity.getResources().getString(
-					R.string.oauth_error);
-			Toast.makeText(callingActivity, OAUTH_ERROR, Toast.LENGTH_LONG).show();
-		}
-
+	@Override
+	/**
+	 * This gets called when the browser api login redirects the user to the custom url scheme
+	 * handled by this activity (see AndroidManifest.xml: <data android:scheme="@string/customAppProtocol"/>)
+	 */
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		tryToLaunchMainActivity(intent);
 	}
 
 }

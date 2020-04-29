@@ -14,7 +14,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.backend.services.utils.BasicImageDownloader;
-import com.example.robi.budgetize.backend.rest.model.Bank;
+import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
 
 import java.io.File;
 import java.util.ArrayList;

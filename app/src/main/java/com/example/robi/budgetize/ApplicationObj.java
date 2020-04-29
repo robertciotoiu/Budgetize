@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.example.robi.budgetize.data.localdatabase.LocalRoomDatabase;
-import com.example.robi.budgetize.backend.rest.model.Bank;
+import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
 
 import java.util.ArrayList;
 

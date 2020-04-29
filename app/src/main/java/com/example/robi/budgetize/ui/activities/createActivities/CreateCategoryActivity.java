@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
-import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModelFactory;
+import com.example.robi.budgetize.backend.viewmodels.factories.MainActivityViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.google.gson.Gson;

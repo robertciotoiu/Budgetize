@@ -191,7 +191,7 @@
    limitations under the License.
 
  */
-package com.example.robi.budgetize.backend.APIs.oauth1.lib;
+package com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib;
 
 public class ExpiredAccessTokenException extends Exception {
 

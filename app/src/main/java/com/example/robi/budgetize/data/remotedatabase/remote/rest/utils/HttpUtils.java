@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.backend.rest.utils;
+package com.example.robi.budgetize.data.remotedatabase.remote.rest.utils;
 
 import java.io.IOException;
 

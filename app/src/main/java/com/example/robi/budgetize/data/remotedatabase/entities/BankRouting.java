@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.backend.rest.model;
+package com.example.robi.budgetize.data.remotedatabase.entities;
 
 public class BankRouting {
     private String scheme;

@@ -22,7 +22,7 @@ import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.APIs.expandingviewAPI.ExpandingItem;
 import com.example.robi.budgetize.backend.APIs.expandingviewAPI.ExpandingList;
 import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
-import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModelFactory;
+import com.example.robi.budgetize.backend.viewmodels.factories.MainActivityViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;

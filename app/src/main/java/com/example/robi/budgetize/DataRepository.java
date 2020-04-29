@@ -3,7 +3,7 @@ package com.example.robi.budgetize;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
-import com.example.robi.budgetize.backend.rest.model.Bank;
+import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
 import com.example.robi.budgetize.data.localdatabase.LocalRoomDatabase;
 import com.example.robi.budgetize.data.localdatabase.dao.CategoryDao;
 import com.example.robi.budgetize.data.localdatabase.dao.IEObjectDao;

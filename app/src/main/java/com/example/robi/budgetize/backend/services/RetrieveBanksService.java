@@ -10,12 +10,13 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.example.robi.budgetize.backend.APIs.oauth1.activity.OAuthActivity;
-import com.example.robi.budgetize.backend.APIs.oauth1.lib.ExpiredAccessTokenException;
-import com.example.robi.budgetize.backend.APIs.oauth1.lib.OBPRestClient;
-import com.example.robi.budgetize.backend.APIs.oauth1.lib.ObpApiCallFailedException;
 import com.example.robi.budgetize.ApplicationObj;
-import com.example.robi.budgetize.backend.rest.model.Bank;
+import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
+import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
+import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.activity.OAuthActivity;
+import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.ExpiredAccessTokenException;
+import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
+import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.ObpApiCallFailedException;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 public class RetrieveBanksService extends Service {
 
     public ArrayList<Bank> banks = new ArrayList<Bank>();
+    ServicesHandlerViewModel servicesHandlerViewModel;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -42,7 +44,7 @@ public class RetrieveBanksService extends Service {
         }
         return super.onStartCommand(intent, flags, startId);
     }
-    /**
+     /**
      * @return A String containing the json representing the available banks, or an error message
      */
     @SuppressLint("StaticFieldLeak")
@@ -60,6 +62,7 @@ public class RetrieveBanksService extends Service {
                     }
                     if (banks != null) {
                         ((ApplicationObj) getApplicationContext()).banks.addAll(banks);
+                        //servicesHandlerViewModel.mObservableBanks.postValue(banks);
                         sendMessage("BanksAdded");
                     } else {
                         sendMessage("BanksNOTAdded");
@@ -68,8 +71,7 @@ public class RetrieveBanksService extends Service {
                 } catch (ExpiredAccessTokenException e) {
                     // login again / re-authenticate
                     redoOAuth();
-                } catch (ObpApiCallFailedException e) {
-                } catch (JSONException e) {
+                } catch (ObpApiCallFailedException | JSONException e) {
                     e.printStackTrace();
                 }
                 return null;

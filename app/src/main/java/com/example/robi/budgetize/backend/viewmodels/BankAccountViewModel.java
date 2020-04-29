@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.robi.budgetize.DataRepository;
-import com.example.robi.budgetize.backend.rest.model.Bank;
+import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
 
 import java.util.List;
 

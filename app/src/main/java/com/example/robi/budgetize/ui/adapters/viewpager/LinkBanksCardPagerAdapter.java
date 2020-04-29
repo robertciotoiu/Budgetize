@@ -14,10 +14,10 @@ import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.backend.APIs.oauth1.activity.OAuthActivity;
+import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.activity.OAuthActivity;
 import com.example.robi.budgetize.backend.APIs.viewpagerforbankaccounts.CardItem;
-import com.example.robi.budgetize.backend.rest.utils.AppConstants;
-import com.example.robi.budgetize.backend.rest.utils.HttpUtils;
+import com.example.robi.budgetize.data.remotedatabase.remote.rest.utils.AppConstants;
+import com.example.robi.budgetize.data.remotedatabase.remote.rest.utils.HttpUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
