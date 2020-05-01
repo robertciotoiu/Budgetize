@@ -39,7 +39,7 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_linked_bank_accounts);
-        init_viewpager();
+        init_viewpager();//here we add the linked banks accounts
         init_listeners();
         checkBankAccountsStatus();
     }
@@ -159,11 +159,14 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
 //        mCardAdapter.addCardItem(new CardItem(R.string.santander_title, R.string.santander_description));
 //        mCardAdapter.addCardItem(new CardItem(R.string.jpmc_title, R.string.jpmc_description));
 //        mCardAdapter.addCardItem(new CardItem(R.string.citi_title, R.string.citi_description));
+
+        //here add all the linked banks
         mCardAdapter.addCardItem(new CardItem("Citibank", "Citibank"));
         mCardAdapter.addCardItem(new CardItem("ING", "ING"));
         mCardAdapter.addCardItem(new CardItem("Banca Transilvania", "Banca Transilvania"));
         mCardAdapter.addCardItem(new CardItem("Santander", "Santander"));
         mCardAdapter.addCardItem(new CardItem("JP Morgan Chase", "JP Morgan Chase"));
+
         mFragmentCardAdapter = new LinkBanksCardFragmentPagerAdapter(getSupportFragmentManager(),
                 dpToPixels(2, this));
 

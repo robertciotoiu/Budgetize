@@ -98,8 +98,7 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mData.get(position).getTitle()!=null)
-                {
+                if(mData.get(position).getTitle()!=null) {
                     //TODO: request to the server asking for auth to the corresponding bank. Have to send an object which contains bank name.(mData.get(position) + the position
                     String requestPath = "/authStatus";
                     HttpUrl.Builder httpBuilder = HttpUrl.parse(AppConstants.SERVER_URL+requestPath).newBuilder();
@@ -129,9 +128,9 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
                     });
 
                 }
-
             }
         });
+
         Button button = (Button) view.findViewById(R.id.bank_account_sync_button);
         button.setOnClickListener(new View.OnClickListener(){
             @Override

@@ -1,56 +1,103 @@
 package com.example.robi.budgetize.ui.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.robi.budgetize.R;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.robi.budgetize.ApplicationObj;
-import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
+import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.services.DownloadBankImagesService;
+import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
+import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerViewModelFactory;
+import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
 import com.example.robi.budgetize.ui.adapters.gridlistview.AvailableBank;
 import com.example.robi.budgetize.ui.adapters.gridlistview.AvailableBanksAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class AvailableBanksActivity extends Activity {
+public class AvailableBanksActivity extends AppCompatActivity {
 
     private ListView listview;
     private ArrayList<AvailableBank> dataList;
     private AvailableBanksAdapter listadapter;
-    private ArrayList<Bank> banks = new ArrayList<Bank>();
+    private View headerView;
+    private View footerView;
 
+    public static ArrayList<Bank> banks = new ArrayList<Bank>();
+
+    private ServicesHandlerViewModel servicesHandlerViewModel;
+    private Observer<List<Bank>> bankListObserver;
 
     private final int MAX_CARDS = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        banks.addAll(((ApplicationObj) getApplicationContext()).banks);
+        servicesHandlerViewModel = new ViewModelProvider(this,
+                new ServicesHandlerViewModelFactory((ApplicationObj)this.getApplication()))
+                .get(ServicesHandlerViewModel.class);
+        banks.addAll(servicesHandlerViewModel.getAllBanksFromUI());
         listview = new ListView(this);
         listview.setDivider(null);
         setContentView(listview);
+        //banks.addAll(((ApplicationObj) getApplicationContext()).banks);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        bankListObserver = banks -> {
+            AvailableBanksActivity.banks.clear();
+            AvailableBanksActivity.banks.addAll(banks);
+//            addBanks();
+//            listadapter = new AvailableBanksAdapter(getApplicationContext(), this,
+//                    MAX_CARDS, (ArrayList<Bank>) banks);
+//            listadapter.addItemsInGrid(dataList);
+//            addHeaderFooters();
+//            listview.setAdapter(listadapter);
+        };
+        servicesHandlerViewModel.mObservableBanks.observe(this,bankListObserver);
+
+        buildscreen();
+    }
+
+    private void buildscreen() {
         addBanks();
         listadapter = new AvailableBanksAdapter(getApplicationContext(), this,
-                MAX_CARDS,banks);
+                MAX_CARDS, (ArrayList<Bank>) banks);
         listadapter.addItemsInGrid(dataList);
         addHeaderFooters();
         listview.setAdapter(listadapter);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+
+        //listadapter = null;
+        listview.removeHeaderView(headerView);
+        listview.removeFooterView(footerView);
+
+        servicesHandlerViewModel.mObservableBanks.removeObserver(bankListObserver);//detach the observer
     }
 
     private void addHeaderFooters() {
         final int cardSpacing = listadapter.getCardSpacing();
 
         // Header View
-        View headerView = getHeaderFooterView("HEADER", cardSpacing);
+        headerView = getHeaderFooterView("HEADER", cardSpacing);
         headerView.setPadding(cardSpacing, cardSpacing, cardSpacing, 0);
         listview.addHeaderView(headerView);
 
         // Footer View
-        View footerView = getHeaderFooterView("FOOTER", cardSpacing);
+        footerView = getHeaderFooterView("FOOTER", cardSpacing);
         footerView.setPadding(cardSpacing, 0, cardSpacing, cardSpacing);
         listview.addFooterView(footerView);
     }

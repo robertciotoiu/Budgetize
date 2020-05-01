@@ -19,7 +19,7 @@ import com.birin.gridlistviewadapters.utils.ChildViewsClickHandler;
 import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
-import com.example.robi.budgetize.backend.services.utils.BasicImageDownloader;
+import com.example.robi.budgetize.backend.viewmodels.helpers.BasicImageDownloader;
 import com.example.robi.budgetize.ui.activities.AvailableBanksActivity;
 import com.example.robi.budgetize.ui.activities.LinkedBankAccounts;
 
