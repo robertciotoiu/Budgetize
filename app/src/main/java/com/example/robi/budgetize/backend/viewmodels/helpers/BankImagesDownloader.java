@@ -72,7 +72,7 @@ public class BankImagesDownloader {
             if (downloader.readFromDisk(file) == null) {
                 String logoUrl = banks.get(i).getLogo();
                 if (logoUrl != null && !logoUrl.contentEquals("")) {
-                    executor.execute(new BankImagesDownloader.DownloadTask(downloader, logoUrl, true));
+                    executor.execute(new DownloadTask(downloader, logoUrl, true));
                     //downloader.download(logoUrl, true);
                 }
             }

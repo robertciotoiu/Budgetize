@@ -19,25 +19,24 @@ import com.example.robi.budgetize.backend.services.DownloadBankImagesService;
 import com.example.robi.budgetize.backend.services.RetrieveBanksService;
 import com.example.robi.budgetize.backend.viewmodels.helpers.BankImagesDownloader;
 import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
-import com.example.robi.budgetize.data.remotedatabase.remote.OBPRetroClass;
+import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ServicesHandlerViewModel extends AndroidViewModel {
+    private final DataRepository repository;
+
     //App objs
-    ApplicationObj applicationObj;
+    private ApplicationObj applicationObj;
 
     //OBP
-    public boolean obpOAuthOK = false;
-    private boolean onFirstCreation = false;
+    public static boolean obpOAuthOK = false;
+    private static boolean onFirstCreation = false;
 
     //LiveData
     MutableLiveData<Boolean> showBankAccountNeedActions = new MutableLiveData<Boolean>();
-    public static final MutableLiveData<List<Bank>> mObservableBanks = new MutableLiveData<>();
-
-    //RetroClasses uses to communicate with APIs
-    private OBPRetroClass obpRetroClass = new OBPRetroClass();
+    public static final MutableLiveData<List<Bank>> mObservableAvailableBanks = new MutableLiveData<>();
 
     //Utilitary class
     private BankImagesDownloader bankImagesDownloader = new BankImagesDownloader();
@@ -56,7 +55,7 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
                 } else if (serviceResponse.contentEquals("Authorized")) {
                     Log.d("Authorized successfull", "!");
                     obpOAuthOK = true;
-                    getAllBanks();
+                    getAllAvailableBanks();
 //                } else if (serviceResponse.contentEquals("BanksAdded")) {
 //                    Log.d("GetBanks successfull", "!");
 //                    //Run this code only at start of the app
@@ -80,18 +79,22 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
                 .registerReceiver(mMessageReceiver,
                         new IntentFilter("my-integer"));
 
-        mObservableBanks.observeForever(new Observer<List<Bank>>() {
+        this.repository = repository;
+        mObservableAvailableBanks.observeForever(new Observer<List<Bank>>() {
             @Override
             public void onChanged(List<Bank> banks) {
                 banksList.clear();
                 banksList.addAll(banks);
                 if (!onFirstCreation) {
+                    //TODO: do this at the first start of the application! 1 time per install!
                     syncAllImages();
+                    onFirstCreation = true;
+                    //Should also refactor it, to stop it to run as a service.
+                     //HERE TO DOWNLOAD LOGOS
                 }
             }
         });
     }
-
 
     //methods available to UI
     //Refactored: this is triggering the bank account linking
@@ -110,6 +113,11 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
         return banksList;
     }
 
+    public void unlinkBankAccount(){
+        OBPRestClient.clearAccessToken();
+        obpOAuthOK = false;
+    }
+
 
 
     //1st Service
@@ -120,13 +128,19 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
     }
 
     //2nd "service"
-    private void getAllBanks() {
-        obpRetroClass.getAllBanks(mObservableBanks);
+    public void getAllAvailableBanks() {
+        repository.getAllAvailableBanks(mObservableAvailableBanks);
     }
 
     //3rd "service"
     private void syncAllImages(){
-        bankImagesDownloader.doSync(banksList);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                bankImagesDownloader.doSync(banksList);
+            }
+        });
+        t.start();
     }
 
     //    2nd Service

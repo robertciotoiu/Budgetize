@@ -11,13 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingTop="24dp"
+            >
 
             <TextView
                 android:id="@+id/titleTextView"
@@ -37,18 +37,21 @@
                 android:id="@+id/bank_account_sync_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Button" />
+                android:layout_gravity="bottom"
+                android:layout_marginTop="100dp"
+
+                android:text="Press To Link\nBank Account" />
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/bank_link_img_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="-5dp"
-            android:src="@drawable/ic_bookmark_24dp" />
+            android:src="@drawable/ic_bookmark_unlinked_24dp" />
 
     </FrameLayout>
 

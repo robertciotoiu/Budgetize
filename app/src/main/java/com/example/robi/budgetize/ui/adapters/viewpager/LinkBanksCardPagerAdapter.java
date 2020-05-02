@@ -8,14 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.activity.OAuthActivity;
 import com.example.robi.budgetize.backend.APIs.viewpagerforbankaccounts.CardItem;
+import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
 import com.example.robi.budgetize.data.remotedatabase.remote.rest.utils.AppConstants;
 import com.example.robi.budgetize.data.remotedatabase.remote.rest.utils.HttpUtils;
 
@@ -37,10 +38,14 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
     private float mBaseElevation;
     private Context activityContext;
 
-    public LinkBanksCardPagerAdapter(Context activityContext) {
+    //OBP ModelView
+    private ServicesHandlerViewModel servicesHandlerViewModel;
+
+    public LinkBanksCardPagerAdapter(Context activityContext, ServicesHandlerViewModel servicesHandlerViewModel) {
         mData = new ArrayList<>();
         mViews = new ArrayList<>();
         this.activityContext = activityContext;
+        this.servicesHandlerViewModel = servicesHandlerViewModel;
     }
 
     public void addCardItem(CardItem item) {
@@ -48,14 +53,12 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         mData.add(item);
     }
 
-    public boolean existCardItem(String selectedBank)
-    {
-        for(CardItem cardItem:mData)
-        {
-                if (cardItem.getTitle()!=null && cardItem.getTitle().equals(selectedBank)) {
-                    //Log.d("Msg","TEXTUL ESTE: "+selectedBank +"SI " + cardItem.getTitle());
-                    return true;
-                }
+    public boolean existCardItem(String selectedBank) {
+        for (CardItem cardItem : mData) {
+            if (cardItem.getTitle() != null && cardItem.getTitle().equals(selectedBank)) {
+                //Log.d("Msg","TEXTUL ESTE: "+selectedBank +"SI " + cardItem.getTitle());
+                return true;
+            }
         }
         return false;
     }
@@ -64,12 +67,11 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         return mBaseElevation;
     }
 
-    public SparseArray<String> getBankNameAndDataPosition(){
+    public SparseArray<String> getBankNameAndDataPosition() {
         SparseArray<String> bankNames = new SparseArray<String>();
-        for(int i = 0; i< mData.size(); i++) {
-            if(mData.get(i).getTitle()!=null)
-            {
-                bankNames.put(i,mData.get(i).getTitle());
+        for (int i = 0; i < mData.size(); i++) {
+            if (mData.get(i).getTitle() != null) {
+                bankNames.put(i, mData.get(i).getTitle());
             }
         }
         return bankNames;
@@ -98,11 +100,11 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mData.get(position).getTitle()!=null) {
+                if (mData.get(position).getTitle() != null) {
                     //TODO: request to the server asking for auth to the corresponding bank. Have to send an object which contains bank name.(mData.get(position) + the position
                     String requestPath = "/authStatus";
-                    HttpUrl.Builder httpBuilder = HttpUrl.parse(AppConstants.SERVER_URL+requestPath).newBuilder();
-                    httpBuilder.addQueryParameter("BankName",mData.get(position).getTitle());
+                    HttpUrl.Builder httpBuilder = HttpUrl.parse(AppConstants.SERVER_URL + requestPath).newBuilder();
+                    httpBuilder.addQueryParameter("BankName", mData.get(position).getTitle());
 
                     Request request = new Request.Builder()
                             .url(httpBuilder.build())
@@ -132,13 +134,25 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         });
 
         Button button = (Button) view.findViewById(R.id.bank_account_sync_button);
-        button.setOnClickListener(new View.OnClickListener(){
+        ImageView icnView = (ImageView) view.findViewById(R.id.bank_link_img_status);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
-                Intent myIntent = new Intent(activityContext, OAuthActivity.class);
-                activityContext.startActivity(myIntent);
+            public void onClick(View v) {
+//                Intent myIntent = new Intent(activityContext, OAuthActivity.class);
+//                activityContext.startActivity(myIntent);
+                if (ServicesHandlerViewModel.obpOAuthOK) {
+
+                    servicesHandlerViewModel.unlinkBankAccount();
+                    updateUICard_BankLinked(button, icnView);
+//                    servicesHandlerViewModel.getAccounts();
+                } else {
+//                    need to do the OAUTH
+                    servicesHandlerViewModel.doOBPOAuth();//move this to account linking(inside of linkedbankaccount
+                }
             }
         });
+        updateUICard_BankLinked(button, icnView);
+
         bind(mData.get(position), view);
         CardView cardView = (CardView) view.findViewById(R.id.cardView);
 
@@ -149,6 +163,16 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         cardView.setMaxCardElevation(mBaseElevation * MAX_ELEVATION_FACTOR);
         mViews.set(position, cardView);
         return view;
+    }
+
+    private void updateUICard_BankLinked(Button button, ImageView icnView) {
+        if(servicesHandlerViewModel.obpOAuthOK) {
+            button.setText("Press To UNLink\nBank Account");
+            icnView.setImageResource(R.drawable.ic_bookmark_linked_24dp);
+        }else{
+            button.setText("Press To Link\nBank Account");
+            icnView.setImageResource(R.drawable.ic_bookmark_unlinked_24dp);
+        }
     }
 
     @Override
@@ -162,5 +186,12 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         TextView contentTextView = (TextView) view.findViewById(R.id.contentTextView);
         titleTextView.setText(item.getTitle());
         contentTextView.setText(item.getText());
+    }
+
+    //COMMON FUNCTIONS FOR THIS ACTIVITY
+    public void startActivity(Class targetClass) {
+        Intent myIntent = new Intent(activityContext, targetClass);
+        activityContext.startActivity(myIntent);
+        //activityContext.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 }

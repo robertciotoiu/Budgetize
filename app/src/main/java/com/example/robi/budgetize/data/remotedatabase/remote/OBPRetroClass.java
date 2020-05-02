@@ -25,7 +25,7 @@ public class OBPRetroClass {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void getAllBanks(MutableLiveData<List<Bank>> mObservableBanks){
+    public void getAllAvailableBanks(MutableLiveData<List<Bank>> mObservableBanks){
         /**
          * @return A String containing the json representing the available banks, or an error message
          */
@@ -62,6 +62,44 @@ public class OBPRetroClass {
                     return null;
                 }
             }.execute();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public void getAllAccounts(){
+        new AsyncTask<Void, Void, Void>() {
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            protected Void doInBackground(Void... voids) {
+                try {
+                    ArrayList<Bank> bankArrayList = new ArrayList<>();
+                    JSONObject banksJson = OBPRestClient.getAccounts();
+                    Gson gson = new Gson();
+                    Log.d("ACCOUNTS: ",banksJson.toString());
+//                    JSONArray banksJsonJSONArray = banksJson.getJSONArray("banks");
+//                    for (int i = 0; i < banksJsonJSONArray.length(); i++) {
+//                        bankArrayList.add(gson.fromJson(banksJsonJSONArray.getJSONObject(i).toString(), Bank.class));
+//                        Log.d("BANK:", bankArrayList.get(i).toString());
+//                    }
+//                    if (bankArrayList.size()!=0) {
+//                        //((ApplicationObj) getApplicationContext()).banks.addAll(bankArrayList);
+//                        //servicesHandlerViewModel.mObservableBanks.postValue(banks);
+//                        mObservableBanks.postValue(bankArrayList);
+//                        Log.d("OBPRetroClass.getAllBanks(): ","BanksAdded");
+//                        //sendMessage("BanksAdded");//handle this
+//                    } else {
+//                        Log.d("OBPRetroClass.getAllBanks(): ","BanksNOTAdded");//handle this
+//                        //sendMessage("BanksNOTAdded");//handle this
+//                    }
+
+                } catch (ExpiredAccessTokenException e) {
+                    // login again / re-authenticate
+//                        redoOAuth(); check if this was really working(I suppose it was not)
+                } catch (ObpApiCallFailedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute();
     }
 
 }

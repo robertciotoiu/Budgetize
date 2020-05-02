@@ -1,6 +1,5 @@
 package com.example.robi.budgetize.backend.viewmodels.helpers;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -80,7 +79,9 @@ public class BasicImageDownloader {
         }
     }
     */
-
+/**
+ * Old method of downloading.
+ * Deprecated because of AsyncTask
     @SuppressLint("StaticFieldLeak")
     public void download(@NonNull final String imageUrl, final boolean displayProgress) {
         if (mUrlsInProgress.contains(imageUrl)) {
@@ -88,7 +89,6 @@ public class BasicImageDownloader {
                     "no further download will be started");
             return;
         }
-
         new AsyncTask<Void, Integer, Bitmap>() {
 
             private ImageError error;
@@ -160,6 +160,55 @@ public class BasicImageDownloader {
                 System.gc();
             }
         }.execute();
+    }
+
+ */
+
+    public void download(@NonNull final String imageUrl, final boolean displayProgress){
+
+        Bitmap bitmap = null;
+        //HttpURLConnection connection = null;
+        InputStream is = null;
+        ByteArrayOutputStream out = null;
+        try {
+            URL url=new URL(imageUrl);
+            HttpURLConnection.setFollowRedirects(false);
+            HttpURLConnection httpURLConnection=(HttpURLConnection) url.openConnection();
+            httpURLConnection.setDoInput(true);
+            httpURLConnection.connect();
+            boolean isRedirect;
+            do {
+                if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM || httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
+                    isRedirect = true;
+                    String newURL = httpURLConnection.getHeaderField("Location");
+                    httpURLConnection = (HttpURLConnection) new URL(newURL).openConnection();
+                } else {
+                    isRedirect = false;
+                }
+            } while (isRedirect);
+
+            InputStream inptStream=httpURLConnection.getInputStream();
+            bitmap = BitmapFactory.decodeStream(inptStream);
+        } catch (Throwable e) {
+            e.printStackTrace();
+//            if (!this.isCancelled()) {
+//                error = new ImageError(e).setErrorCode(ImageError.ERROR_GENERAL_EXCEPTION);
+//                this.cancel(true);
+//            }
+        } finally {
+            if (bitmap == null){// || result.getByteCount()==0) {
+                Log.e(TAG, "factory returned a null result");
+                mImageLoaderListener.onError(new ImageError("downloaded file could not be decoded as bitmap"+imageUrl)
+                        .setErrorCode(ImageError.ERROR_DECODE_FAILED));
+            } else {
+                Log.d(TAG, "download complete, " + bitmap.getByteCount() +
+                        " bytes transferred");
+                mImageLoaderListener.onComplete(bitmap);
+            }
+            mUrlsInProgress.remove(imageUrl);
+            System.gc();
+        }
+
     }
 
     public interface OnBitmapSaveListener {

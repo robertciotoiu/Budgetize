@@ -10,15 +10,26 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksCardFragmentPagerAdapter;
 import com.example.robi.budgetize.backend.APIs.viewpagerforbankaccounts.CardItem;
+import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
+import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
+import com.example.robi.budgetize.backend.viewmodels.factories.BankAccountViewModelFactory;
+import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerViewModelFactory;
+import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
+import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
+import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksCardFragmentPagerAdapter;
 import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksCardPagerAdapter;
 import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksShadowTransformer;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LinkedBankAccounts extends AppCompatActivity implements View.OnClickListener,
         CompoundButton.OnCheckedChangeListener {
@@ -33,15 +44,31 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
     private LinkBanksCardFragmentPagerAdapter mFragmentCardAdapter;
     private LinkBanksShadowTransformer mFragmentCardShadowTransformer;
 
+    //ModelView
+    private ServicesHandlerViewModel servicesHandlerViewModel;
+    private BankAccountViewModel bankAccountViewModel;
+    //private
+
     private boolean mShowingFragments = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_linked_bank_accounts);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);//set transition animation
+        //init MV
+        servicesHandlerViewModel = new ViewModelProvider(this,
+                new ServicesHandlerViewModelFactory((ApplicationObj) this.getApplication()))
+                .get(ServicesHandlerViewModel.class);
+
+        bankAccountViewModel = new ViewModelProvider(this,
+                new BankAccountViewModelFactory((ApplicationObj) this.getApplication()))
+                .get(BankAccountViewModel.class);
+
+
+//        servicesHandlerViewModel.startServices();
         init_viewpager();//here we add the linked banks accounts
         init_listeners();
-        checkBankAccountsStatus();
     }
 
     private void checkBankAccountsStatus() {
@@ -124,12 +151,15 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
         if (requestCode == SELECTED_BANK) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                // The user picked a contact.
-                // The Intent's data Uri identifies which contact was selected.
-
-                String selectedBank = data.getStringExtra("BANK_NAME");
+                // The user picked a bank
+                // The Intent's data Uri identifies which bank was selected.
+                //TODO: receive bank id
+                Gson gson = new Gson();
+                String selectedBank = data.getStringExtra("BANK");
+                Bank bank = gson.fromJson(selectedBank, Bank.class);
+                bankAccountViewModel.addLinkedBank(new LinkedBank(bank.getShort_name(),bank.getFull_name(),bank.getLogo(),bank.getWebsite(),"unlinked"));
                 //Log.d("Msg","TEXTUL ESTE: "+selectedBank);
-                addNewCard(selectedBank);
+                //addNewCard(selectedBank);
                 // Do something with the contact here (bigger example below)
             }
         }
@@ -137,7 +167,8 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
 
     private void addNewCard(String selectedBank) {
         if (!mCardAdapter.existCardItem(selectedBank)) {
-            mCardAdapter.addCardItem(new CardItem(selectedBank, selectedBank));
+            //TODO: here we have to save into Database! no to add card here!
+           // mCardAdapter.addCardItem(new CardItem(selectedBank, selectedBank));
             mViewPager.setAdapter(mCardAdapter);
         } else {
             Toast.makeText(this,
@@ -153,7 +184,26 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
         //mButton.setOnClickListener(this);
 
         //TODO: we should get this data from server!(list of available banks)
-        mCardAdapter = new LinkBanksCardPagerAdapter(this);
+        LiveData<List<LinkedBank>> linkedBanksList = bankAccountViewModel.getAllLinkedBanks();
+        linkedBanksList.observe(this, linkedBanks -> {
+            mCardAdapter = new LinkBanksCardPagerAdapter(this, servicesHandlerViewModel);
+            for(LinkedBank linkedBank:linkedBanks){
+                mCardAdapter.addCardItem(new CardItem(linkedBank.getFull_name(), linkedBank.getShort_name(),linkedBank.getLink_status()));
+            }
+            mFragmentCardAdapter = new LinkBanksCardFragmentPagerAdapter(getSupportFragmentManager(),
+                    dpToPixels(2, this));
+
+            mCardShadowTransformer = new LinkBanksShadowTransformer(mViewPager, mCardAdapter);
+            mFragmentCardShadowTransformer = new LinkBanksShadowTransformer(mViewPager, mFragmentCardAdapter);
+
+            mViewPager.setAdapter(mCardAdapter);
+            mViewPager.setPageTransformer(false, mCardShadowTransformer);
+            mViewPager.setOffscreenPageLimit(3);
+
+            checkBankAccountsStatus();
+        });
+//        for (LinkedBank linkedBank :.)
+//        mCardAdapter.addCardItem();
 //        mCardAdapter.addCardItem(new CardItem(R.string.ing_title, R.string.ing_description));
 //        mCardAdapter.addCardItem(new CardItem(R.string.bt_title, R.string.bt_description));
 //        mCardAdapter.addCardItem(new CardItem(R.string.santander_title, R.string.santander_description));
@@ -161,21 +211,11 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
 //        mCardAdapter.addCardItem(new CardItem(R.string.citi_title, R.string.citi_description));
 
         //here add all the linked banks
-        mCardAdapter.addCardItem(new CardItem("Citibank", "Citibank"));
-        mCardAdapter.addCardItem(new CardItem("ING", "ING"));
-        mCardAdapter.addCardItem(new CardItem("Banca Transilvania", "Banca Transilvania"));
-        mCardAdapter.addCardItem(new CardItem("Santander", "Santander"));
-        mCardAdapter.addCardItem(new CardItem("JP Morgan Chase", "JP Morgan Chase"));
-
-        mFragmentCardAdapter = new LinkBanksCardFragmentPagerAdapter(getSupportFragmentManager(),
-                dpToPixels(2, this));
-
-        mCardShadowTransformer = new LinkBanksShadowTransformer(mViewPager, mCardAdapter);
-        mFragmentCardShadowTransformer = new LinkBanksShadowTransformer(mViewPager, mFragmentCardAdapter);
-
-        mViewPager.setAdapter(mCardAdapter);
-        mViewPager.setPageTransformer(false, mCardShadowTransformer);
-        mViewPager.setOffscreenPageLimit(3);
+//        mCardAdapter.addCardItem(new CardItem("Citibank", "Citibank"));
+//        mCardAdapter.addCardItem(new CardItem("ING", "ING"));
+//        mCardAdapter.addCardItem(new CardItem("Banca Transilvania", "Banca Transilvania"));
+//        mCardAdapter.addCardItem(new CardItem("Santander", "Santander"));
+//        mCardAdapter.addCardItem(new CardItem("JP Morgan Chase", "JP Morgan Chase"));
     }
     /*
     @Override

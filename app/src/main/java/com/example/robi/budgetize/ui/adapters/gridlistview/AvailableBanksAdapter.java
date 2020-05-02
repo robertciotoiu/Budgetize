@@ -22,6 +22,7 @@ import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
 import com.example.robi.budgetize.backend.viewmodels.helpers.BasicImageDownloader;
 import com.example.robi.budgetize.ui.activities.AvailableBanksActivity;
 import com.example.robi.budgetize.ui.activities.LinkedBankAccounts;
+import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -78,15 +79,17 @@ public class AvailableBanksAdapter extends ListGridAdapter<AvailableBank, Availa
     protected void setCardView(CardDataHolder<AvailableBank> cardDataHolder,
                                AvailableBankViewHolder cardViewHolder) {
         AvailableBank item = cardDataHolder.getData();
-        cardViewHolder.bankLogo.setImageBitmap(BasicImageDownloader.readFromDisk(new File(fileLocation.getPath()+File.separator+item.getBankImg()+".png")));
-        cardViewHolder.bankName.setText(item.getBankName());
+        Bitmap bankIcon = BasicImageDownloader.readFromDisk(new File(fileLocation.getPath()+File.separator+item.getBankImg()+".png"));
+        if(bankIcon!=null) {
+            cardViewHolder.bankLogo.setImageBitmap(bankIcon);
+            cardViewHolder.bankName.setText(item.getBankName());
+        }
     }
 
     //TODO: Implement the functionality when a bank is selected
     @Override
     protected void onCardClicked(AvailableBank cardData) {
         startActivity(LinkedBankAccounts.class, cardData);
-
         Toast.makeText(getContext(),
                 "Card click " + cardData.getPositionText(), Toast.LENGTH_LONG)
                 .show();
@@ -94,9 +97,16 @@ public class AvailableBanksAdapter extends ListGridAdapter<AvailableBank, Availa
 
     private void startActivity(Class targetClass, AvailableBank cardData) {
         Intent myIntent = new Intent();
-        myIntent.putExtra("BANK_NAME", cardData.getBankName());
-        ((AvailableBanksActivity) activityContext).setResult(Activity.RESULT_OK, myIntent);
-        ((AvailableBanksActivity) activityContext).finish();
+        for(Bank bank:banks){
+            if(bank.getId().contentEquals(cardData.getBankImg())){
+                Gson gson = new Gson();
+                String bankAsJSON = gson.toJson(bank);
+                myIntent.putExtra("BANK", bankAsJSON);
+                ((AvailableBanksActivity) activityContext).setResult(Activity.RESULT_OK, myIntent);
+                ((AvailableBanksActivity) activityContext).finish();
+                break;
+            }
+        }
     }
 
     private final int TEXT_VIEW_CLICK_ID = 0;

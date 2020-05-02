@@ -2,7 +2,10 @@ package com.example.robi.budgetize;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import com.example.robi.budgetize.data.localdatabase.dao.LinkedBankDao;
+import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
 import com.example.robi.budgetize.data.localdatabase.LocalRoomDatabase;
 import com.example.robi.budgetize.data.localdatabase.dao.CategoryDao;
@@ -11,10 +14,11 @@ import com.example.robi.budgetize.data.localdatabase.dao.WalletDao;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
+import com.example.robi.budgetize.data.remotedatabase.remote.OBPRetroClass;
 
 import java.util.List;
 
-public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
+public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, LinkedBankDao {
 
     private static DataRepository sInstance;
 
@@ -22,7 +26,11 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
     private MediatorLiveData<List<Wallet>> ObservableWallet;
     private MediatorLiveData<List<CategoryObject>> ObservableCategory;
     private MediatorLiveData<List<IEObject>> ObservableIE;
+    private MediatorLiveData<List<LinkedBank>> ObservableLinkedBanks;
     //TODO: MediatorLiveData for IE and Category
+
+    //RetroClasses uses to communicate with APIs
+    private OBPRetroClass obpRetroClass = new OBPRetroClass();
 
     private OnDataChangedRepositoryListener listener;
     private OnBankDataChanged bankDataListener;
@@ -32,6 +40,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
         ObservableWallet = new MediatorLiveData<>();
         ObservableCategory = new MediatorLiveData<>();
         ObservableIE = new MediatorLiveData<>();
+        ObservableLinkedBanks = new MediatorLiveData<>();
 
         ObservableWallet.addSource(mDatabase.walletDao().getAllWallets(),
                 wallets -> {
@@ -56,6 +65,13 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
                 if(mDatabase.getDatabaseCreated().getValue()!=null)
                     if(listener!=null)
                         listener.onIEDataChanged(ieObjects);
+                });
+
+        ObservableLinkedBanks.addSource(mDatabase.linkedBankDao().getAllLinkedBanks(),
+                linkedBanks -> {
+                    if(mDatabase.getDatabaseCreated().getValue()!=null){
+                        ObservableLinkedBanks.setValue(linkedBanks);
+                    }
                 });
     }
 
@@ -199,6 +215,49 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
         mDatabase.walletDao().deleteWallet(wallet);
     }
 
+    //LINKEDBANKDAO
+
+    @Override
+    public long addLinkedBank(LinkedBank linkedBank) {
+        return mDatabase.linkedBankDao().addLinkedBank(linkedBank);
+    }
+
+    @Override
+    public LiveData<List<LinkedBank>> getAllLinkedBanks() {
+        return mDatabase.linkedBankDao().getAllLinkedBanks();
+    }
+
+    @Override
+    public LiveData<LinkedBank> getLinkedBank(long id) {
+        return mDatabase.linkedBankDao().getLinkedBank(id);
+    }
+
+    @Override
+    public int deleteLinkedBank(long id) {
+        return mDatabase.linkedBankDao().deleteLinkedBank(id);
+    }
+
+    //REMOTE REST APIS
+    //USED BY ServiceHandlerViewModel.java
+    public void getAllAvailableBanks(MutableLiveData<List<Bank>> mObservableBanks){
+        obpRetroClass.getAllAvailableBanks(mObservableBanks);
+    }
+
+    //REMOTE REST APIS
+    //USED BY BankAccountViewModel.java
+    /**
+     * Get the list of products from the database and get notified when the data changes.
+     */
+    public LiveData<List<LinkedBank>> getLinkedBanksObserver() {
+        return ObservableLinkedBanks;
+    }
+
+    public void getAccounts(){
+        obpRetroClass.getAllAccounts();
+    }
+
+    //Listeners
+
     public interface OnDataChangedRepositoryListener{
         void onWalletDataChanged(List<Wallet> walletList);
         void onCategoryDataChanged(List<CategoryObject> categoryObjects);
@@ -254,4 +313,5 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao {
 //    public LiveData<List<Wallet>> searchProducts(String query) {
 //        return mDatabase.productDao().searchAllProducts(query);
 //    }
+
 }

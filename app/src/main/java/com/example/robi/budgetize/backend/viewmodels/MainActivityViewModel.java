@@ -20,7 +20,6 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     private final MutableLiveData<List<Wallet>> mObservableWallets = new MutableLiveData<>();
     private final MutableLiveData<List<CategoryObject>> mObservableCategories = new MutableLiveData<>();
     private final MutableLiveData<List<IEObject>> mObservableIEs = new MutableLiveData<>();
-    public boolean onFirstCreation = false;
     public int lastWalletPosition = 0;
     public boolean onFirstCreationForPBFirstElementAnimation = false;
 
@@ -31,9 +30,6 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
         repository.addListener(this);
         //mObservableWallets = repository.getWallets();
     }
-
-
-
 
     @NonNull
     @Override

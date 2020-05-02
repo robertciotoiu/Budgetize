@@ -2,6 +2,7 @@ package com.example.robi.budgetize.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,10 +16,12 @@ import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.services.DownloadBankImagesService;
 import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerViewModelFactory;
+import com.example.robi.budgetize.backend.viewmodels.helpers.BasicImageDownloader;
 import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
 import com.example.robi.budgetize.ui.adapters.gridlistview.AvailableBank;
 import com.example.robi.budgetize.ui.adapters.gridlistview.AvailableBanksAdapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +44,7 @@ public class AvailableBanksActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         servicesHandlerViewModel = new ViewModelProvider(this,
-                new ServicesHandlerViewModelFactory((ApplicationObj)this.getApplication()))
+                new ServicesHandlerViewModelFactory((ApplicationObj) this.getApplication()))
                 .get(ServicesHandlerViewModel.class);
         banks.addAll(servicesHandlerViewModel.getAllBanksFromUI());
         listview = new ListView(this);
@@ -63,7 +66,7 @@ public class AvailableBanksActivity extends AppCompatActivity {
 //            addHeaderFooters();
 //            listview.setAdapter(listadapter);
         };
-        servicesHandlerViewModel.mObservableBanks.observe(this,bankListObserver);
+        servicesHandlerViewModel.mObservableAvailableBanks.observe(this, bankListObserver);
 
         buildscreen();
     }
@@ -78,14 +81,14 @@ public class AvailableBanksActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
 
         //listadapter = null;
         listview.removeHeaderView(headerView);
         listview.removeFooterView(footerView);
 
-        servicesHandlerViewModel.mObservableBanks.removeObserver(bankListObserver);//detach the observer
+        servicesHandlerViewModel.mObservableAvailableBanks.removeObserver(bankListObserver);//detach the observer
     }
 
     private void addHeaderFooters() {
@@ -122,11 +125,30 @@ public class AvailableBanksActivity extends AppCompatActivity {
 
     //TODO: Implement to get supported bank list from server!!!
     private void addBanks() {
+        File fileLocation;
+        if (isExternalStorageWritable()) {
+            fileLocation = new File(Environment.getExternalStorageDirectory()
+                    + "/Android/data/"
+                    + ApplicationObj.getAppContext().getPackageName()
+                    + "/BankIcons");
+        } else {
+            fileLocation = new File(Environment.getExternalStorageDirectory() +
+                    "/Android/data/"
+                    + ApplicationObj.getAppContext().getPackageName()
+                    + "/BankIcons");
+        }
+        String bankFullName;
         dataList = new ArrayList<AvailableBank>();
         // Add data
         for (int i = 0; i < banks.size(); i++) {
-            dataList.add(new AvailableBank(banks.get(i).getFull_name() != null ? banks.get(i).getFull_name() : "null", i, banks.get(i).getId()));
+            bankFullName = banks.get(i).getFull_name();
+            if (BasicImageDownloader.readFromDisk(new File(fileLocation.getPath() + File.separator + banks.get(i).getId() + ".png")) != null)
+                dataList.add(new AvailableBank(bankFullName != null ? bankFullName : "null", i, banks.get(i).getId()));
         }
+    }
+
+    private boolean isExternalStorageWritable() {
+        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED;
     }
 
     private void syncAllImagesService() {

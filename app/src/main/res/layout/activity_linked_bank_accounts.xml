@@ -6,16 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".ui.activities.LinkedBankAccounts">
 
+
     <Button
         android:id="@+id/link_new_bank_account_button"
         android:layout_width="135dp"
         android:layout_height="121dp"
+        android:layout_marginTop="100dp"
+        android:gravity="center_horizontal"
         android:text="Link New Bank Account"
+        android:textAlignment="gravity"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/viewPager" />
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.913" />
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
@@ -29,10 +33,12 @@
         android:paddingEnd="@dimen/card_padding"
         android:paddingRight="@dimen/card_padding"
         android:paddingBottom="30dp"
-        app:layout_constraintBottom_toTopOf="@id/link_new_bank_account_button"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.374" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
