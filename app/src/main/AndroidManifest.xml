@@ -1,39 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.robi.budgetize">
-
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
     <application
         android:name=".ApplicationObj"
-        android:usesCleartextTraffic="true"
-
         android:allowBackup="true"
         android:icon="@mipmap/app_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/app_icon"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".ui.activities.AvailableBanksActivity">
-
-        </activity>
-        <activity android:name=".ui.activities.createActivities.SelectBank"/>
+        android:theme="@style/AppTheme.NoActionBar"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".ui.activities.ImportTransactionsActivity"></activity>
+        <activity android:name=".ui.activities.AvailableBanksActivity"></activity>
+        <activity android:name=".ui.activities.createActivities.SelectBank" />
         <activity android:name=".ui.activities.LinkedBankAccounts">
-            <!--This Activity is responsible to intercept OBP OAuth response-->
+
+            <!-- This Activity is responsible to intercept OBP OAuth response -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- You will want to set customAppProtocol to something unique to avoid having Android
-                give the user more than one app to pick from to handle the oauth callback -->
-                <data android:scheme="@string/customAppProtocol"/>
+                <!--
+                You will want to set customAppProtocol to something unique to avoid having Android
+                give the user more than one app to pick from to handle the oauth callback
+                -->
+                <data android:scheme="@string/customAppProtocol" />
             </intent-filter>
-        </activity>
-        <!-- android:launchMode="singleInstance" BE AWARE OF THIS!-->
+        </activity> <!-- android:launchMode="singleInstance" BE AWARE OF THIS! -->
         <activity android:name=".ui.activities.IEActivityDiegodobelo" />
         <activity android:name=".ui.activities.createActivities.CreateCategoryActivity" />
         <activity android:name=".ui.activities.createActivities.CreateIEActivity" />
@@ -41,36 +40,47 @@
         <activity
             android:name=".data.remotedatabase.remote.oauth1.activity.OAuthActivity"
             android:noHistory="true"
-            android:theme="@android:style/Theme.NoTitleBar" >
-        </activity>
+            android:theme="@android:style/Theme.NoTitleBar"></activity>
         <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <service android:name=".backend.services.DownloadBankImagesService" />
-        <service android:name=".backend.services.DoOAuthService"><intent-filter>
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <!-- You will want to set customAppProtocol to something unique to avoid having Android
-            give the user more than one app to pick from to handle the oauth callback -->
-            <data android:scheme="@string/customAppProtocol"/>
-        </intent-filter></service>
-        <service android:name=".backend.services.RetrieveBanksService" ><intent-filter>
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <!-- You will want to set customAppProtocol to something unique to avoid having Android
-            give the user more than one app to pick from to handle the oauth callback -->
-            <data android:scheme="@string/customAppProtocol"/>
-        </intent-filter></service>
+        <service android:name=".backend.services.DoOAuthService">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
-        <!--meta-data
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!--
+            You will want to set customAppProtocol to something unique to avoid having Android
+            give the user more than one app to pick from to handle the oauth callback
+                -->
+                <data android:scheme="@string/customAppProtocol" />
+            </intent-filter>
+        </service>
+        <service android:name=".backend.services.RetrieveBanksService">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!--
+            You will want to set customAppProtocol to something unique to avoid having Android
+            give the user more than one app to pick from to handle the oauth callback
+                -->
+                <data android:scheme="@string/customAppProtocol" />
+            </intent-filter>
+        </service>
+        <!--
+meta-data
             android:name=""
-            android:value="AIzaSyDPZay8l4wnxz211AOP0HQYGxVlKNBHDRA"/-->
+            android:value="AIzaSyDPZay8l4wnxz211AOP0HQYGxVlKNBHDRA"/
+        -->
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

@@ -92,7 +92,7 @@ public class DoOAuthService extends Service {
             // Get the the url the user should be directed to in order to login
             try {
                 String urlString = OBPRestClient
-                        .getAuthoriseAppUrl(callingService);
+                        .getAuthoriseAppUrl(BankAccountViewModel.lastClickedBankID);
                 Uri authoriseURI = Uri.parse(urlString);
                 return authoriseURI;
             } catch (OAuthMessageSignerException e) {

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activities.IEActivityDiegodobelo"
+    android:fitsSystemWindows="true"
+    android:background="@android:color/background_light"
+    >
+
+    <com.example.robi.budgetize.backend.APIs.expandingviewAPI.ExpandingList
+        android:id="@+id/expanding_list_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        />
+
+</RelativeLayout>

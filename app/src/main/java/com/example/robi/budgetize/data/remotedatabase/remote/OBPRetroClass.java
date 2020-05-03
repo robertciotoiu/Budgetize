@@ -65,14 +65,15 @@ public class OBPRetroClass {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void getAllAccounts(){
+    public void getAllAccounts(long bankID, String obpBankID){
         new AsyncTask<Void, Void, Void>() {
             @SuppressLint("StaticFieldLeak")
             @Override
             protected Void doInBackground(Void... voids) {
                 try {
                     ArrayList<Bank> bankArrayList = new ArrayList<>();
-                    JSONObject banksJson = OBPRestClient.getAccounts();
+//                    JSONObject banksJson = OBPRestClient.getAccounts(bankID, obpBankID);
+                    JSONObject banksJson = OBPRestClient.getAccountsAtAllBanks(bankID);
                     Gson gson = new Gson();
                     Log.d("ACCOUNTS: ",banksJson.toString());
 //                    JSONArray banksJsonJSONArray = banksJson.getJSONArray("banks");

@@ -11,6 +11,9 @@ public class LinkedBank {
     @ColumnInfo(name = "id")
     private long id;
 
+    @ColumnInfo(name ="obp_bank_id")
+    private String obp_bank_id;
+
     @ColumnInfo(name = "short_name")
     private String short_name;
 
@@ -26,11 +29,12 @@ public class LinkedBank {
     @ColumnInfo(name = "link_status")
     private String link_status;
 
-    public LinkedBank(String short_name, String full_name, String logo, String website, String link_status) {
+    public LinkedBank(String obp_bank_id, String short_name, String full_name, String logo, String website, String link_status) {
         this.id = System.nanoTime();
+        this.obp_bank_id = obp_bank_id;
         this.short_name = short_name;
         this.full_name = full_name;
-        this.logo = logo;
+        this.logo = logo;//also bank ID of OBP
         this.website = website;
         this.link_status = link_status;
     }
@@ -41,6 +45,14 @@ public class LinkedBank {
 
     public long getId(){
         return id;
+    }
+
+    public String getObp_bank_id() {
+        return obp_bank_id;
+    }
+
+    public void setObp_bank_id(String obp_bank_id) {
+        this.obp_bank_id = obp_bank_id;
     }
 
     public String getShort_name() {

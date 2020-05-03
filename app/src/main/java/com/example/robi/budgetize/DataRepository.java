@@ -4,16 +4,16 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.robi.budgetize.data.localdatabase.dao.LinkedBankDao;
-import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
-import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
 import com.example.robi.budgetize.data.localdatabase.LocalRoomDatabase;
 import com.example.robi.budgetize.data.localdatabase.dao.CategoryDao;
 import com.example.robi.budgetize.data.localdatabase.dao.IEObjectDao;
+import com.example.robi.budgetize.data.localdatabase.dao.LinkedBankDao;
 import com.example.robi.budgetize.data.localdatabase.dao.WalletDao;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
+import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
+import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
 import com.example.robi.budgetize.data.remotedatabase.remote.OBPRetroClass;
 
 import java.util.List;
@@ -238,6 +238,11 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
+    public String getLinkedBankOBPID(long id){
+        return mDatabase.linkedBankDao().getLinkedBankOBPID(id);
+    }
+
+    @Override
     public long updateLinkStatus(long id, String link_status){
         return mDatabase.linkedBankDao().updateLinkStatus(id,link_status);
     }
@@ -262,8 +267,8 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         return ObservableLinkedBanks;
     }
 
-    public void getAccounts(){
-        obpRetroClass.getAllAccounts();
+    public void getAccounts(long bankID, String obpBankID){
+        obpRetroClass.getAllAccounts(bankID, obpBankID);
     }
 
     //Listeners

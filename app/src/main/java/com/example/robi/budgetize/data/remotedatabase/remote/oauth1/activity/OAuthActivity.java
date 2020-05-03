@@ -203,6 +203,7 @@ import android.view.Menu;
 import android.widget.Toast;
 
 import com.example.robi.budgetize.R;
+import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
 import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
 
 import oauth.signpost.exception.OAuthCommunicationException;
@@ -250,7 +251,7 @@ public class OAuthActivity extends Activity {
 			// Get the the url the user should be directed to in order to login
 			try {
 				String urlString = OBPRestClient
-						.getAuthoriseAppUrl(callingActivity);
+						.getAuthoriseAppUrl(BankAccountViewModel.lastClickedBankID);
 				Uri authoriseURI = Uri.parse(urlString);
 				return authoriseURI;
 			} catch (OAuthMessageSignerException e) {

@@ -23,6 +23,9 @@ public interface LinkedBankDao {
     @Query("SELECT link_status FROM linked_banks where id=:id")
     public String getLinkedBankStatus(long id);
 
+    @Query("SELECT obp_bank_id FROM linked_banks where id=:id")
+    public String getLinkedBankOBPID(long id);
+
     @Query("UPDATE linked_banks SET link_status=:link_status WHERE id=:id")
     public long updateLinkStatus(long id, String link_status);
 

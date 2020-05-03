@@ -215,7 +215,7 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
                 Gson gson = new Gson();
                 String selectedBank = data.getStringExtra("BANK");
                 Bank bank = gson.fromJson(selectedBank, Bank.class);
-                bankAccountViewModel.addLinkedBank(new LinkedBank(bank.getShort_name(),bank.getFull_name(),bank.getLogo(),bank.getWebsite(),"unlinked"));
+                bankAccountViewModel.addLinkedBank(new LinkedBank(bank.getId(),bank.getShort_name(),bank.getFull_name(),bank.getLogo(),bank.getWebsite(),"unlinked"));
                 //Log.d("Msg","TEXTUL ESTE: "+selectedBank);
                 //addNewCard(selectedBank);
                 // Do something with the contact here (bigger example below)

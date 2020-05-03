@@ -49,8 +49,8 @@ public class BankAccountViewModel extends AndroidViewModel implements DataReposi
         return mObservableLinkedBanks;
     }
 
-    public void getAccounts(){
-        repository.getAccounts();
+    public void getAccounts(long bankID, String obpBankID){
+        repository.getAccounts(bankID, obpBankID);
     }
 
     //Operations with LinkedBanks
@@ -68,6 +68,10 @@ public class BankAccountViewModel extends AndroidViewModel implements DataReposi
 
     public String getLinkedBankStatus(long id){
         return repository.getLinkedBankStatus(id);
+    }
+
+    public String getLinkedBankOBPID(long id){
+        return repository.getLinkedBankOBPID(id);
     }
 
     public long updateLinkStatus(long id, String link_status){

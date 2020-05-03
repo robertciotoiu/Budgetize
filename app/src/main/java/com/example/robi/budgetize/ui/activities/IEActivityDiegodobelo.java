@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+
 //TODO: display at the bottom all the IEs without a category
 public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
     private ExpandingList mExpandingList = null;
@@ -68,7 +69,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         setContentView(R.layout.activity_iediegodobelo);
         mExpandingList = findViewById(R.id.expanding_list_main);
         Bundle bundle = getIntent().getExtras();
-        if(bundle.get("wallet")!=null){
+        if (bundle.get("wallet") != null) {
             Gson gson = new Gson();
             String walletAsString = (String) bundle.get("wallet");
             this.wallet = gson.fromJson(walletAsString, Wallet.class);
@@ -78,9 +79,9 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-        mainActivityViewModel =  new ViewModelProvider(this
+        mainActivityViewModel = new ViewModelProvider(this
                 , new MainActivityViewModelFactory((ApplicationObj) this.getApplication()))
                 .get(MainActivityViewModel.class);
         init();
@@ -94,7 +95,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
             public void onChanged(List<CategoryObject> categoryObjects) {
                 IEActivityDiegodobelo.categoryObjectsList.clear();
                 IEActivityDiegodobelo.categoryObjectsList.addAll(categoryObjects);
-                if(firstStart){
+                if (firstStart) {
                     populateLists();
                     firstStart = false;
                 }
@@ -116,7 +117,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
             public void onChanged(List<IEObject> orphanIEs) {
                 IEActivityDiegodobelo.orphanIEs.clear();
                 IEActivityDiegodobelo.orphanIEs.addAll(orphanIEs);
-                if(firstStartOrphane){
+                if (firstStartOrphane) {
                     addOrphaneCategories();
                     firstStartOrphane = false;
                 }
@@ -127,10 +128,10 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
-        firstStart=true;
-        firstStartOrphane=true;
+        firstStart = true;
+        firstStartOrphane = true;
         depopulateLists();
         mainActivityViewModel.getAllIEofAWalletWithoutCategoriesAssigned(walletID).removeObserver(orphanIEsObserver);
         mainActivityViewModel.getAllCategories().removeObserver(categoryListObsever);
@@ -167,6 +168,16 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                 .setLabelColor(0xff056f00)
                 .setWrapper(2)
         );
+        items.add(new RFACLabelItem<Integer>()
+                .setLabel("Import transactions")
+                .setResId(R.drawable.import_transactions)
+                //.setIconNormalColor(0xff056f00)
+                .setIconNormalColor(0xffcccccc)
+                .setIconPressedColor(0xff0d5302)
+                .setLabelColor(0xff056f00)
+                //.setLabelColor(0x000000)
+                .setWrapper(2)
+        );
         rfaContent
                 .setItems(items)
                 //.setIconShadowRadius(ABTextUtil.dip2px(this, 5))
@@ -192,7 +203,11 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         Gson gson = new Gson();
         String walletAsString = gson.toJson(wallet);
         //Toast.makeText(this, "clicked icon: " + position, Toast.LENGTH_SHORT).show();
-        if (position == 2) {
+        if (position == 3) {
+            Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateIEActivity.class);
+            myIntent.putExtra("wallet", walletAsString); //Optional parameters
+            IEActivityDiegodobelo.this.startActivity(myIntent);
+        } else if (position == 2) {
             //launch create IE activity
             Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateIEActivity.class);
             myIntent.putExtra("wallet", walletAsString); //Optional parameters
@@ -229,9 +244,9 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         }
     }
 
-    private void addOrphaneCategories(){
-        Log.d("WTF:",mExpandingList.getItemsCount()+"-ITEM COUNT");
-        for(IEObject orphaneIEObject: orphanIEs){
+    private void addOrphaneCategories() {
+        Log.d("WTF:", mExpandingList.getItemsCount() + "-ITEM COUNT");
+        for (IEObject orphaneIEObject : orphanIEs) {
             addOrphanItems(orphaneIEObject);
         }
     }
@@ -242,9 +257,9 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 
         IEActivityDiegodobelo.this.runOnUiThread(() -> {
             final ExpandingItem item;
-            if(orphaneIEObject.type==0) {
-                item  =getCorrectItem(orphaneIEObject.amount);
-            }else{
+            if (orphaneIEObject.type == 0) {
+                item = getCorrectItem(orphaneIEObject.amount);
+            } else {
                 item = getCorrectItem(-orphaneIEObject.amount);
             }
             if (item != null) {
@@ -267,7 +282,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         });
     }
 
-    private void depopulateLists(){
+    private void depopulateLists() {
         mExpandingList.removeAllViews();
     }
 
@@ -326,11 +341,11 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE: {
                         try {
-                            if(object instanceof IEObject){
-                                mainActivityViewModel.deleteIE(((IEObject)object).getId());
+                            if (object instanceof IEObject) {
+                                mainActivityViewModel.deleteIE(((IEObject) object).getId());
                                 mExpandingList.removeView(expandingItem);
-                            }else {
-                                mainActivityViewModel.deleteCategory(((CategoryObject)object).getCategory_id());
+                            } else {
+                                mainActivityViewModel.deleteCategory(((CategoryObject) object).getCategory_id());
                                 mExpandingList.removeView(expandingItem);
                             }
                         } catch (Exception e) {
@@ -382,7 +397,6 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         } else {
             DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.neutralBackgroundColor));
         }
-
         return wrappedDrawable;
     }
 

@@ -1,8 +1,9 @@
 package com.example.robi.budgetize.ui.adapters.viewpager;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.util.Log;
+import android.graphics.Color;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,25 +11,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.APIs.viewpagerforbankaccounts.CardItem;
 import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
-import com.example.robi.budgetize.data.remotedatabase.remote.rest.utils.AppConstants;
-import com.example.robi.budgetize.data.remotedatabase.remote.rest.utils.HttpUtils;
+import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-import okhttp3.Response;
 
 
 public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBanksCardAdapter {
@@ -92,6 +87,42 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         return view == object;
     }
 
+    private void createDialogClickListener(long bankID) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE: {
+                        try {
+                            OBPRestClient.clearAccessToken(bankID);
+                            bankAccountViewModel.deleteLinkedBank(bankID);
+                            Toast.makeText(activityContext, "Bank Account Deleted", Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println(e.getMessage());
+                            Toast toast = Toast.makeText(activityContext, "Unable to delete the Bank Account", Toast.LENGTH_SHORT);
+                            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+                            v.setTextColor(Color.RED);
+                            toast.show();
+                        }
+
+
+                        //Yes button clicked
+                        break;
+                    }
+
+                    case DialogInterface.BUTTON_NEGATIVE: {
+                        //No button clicked
+                        break;
+                    }
+                }
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+        builder.setMessage("Are you sure you want do DELETE permanently this Bank Account?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
+
     @Override
     public Object instantiateItem(ViewGroup container, final int position) {
         View view = LayoutInflater.from(container.getContext())
@@ -100,6 +131,7 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
                 if (mData.get(position).getTitle() != null) {
                     //TODO: request to the server asking for auth to the corresponding bank. Have to send an object which contains bank name.(mData.get(position) + the position
                     String requestPath = "/authStatus";
@@ -130,6 +162,16 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
                     });
 
                 }
+                 */
+                //TODO: make a query in LinkedBankDao to retrieve directly the banklogo(aka OBP BANK ID)
+                bankAccountViewModel.getAccounts(mData.get(position).getBankID(), bankAccountViewModel.getLinkedBankOBPID(mData.get(position).getBankID()));
+            }
+        });
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                createDialogClickListener(mData.get(position).getBankID());
+                return true;
             }
         });
 
