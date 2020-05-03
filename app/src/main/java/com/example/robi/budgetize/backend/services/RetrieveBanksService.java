@@ -31,7 +31,7 @@ public class RetrieveBanksService extends Service {
 
 
     private void redoOAuth() {
-        OBPRestClient.clearAccessToken(this);
+        OBPRestClient.clearAccessToken(0);//TODO:be aware of this
         Intent oauthActivity = new Intent(this, OAuthActivity.class);
         startActivity(oauthActivity);
     }

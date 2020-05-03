@@ -16,7 +16,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.APIs.viewpagerforbankaccounts.CardItem;
-import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
+import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
 import com.example.robi.budgetize.data.remotedatabase.remote.rest.utils.AppConstants;
 import com.example.robi.budgetize.data.remotedatabase.remote.rest.utils.HttpUtils;
 
@@ -39,13 +39,13 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
     private Context activityContext;
 
     //OBP ModelView
-    private ServicesHandlerViewModel servicesHandlerViewModel;
+    private BankAccountViewModel bankAccountViewModel;
 
-    public LinkBanksCardPagerAdapter(Context activityContext, ServicesHandlerViewModel servicesHandlerViewModel) {
+    public LinkBanksCardPagerAdapter(Context activityContext, BankAccountViewModel bankAccountViewModel) {
         mData = new ArrayList<>();
         mViews = new ArrayList<>();
         this.activityContext = activityContext;
-        this.servicesHandlerViewModel = servicesHandlerViewModel;
+        this.bankAccountViewModel = bankAccountViewModel;
     }
 
     public void addCardItem(CardItem item) {
@@ -140,18 +140,18 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
             public void onClick(View v) {
 //                Intent myIntent = new Intent(activityContext, OAuthActivity.class);
 //                activityContext.startActivity(myIntent);
-                if (ServicesHandlerViewModel.obpOAuthOK) {
-
-                    servicesHandlerViewModel.unlinkBankAccount();
-                    updateUICard_BankLinked(button, icnView);
+                if (bankAccountViewModel.getLinkedBankStatus(mData.get(position).getBankID()).contentEquals("LINKED")) {
+                    bankAccountViewModel.unlinkBankAccount(mData.get(position).getBankID());
+                    updateUICard_BankLinked(button, icnView, position);
 //                    servicesHandlerViewModel.getAccounts();
                 } else {
 //                    need to do the OAUTH
-                    servicesHandlerViewModel.doOBPOAuth();//move this to account linking(inside of linkedbankaccount
+                    BankAccountViewModel.lastClickedBankID = mData.get(position).getBankID();
+                    bankAccountViewModel.doOBPOAuth();//move this to account linking(inside of linkedbankaccount
                 }
             }
         });
-        updateUICard_BankLinked(button, icnView);
+        updateUICard_BankLinked(button, icnView, position);
 
         bind(mData.get(position), view);
         CardView cardView = (CardView) view.findViewById(R.id.cardView);
@@ -165,8 +165,8 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         return view;
     }
 
-    private void updateUICard_BankLinked(Button button, ImageView icnView) {
-        if(servicesHandlerViewModel.obpOAuthOK) {
+    private void updateUICard_BankLinked(Button button, ImageView icnView, int position) {
+        if(bankAccountViewModel.getLinkedBankStatus(mData.get(position).getBankID()).contentEquals("LINKED")) {
             button.setText("Press To UNLink\nBank Account");
             icnView.setImageResource(R.drawable.ic_bookmark_linked_24dp);
         }else{

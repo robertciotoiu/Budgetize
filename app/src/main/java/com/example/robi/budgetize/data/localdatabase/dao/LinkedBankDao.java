@@ -20,6 +20,12 @@ public interface LinkedBankDao {
     @Query("SELECT * FROM linked_banks where id=:id")
     public LiveData<LinkedBank> getLinkedBank(long id);
 
+    @Query("SELECT link_status FROM linked_banks where id=:id")
+    public String getLinkedBankStatus(long id);
+
+    @Query("UPDATE linked_banks SET link_status=:link_status WHERE id=:id")
+    public long updateLinkStatus(long id, String link_status);
+
     @Query("DELETE FROM linked_banks where id=:id")
     public int deleteLinkedBank(long id);
 }

@@ -193,21 +193,10 @@
  */
 package com.example.robi.budgetize.data.remotedatabase.remote.oauth1.activity;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.Menu;
-import android.widget.Toast;
-
-import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
-import com.example.robi.budgetize.ui.activities.MainActivity;
-
 /**
  * @AuthenticateActivity is responsible to intercept OBP OAuth response, after the bank browser login
  */
+/*
 public class AuthenticateActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -260,7 +249,7 @@ public class AuthenticateActivity extends Activity {
 	}
 
 	private void launchMainActivity() {
-		Intent mainActivity = new Intent(this, MainActivity.class);
+		Intent mainActivity = new Intent(this, LinkedBankAccounts.class);
 		startActivity(mainActivity);
 		finish();
 	}
@@ -287,9 +276,11 @@ public class AuthenticateActivity extends Activity {
 	 * This gets called when the browser api login redirects the user to the custom url scheme
 	 * handled by this activity (see AndroidManifest.xml: <data android:scheme="@string/customAppProtocol"/>)
 	 */
+/*
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		tryToLaunchMainActivity(intent);
 	}
 
 }
+*/

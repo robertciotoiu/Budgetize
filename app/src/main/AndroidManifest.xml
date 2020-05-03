@@ -21,21 +21,8 @@
         <activity android:name=".ui.activities.AvailableBanksActivity">
 
         </activity>
-        <activity android:name=".ui.activities.createActivities.SelectBank"></activity>
-        <activity android:name=".ui.activities.LinkedBankAccounts" />
-        <activity android:name=".ui.activities.IEActivityDiegodobelo" />
-        <activity android:name=".ui.activities.createActivities.CreateCategoryActivity" />
-        <activity android:name=".ui.activities.createActivities.CreateIEActivity" />
-        <activity android:name=".ui.activities.createActivities.CreateWalletActivity" />
-        <activity
-            android:name=".data.remotedatabase.remote.oauth1.activity.OAuthActivity"
-            android:noHistory="true"
-            android:theme="@android:style/Theme.NoTitleBar" >
-        </activity>
-        <activity
-            android:name=".data.remotedatabase.remote.oauth1.activity.AuthenticateActivity"
-            android:noHistory="true"
-            android:launchMode="singleInstance">
+        <activity android:name=".ui.activities.createActivities.SelectBank"/>
+        <activity android:name=".ui.activities.LinkedBankAccounts">
             <!--This Activity is responsible to intercept OBP OAuth response-->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -45,6 +32,16 @@
                 give the user more than one app to pick from to handle the oauth callback -->
                 <data android:scheme="@string/customAppProtocol"/>
             </intent-filter>
+        </activity>
+        <!-- android:launchMode="singleInstance" BE AWARE OF THIS!-->
+        <activity android:name=".ui.activities.IEActivityDiegodobelo" />
+        <activity android:name=".ui.activities.createActivities.CreateCategoryActivity" />
+        <activity android:name=".ui.activities.createActivities.CreateIEActivity" />
+        <activity android:name=".ui.activities.createActivities.CreateWalletActivity" />
+        <activity
+            android:name=".data.remotedatabase.remote.oauth1.activity.OAuthActivity"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity android:name=".ui.activities.MainActivity">
             <intent-filter>

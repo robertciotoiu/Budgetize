@@ -233,6 +233,16 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
+    public String getLinkedBankStatus(long id){
+        return mDatabase.linkedBankDao().getLinkedBankStatus(id);
+    }
+
+    @Override
+    public long updateLinkStatus(long id, String link_status){
+        return mDatabase.linkedBankDao().updateLinkStatus(id,link_status);
+    }
+
+    @Override
     public int deleteLinkedBank(long id) {
         return mDatabase.linkedBankDao().deleteLinkedBank(id);
     }

@@ -1,7 +1,10 @@
 package com.example.robi.budgetize.ui.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
@@ -23,6 +26,7 @@ import com.example.robi.budgetize.backend.viewmodels.factories.BankAccountViewMo
 import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
+import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
 import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksCardFragmentPagerAdapter;
 import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksCardPagerAdapter;
 import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksShadowTransformer;
@@ -69,7 +73,61 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
 //        servicesHandlerViewModel.startServices();
         init_viewpager();//here we add the linked banks accounts
         init_listeners();
+
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        // Check if we've got the verifier code available
+        Uri data = getIntent().getData();
+        if (data != null) {
+            String code = data.getQueryParameter("oauth_verifier");
+            if (code != null) {
+                getAccessToken(code);
+            }
+        }
+
+
+    }
+
+    public void getAccessToken(String verifyCode) {
+        new LinkedBankAccounts.AccessTokenTask(this).execute(verifyCode);
+    }
+
+    private class AccessTokenTask extends AsyncTask<String, Void, Boolean> {
+
+        private Activity callingActivity;
+
+        private AccessTokenTask(Activity act) {
+            this.callingActivity = act;
+        }
+
+        @Override
+        protected Boolean doInBackground(String... s) {
+            if (s.length != 1) {
+                return false;
+            } else {
+                String verifierCode = s[0];
+                boolean accessTokenSet = OBPRestClient.getAndSetAccessToken(BankAccountViewModel.lastClickedBankID, verifierCode);
+                return accessTokenSet;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                Toast.makeText(callingActivity, "Account Linked Succesfully!", Toast.LENGTH_SHORT).show();
+                bankAccountViewModel.updateLinkStatus(BankAccountViewModel.lastClickedBankID, "LINKED");
+                //ServicesHandlerViewModel.obpOAuthOK = true;
+                init_viewpager();//here we add the linked banks accounts
+                init_listeners();
+            } else
+                Toast.makeText(callingActivity, "Incorrect verification code!",
+                        Toast.LENGTH_LONG).show();
+        }
+
+    }
+
 
     private void checkBankAccountsStatus() {
         ArrayList<String> bankNames = new ArrayList<String>();
@@ -186,9 +244,9 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
         //TODO: we should get this data from server!(list of available banks)
         LiveData<List<LinkedBank>> linkedBanksList = bankAccountViewModel.getAllLinkedBanks();
         linkedBanksList.observe(this, linkedBanks -> {
-            mCardAdapter = new LinkBanksCardPagerAdapter(this, servicesHandlerViewModel);
+            mCardAdapter = new LinkBanksCardPagerAdapter(this, bankAccountViewModel);
             for(LinkedBank linkedBank:linkedBanks){
-                mCardAdapter.addCardItem(new CardItem(linkedBank.getFull_name(), linkedBank.getShort_name(),linkedBank.getLink_status()));
+                mCardAdapter.addCardItem(new CardItem(linkedBank.getFull_name(), linkedBank.getShort_name(),linkedBank.getLink_status(),linkedBank.getId()));
             }
             mFragmentCardAdapter = new LinkBanksCardFragmentPagerAdapter(getSupportFragmentManager(),
                     dpToPixels(2, this));

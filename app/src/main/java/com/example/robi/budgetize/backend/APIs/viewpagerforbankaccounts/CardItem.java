@@ -2,6 +2,7 @@ package com.example.robi.budgetize.backend.APIs.viewpagerforbankaccounts;
 
 public class CardItem {
 
+    private long bankID;
     private int mTextResource;
     private int mTitleResource;
 
@@ -16,11 +17,19 @@ public class CardItem {
         this.mLinkStatus = mLinkStatus;
     }
 
-    public CardItem(String title, String text, String mLinkStatus)
-    {
+    public CardItem(String title, String text, String mLinkStatus, long bankID) {
         this.mTitle = title;
         this.mText = text;
         this.mLinkStatus = mLinkStatus;
+        this.bankID = bankID;
+    }
+
+    public long getBankID() {
+        return bankID;
+    }
+
+    public void setBankID(long bankID) {
+        this.bankID = bankID;
     }
 
     public String getLinkStatus() {

@@ -19,7 +19,6 @@ import com.example.robi.budgetize.backend.services.DownloadBankImagesService;
 import com.example.robi.budgetize.backend.services.RetrieveBanksService;
 import com.example.robi.budgetize.backend.viewmodels.helpers.BankImagesDownloader;
 import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
-import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
     private final DataRepository repository;
 
     //App objs
-    private ApplicationObj applicationObj;
+    private final ApplicationObj applicationObj;
 
     //OBP
     public static boolean obpOAuthOK = false;
@@ -39,7 +38,7 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
     public static final MutableLiveData<List<Bank>> mObservableAvailableBanks = new MutableLiveData<>();
 
     //Utilitary class
-    private BankImagesDownloader bankImagesDownloader = new BankImagesDownloader();
+    private final BankImagesDownloader bankImagesDownloader = new BankImagesDownloader();
 
     private static List<Bank> banksList = new ArrayList<>();
 
@@ -103,19 +102,8 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
         checkOBPOAuthStatus();
     }
 
-    public void doOBPOAuth() {
-        Intent serviceIntent = new Intent(applicationObj.getApplicationContext(), DoOAuthService.class);
-        serviceIntent.putExtra("doLogin", true);
-        applicationObj.startService(serviceIntent);
-    }
-
     public List<Bank> getAllBanksFromUI(){
         return banksList;
-    }
-
-    public void unlinkBankAccount(){
-        OBPRestClient.clearAccessToken();
-        obpOAuthOK = false;
     }
 
 

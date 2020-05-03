@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.robi.budgetize.R;
+import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
 import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
 
 import java.util.Random;
@@ -58,7 +59,7 @@ public class DoOAuthService extends Service {
     }
 
     private void checkOAuth() {
-        if (!OBPRestClient.setAccessTokenFromSharedPrefs(this))
+        if (!OBPRestClient.setAccessTokenFromSharedPrefs(BankAccountViewModel.lastClickedBankID))
             sendMessage("needAuth");
         else{
             sendMessage("Authorized");
@@ -66,7 +67,7 @@ public class DoOAuthService extends Service {
     }
 
     private void doOAuth() {
-        if (!OBPRestClient.setAccessTokenFromSharedPrefs(this))
+        if (!OBPRestClient.setAccessTokenFromSharedPrefs(BankAccountViewModel.lastClickedBankID))
             getNewAccessToken();
         else{
             Log.d("BLABLA","SUNT DEJA AUTH");
