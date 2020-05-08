@@ -25,7 +25,7 @@ import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.BankAccountViewModelFactory;
 import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
-import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
+import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
 import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksCardFragmentPagerAdapter;
 import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksCardPagerAdapter;
@@ -73,8 +73,16 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
 //        servicesHandlerViewModel.startServices();
         init_viewpager();//here we add the linked banks accounts
         init_listeners();
-
+//        init_obpoauths();
     }
+
+//    private void init_obpoauths() {
+//        for(CardItem cardItem:mCardAdapter.getAllCardData()) {
+//
+//        }
+//
+//    }
+
     @Override
     public void onResume(){
         super.onResume();
@@ -86,8 +94,6 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
                 getAccessToken(code);
             }
         }
-
-
     }
 
     public void getAccessToken(String verifyCode) {

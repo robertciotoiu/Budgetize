@@ -43,6 +43,10 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         this.bankAccountViewModel = bankAccountViewModel;
     }
 
+    public List<CardItem> getAllCardData(){
+        return mData;
+    }
+
     public void addCardItem(CardItem item) {
         mViews.add(null);
         mData.add(item);
@@ -164,7 +168,7 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
                 }
                  */
                 //TODO: make a query in LinkedBankDao to retrieve directly the banklogo(aka OBP BANK ID)
-                bankAccountViewModel.getAccounts(mData.get(position).getBankID(), bankAccountViewModel.getLinkedBankOBPID(mData.get(position).getBankID()));
+                bankAccountViewModel.getAccounts(mData.get(position).getBankID());//, bankAccountViewModel.getLinkedBankOBPID(mData.get(position).getBankID()));
             }
         });
         view.setOnLongClickListener(new View.OnLongClickListener() {
@@ -211,6 +215,14 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         if(bankAccountViewModel.getLinkedBankStatus(mData.get(position).getBankID()).contentEquals("LINKED")) {
             button.setText("Press To UNLink\nBank Account");
             icnView.setImageResource(R.drawable.ic_bookmark_linked_24dp);
+            long bankID = mData.get(position).getBankID();
+
+//            if(!OBPRestClient.consumers.containsKey(mData.get(position).getBankID())){
+//                OBPRestClient.retrieveConsumer(bankID);
+//            }
+//            if(!OBPRestClient.providers.containsKey(mData.get(position).getBankID())) {
+//                OBPRestClient.retrieveProvider(bankID);
+//            }
         }else{
             button.setText("Press To Link\nBank Account");
             icnView.setImageResource(R.drawable.ic_bookmark_unlinked_24dp);

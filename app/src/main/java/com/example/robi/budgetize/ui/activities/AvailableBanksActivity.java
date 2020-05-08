@@ -17,7 +17,7 @@ import com.example.robi.budgetize.backend.services.DownloadBankImagesService;
 import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerViewModelFactory;
 import com.example.robi.budgetize.backend.viewmodels.helpers.BasicImageDownloader;
-import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
+import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 import com.example.robi.budgetize.ui.adapters.gridlistview.AvailableBank;
 import com.example.robi.budgetize.ui.adapters.gridlistview.AvailableBanksAdapter;
 
@@ -46,7 +46,7 @@ public class AvailableBanksActivity extends AppCompatActivity {
         servicesHandlerViewModel = new ViewModelProvider(this,
                 new ServicesHandlerViewModelFactory((ApplicationObj) this.getApplication()))
                 .get(ServicesHandlerViewModel.class);
-        banks.addAll(servicesHandlerViewModel.getAllBanksFromUI());
+        banks.addAll(servicesHandlerViewModel.getAllBanksFromUI());//TODO: watch this as it may cause problems. in the past it was without new ArrayList<...
         listview = new ListView(this);
         listview.setDivider(null);
         setContentView(listview);

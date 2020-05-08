@@ -14,10 +14,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.robi.budgetize.AppExecutors;
 import com.example.robi.budgetize.data.DataGenerator;
+import com.example.robi.budgetize.data.localdatabase.dao.BankAccountDao;
 import com.example.robi.budgetize.data.localdatabase.dao.CategoryDao;
 import com.example.robi.budgetize.data.localdatabase.dao.IEObjectDao;
 import com.example.robi.budgetize.data.localdatabase.dao.LinkedBankDao;
 import com.example.robi.budgetize.data.localdatabase.dao.WalletDao;
+import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
@@ -25,7 +27,7 @@ import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 
 import java.util.List;
 
-@Database(entities = {Wallet.class, IEObject.class, CategoryObject.class, LinkedBank.class},version = 1)//specify the tables(wallets,incomes,expenses,etc) and versions
+@Database(entities = {Wallet.class, IEObject.class, CategoryObject.class, LinkedBank.class, BankAccount.class},version = 1)//specify the tables(wallets,incomes,expenses,etc) and versions
 public abstract class LocalRoomDatabase extends RoomDatabase {
     @VisibleForTesting
     public static final String DATABASE_NAME = "budgetize-db";
@@ -37,6 +39,8 @@ public abstract class LocalRoomDatabase extends RoomDatabase {
     public abstract CategoryDao categoryDao();
 
     public abstract LinkedBankDao linkedBankDao();
+
+    public abstract BankAccountDao bankAccountDao();
 
     private static LocalRoomDatabase sInstance;
 

@@ -4,13 +4,15 @@ import android.app.Application;
 import android.content.Context;
 
 import com.example.robi.budgetize.data.localdatabase.LocalRoomDatabase;
-import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
+import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 
 import java.util.ArrayList;
 
 public class ApplicationObj extends Application {
     public boolean bankImagesAvailable = false;
     public long lastUpdated = 0;
+    public static long lastTransactionsDownload;
+
     public ArrayList<Bank> banks = new ArrayList<Bank>();
     private AppExecutors mAppExecutors;
 
@@ -33,6 +35,8 @@ public class ApplicationObj extends Application {
     public DataRepository getRepository() {
         return DataRepository.getInstance(getDatabase());
     }
+
+
 }
 
 //    public DataRepository getRepository() {

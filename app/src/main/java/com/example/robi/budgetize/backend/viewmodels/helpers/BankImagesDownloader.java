@@ -5,7 +5,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.example.robi.budgetize.ApplicationObj;
-import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
+import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 
 import java.io.File;
 import java.util.List;

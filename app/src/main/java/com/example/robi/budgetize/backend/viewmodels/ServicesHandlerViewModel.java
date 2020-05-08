@@ -18,7 +18,7 @@ import com.example.robi.budgetize.backend.services.DoOAuthService;
 import com.example.robi.budgetize.backend.services.DownloadBankImagesService;
 import com.example.robi.budgetize.backend.services.RetrieveBanksService;
 import com.example.robi.budgetize.backend.viewmodels.helpers.BankImagesDownloader;
-import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
+import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
     //Utilitary class
     private final BankImagesDownloader bankImagesDownloader = new BankImagesDownloader();
 
-    private static List<Bank> banksList = new ArrayList<>();
+    public static List<Bank> banksList = new ArrayList<>();
 
     //Service messages handler
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -84,6 +84,7 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
             public void onChanged(List<Bank> banks) {
                 banksList.clear();
                 banksList.addAll(banks);
+                Log.d("BANKSCHANGED: ","SERVICEHANDLERVIEWMODEL");
                 if (!onFirstCreation) {
                     //TODO: do this at the first start of the application! 1 time per install!
                     syncAllImages();

@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.data.remotedatabase.entities;
+package com.example.robi.budgetize.data.remotedatabase.entities.bank;
 
 public class Bank {
     private String id;

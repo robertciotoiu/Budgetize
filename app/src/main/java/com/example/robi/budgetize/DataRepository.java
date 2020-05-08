@@ -5,20 +5,23 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.robi.budgetize.data.localdatabase.LocalRoomDatabase;
+import com.example.robi.budgetize.data.localdatabase.dao.BankAccountDao;
 import com.example.robi.budgetize.data.localdatabase.dao.CategoryDao;
 import com.example.robi.budgetize.data.localdatabase.dao.IEObjectDao;
 import com.example.robi.budgetize.data.localdatabase.dao.LinkedBankDao;
 import com.example.robi.budgetize.data.localdatabase.dao.WalletDao;
+import com.example.robi.budgetize.data.localdatabase.entities.AccountTransaction;
+import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
-import com.example.robi.budgetize.data.remotedatabase.entities.Bank;
+import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 import com.example.robi.budgetize.data.remotedatabase.remote.OBPRetroClass;
 
 import java.util.List;
 
-public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, LinkedBankDao {
+public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, LinkedBankDao, BankAccountDao {
 
     private static DataRepository sInstance;
 
@@ -33,7 +36,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     private OBPRetroClass obpRetroClass = new OBPRetroClass();
 
     private OnDataChangedRepositoryListener listener;
-    private OnBankDataChanged bankDataListener;
+//    private OnBankDataChanged bankDataListener;
 
     private DataRepository(final LocalRoomDatabase database) {
         mDatabase = database;
@@ -252,6 +255,39 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         return mDatabase.linkedBankDao().deleteLinkedBank(id);
     }
 
+    //BankAccountDAO
+
+
+    @Override
+    public long[] insertAllBankAccounts(List<BankAccount> bankAccounts) {
+        return mDatabase.bankAccountDao().insertAllBankAccounts(bankAccounts);
+    }
+
+    @Override
+    public long addBankAccount(BankAccount bankAccount) {
+        return mDatabase.bankAccountDao().addBankAccount(bankAccount);
+    }
+
+    @Override
+    public LiveData<List<BankAccount>> getAllBankAccounts() {
+        return mDatabase.bankAccountDao().getAllBankAccounts();
+    }
+
+    @Override
+    public LiveData<List<BankAccount>> getBankAccountsFromALinkedBank(String bank_id) {
+        return mDatabase.bankAccountDao().getBankAccountsFromALinkedBank(bank_id);
+    }
+
+    @Override
+    public int deleteBankAccount(String id) {
+        return mDatabase.bankAccountDao().deleteBankAccount(id);
+    }
+
+    @Override
+    public int deleteAllBankAccountsFromALinkedBank(String bank_id) {
+        return mDatabase.bankAccountDao().deleteAllBankAccountsFromALinkedBank(bank_id);
+    }
+
     //REMOTE REST APIS
     //USED BY ServiceHandlerViewModel.java
     public void getAllAvailableBanks(MutableLiveData<List<Bank>> mObservableBanks){
@@ -267,8 +303,13 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         return ObservableLinkedBanks;
     }
 
-    public void getAccounts(long bankID, String obpBankID){
-        obpRetroClass.getAllAccounts(bankID, obpBankID);
+    public void getAccounts(long bankID, DataRepository repository ){
+        obpRetroClass.getAllAccounts(bankID, repository);
+    }
+
+    public void getTransactions(long bankID, String obpBankID, String accountID, MutableLiveData<List<AccountTransaction>> mObservableTransactions){
+        obpRetroClass.getAllTransactions(bankID, obpBankID, accountID, mObservableTransactions);
+
     }
 
     //Listeners
@@ -278,12 +319,12 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         void onCategoryDataChanged(List<CategoryObject> categoryObjects);
         void onIEDataChanged(List<IEObject> ieObjects);
     }
+//
+//    public interface OnBankDataChanged{
+//        void onBankDataChanged(List<Bank> bankList);
+//    }
 
-    public interface OnBankDataChanged{
-        void onBankDataChanged(List<Bank> bankList);
-    }
-
-    public void addListener(OnBankDataChanged bankDataListener){ this.bankDataListener = bankDataListener;}
+//    public void addListener(OnBankDataChanged bankDataListener){ this.bankDataListener = bankDataListener;}
 
     public void addListener(OnDataChangedRepositoryListener listener){
         this.listener = listener;

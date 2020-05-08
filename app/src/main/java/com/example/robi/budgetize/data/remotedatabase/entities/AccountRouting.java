@@ -1,8 +1,13 @@
 package com.example.robi.budgetize.data.remotedatabase.entities;
 
-public class BankRouting {
-    private String scheme;
-    private String address;
+public class AccountRouting {
+    String scheme;
+    String address;
+
+    public AccountRouting(String scheme, String address) {
+        this.scheme = scheme;
+        this.address = address;
+    }
 
     public String getScheme() {
         return scheme;
@@ -20,14 +25,9 @@ public class BankRouting {
         this.address = address;
     }
 
-    public BankRouting(String scheme, String address) {
-        this.scheme = scheme;
-        this.address = address;
-    }
-
     @Override
     public String toString() {
-        return "BankRouting{" +
+        return "AccountRouting{" +
                 "scheme='" + scheme + '\'' +
                 ", address='" + address + '\'' +
                 '}';
