@@ -124,6 +124,7 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
             if (success) {
                 Toast.makeText(callingActivity, "Account Linked Succesfully!", Toast.LENGTH_SHORT).show();
                 bankAccountViewModel.updateLinkStatus(BankAccountViewModel.lastClickedBankID, "LINKED");
+                bankAccountViewModel.getAccounts(BankAccountViewModel.lastClickedBankID);
                 //ServicesHandlerViewModel.obpOAuthOK = true;
                 init_viewpager();//here we add the linked banks accounts
                 init_listeners();

@@ -24,6 +24,9 @@ public interface BankAccountDao {
     @Query("SELECT * FROM bank_accounts WHERE bank_id=:bank_id")
     public LiveData<List<BankAccount>> getBankAccountsFromALinkedBank(String bank_id);
 
+    @Query("SELECT * FROM bank_accounts WHERE bank_id=:bank_id")
+    public List<BankAccount> getBankAccountsFromALinkedBankNOTLIVEDATA(String bank_id);
+
     @Query("DELETE FROM bank_accounts WHERE id=:id")
     public int deleteBankAccount(String id);
 

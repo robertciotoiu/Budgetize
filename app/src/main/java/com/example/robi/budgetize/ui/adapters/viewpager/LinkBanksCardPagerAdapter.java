@@ -184,8 +184,6 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent myIntent = new Intent(activityContext, OAuthActivity.class);
-//                activityContext.startActivity(myIntent);
                 if (bankAccountViewModel.getLinkedBankStatus(mData.get(position).getBankID()).contentEquals("LINKED")) {
                     bankAccountViewModel.unlinkBankAccount(mData.get(position).getBankID());
                     updateUICard_BankLinked(button, icnView, position);
@@ -198,7 +196,6 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
             }
         });
         updateUICard_BankLinked(button, icnView, position);
-
         bind(mData.get(position), view);
         CardView cardView = (CardView) view.findViewById(R.id.cardView);
 
@@ -215,7 +212,7 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         if(bankAccountViewModel.getLinkedBankStatus(mData.get(position).getBankID()).contentEquals("LINKED")) {
             button.setText("Press To UNLink\nBank Account");
             icnView.setImageResource(R.drawable.ic_bookmark_linked_24dp);
-            long bankID = mData.get(position).getBankID();
+//            long bankID = mData.get(position).getBankID();
 
 //            if(!OBPRestClient.consumers.containsKey(mData.get(position).getBankID())){
 //                OBPRestClient.retrieveConsumer(bankID);

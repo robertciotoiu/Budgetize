@@ -5,6 +5,7 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.robi.budgetize.data.localdatabase.LocalRoomDatabase;
+import com.example.robi.budgetize.data.localdatabase.dao.AccountTransactionDao;
 import com.example.robi.budgetize.data.localdatabase.dao.BankAccountDao;
 import com.example.robi.budgetize.data.localdatabase.dao.CategoryDao;
 import com.example.robi.budgetize.data.localdatabase.dao.IEObjectDao;
@@ -21,7 +22,7 @@ import com.example.robi.budgetize.data.remotedatabase.remote.OBPRetroClass;
 
 import java.util.List;
 
-public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, LinkedBankDao, BankAccountDao {
+public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, LinkedBankDao, BankAccountDao, AccountTransactionDao {
 
     private static DataRepository sInstance;
 
@@ -31,6 +32,11 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     private MediatorLiveData<List<IEObject>> ObservableIE;
     private MediatorLiveData<List<LinkedBank>> ObservableLinkedBanks;
     //TODO: MediatorLiveData for IE and Category
+
+    //TODO: delete this! DB debug purposes
+    public LocalRoomDatabase getDB(){
+        return mDatabase;
+    }
 
     //RetroClasses uses to communicate with APIs
     private OBPRetroClass obpRetroClass = new OBPRetroClass();
@@ -288,6 +294,44 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         return mDatabase.bankAccountDao().deleteAllBankAccountsFromALinkedBank(bank_id);
     }
 
+    //AccountTransactionDao
+
+
+    @Override
+    public long[] insertAllAccountTransactions(List<AccountTransaction> accountTransactions) {
+        return mDatabase.accountTransactionDao().insertAllAccountTransactions(accountTransactions);
+    }
+
+    @Override
+    public long addAccountTransaction(AccountTransaction accountTransactions) {
+        return mDatabase.accountTransactionDao().addAccountTransaction(accountTransactions);
+    }
+
+    @Override
+    public LiveData<List<AccountTransaction>> getAllTransactions() {
+        return mDatabase.accountTransactionDao().getAllTransactions();
+    }
+
+    @Override
+    public LiveData<List<AccountTransaction>> getAllTransactionsFromABankAccount(String bank_account_id) {
+        return mDatabase.accountTransactionDao().getAllTransactionsFromABankAccount(bank_account_id);
+    }
+
+    @Override
+    public int deleteTransaction(String id) {
+        return mDatabase.accountTransactionDao().deleteTransaction(id);
+    }
+
+    @Override
+    public int deleteAllTransactionsFromABankAccount(String bank_account_id) {
+        return mDatabase.accountTransactionDao().deleteAllTransactionsFromABankAccount(bank_account_id);
+    }
+
+    @Override
+    public List<BankAccount> getBankAccountsFromALinkedBankNOTLIVEDATA(String bank_id) {
+        return mDatabase.bankAccountDao().getBankAccountsFromALinkedBankNOTLIVEDATA(bank_id);
+    }
+
     //REMOTE REST APIS
     //USED BY ServiceHandlerViewModel.java
     public void getAllAvailableBanks(MutableLiveData<List<Bank>> mObservableBanks){
@@ -307,8 +351,8 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         obpRetroClass.getAllAccounts(bankID, repository);
     }
 
-    public void getTransactions(long bankID, String obpBankID, String accountID, MutableLiveData<List<AccountTransaction>> mObservableTransactions){
-        obpRetroClass.getAllTransactions(bankID, obpBankID, accountID, mObservableTransactions);
+    public void getTransactions(long bankID, String obpBankID, String accountID, DataRepository dataRepository){
+        obpRetroClass.getAllTransactions(bankID, obpBankID, accountID, dataRepository);
 
     }
 

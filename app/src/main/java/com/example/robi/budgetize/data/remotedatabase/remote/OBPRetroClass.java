@@ -11,6 +11,7 @@ import com.example.robi.budgetize.data.localdatabase.entities.AccountTransaction
 import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;
 import com.example.robi.budgetize.data.remotedatabase.entities.account.Account;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
+import com.example.robi.budgetize.data.remotedatabase.entities.transaction.Holder;
 import com.example.robi.budgetize.data.remotedatabase.entities.transaction.Transaction;
 import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.ExpiredAccessTokenException;
 import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
@@ -114,7 +115,7 @@ public class OBPRetroClass {
         }.execute();
     }
 
-    public static void getAllTransactions(long bankID, String obpBankID, String accountID, MutableLiveData<List<AccountTransaction>> mObservableTransactions) {
+    public static void getAllTransactions(long bankID, String obpBankID, String accountID, DataRepository repository) {
         new AsyncTask<Void, Void, Void>() {
             @SuppressLint("StaticFieldLeak")
             @Override
@@ -132,29 +133,53 @@ public class OBPRetroClass {
                         Log.d("Transaction:", transactionsArrayList.get(i).toString());
                     }
 
-//                    if (transactionsArrayList.size() != 0) {
-//                        //MAP OBJECT FROM ACCOUNT TO BANKACCOUNT BEFORE POSTVALUE!!!
-//                        List<AccountTransaction> bankAccounts = new ArrayList<>();
-//                        for (Account account : accountsArrayList) {
-//                            bankAccounts.add(new BankAccount(account.getId(), account.bank_id, bankID, account.label, account.account_type));
-//                        }
-//                        mObservableAccounts.postValue(bankAccounts);
-//                        Log.d("OBPRetroClass.getAllAccounts(): ", "AccountsAdded");
-//                    } else {
-//                        Log.d("OBPRetroClass.getAllAccounts(): ", "AccountsNOTAdded");//handle this
-//                    }
-//                    if (transactionsArrayList.size()!=0) {
-//                        //MAP OBJECT FROM ACCOUNT TO BANKACCOUNT BEFORE POSTVALUE!!!
-//                        List<BankAccount> bankAccounts = new ArrayList<>();
-//                        for(Account account:transactionsArrayList){
-//                            bankAccounts.add(new BankAccount(account.getId(),account.bank_id,account.label,account.account_type));
-//                        }
-//                        mObservableAccounts.postValue(bankAccounts);
-//                        Log.d("OBPRetroClass.getAllAccounts(): ","AccountsAdded");
-//                    } else {
-//                        Log.d("OBPRetroClass.getAllAccounts(): ","AccountsNOTAdded");//handle this
-//                    }
+                    if (transactionsArrayList.size() != 0) {
+                        //MAP OBJECT FROM ACCOUNT TO BANKACCOUNT BEFORE POSTVALUE!!!
+                        List<AccountTransaction> accountTransactions = new ArrayList<>();
+                        for (Transaction transaction : transactionsArrayList) {
+                            String thisHolders = "";
+                            for(Holder holder:transaction.getThis_account().getHolders()){
+                                thisHolders = thisHolders +","+ holder.getName();
+                            }
+                            thisHolders = thisHolders.substring(0,thisHolders.length()-2);
 
+//                            String otherHolders = "";
+//                            for(Holder holder:transaction.getOther_account().getHolders()){
+//                                otherHolders = otherHolders +","+ holder.getName();
+//                            }
+//                            otherHolders = otherHolders.substring(0,otherHolders.length()-2);
+
+                            accountTransactions.add(
+                                    new AccountTransaction(
+                                            transaction.getId(),
+                                            transaction.getThis_account().getId(),
+                                            thisHolders,
+                                            transaction.getOther_account().getId(),
+                                            transaction.getOther_account().getHolder().getName(),
+                                            transaction.getDetails().getType(),
+                                            transaction.getDetails().getDescription(),
+                                            transaction.getDetails().getPosted(),
+                                            transaction.getDetails().getCompleted(),
+                                            transaction.getDetails().getNew_balance().getAmount(),
+                                            transaction.getDetails().getNew_balance().getCurrency(),
+                                            transaction.getDetails().getValue().getAmount(),
+                                            transaction.getDetails().getValue().getCurrency()
+                                            )
+                            );
+                        }
+
+                        long[] status = repository.insertAllAccountTransactions(accountTransactions);
+                        String composeStatus="";
+                        for(int i = 0;i<status.length;i++) {
+                            composeStatus = composeStatus.concat(status[i]+", ");
+                        }
+                        Log.d("OBPRetroClass: ", "INSERTED TRANSACTIONS TO DB: " + composeStatus);
+
+                        //mObservableAccounts.postValue(bankAccounts);
+                        Log.d("OBPRetroClass.getAllTransactions(): ", "TransactionsAdded");
+                    } else {
+                        Log.d("OBPRetroClass.getAllTransactions(): ", "TransactionsNOTAdded");//handle this
+                    }
                 } catch (ExpiredAccessTokenException e) {
                     // login again / re-authenticate
 //                        redoOAuth(); check if this was really working(I suppose it was not)

@@ -10,7 +10,7 @@
     >
 
     <com.example.robi.budgetize.backend.APIs.expandingviewAPI.ExpandingList
-        android:id="@+id/expanding_list_main"
+        android:id="@+id/expanding_list_main_transactions"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginRight="10dp"

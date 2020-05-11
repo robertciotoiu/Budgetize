@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/expanding_item_id_transaction"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/text_view_value_transaction"
+
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="22dp"
+        android:layout_marginEnd="4dp"
+        android:layout_toStartOf="@id/remove_item"
+        android:layout_toEndOf="@+id/text_view_category_name_transaction"
+        android:autoSizeMaxTextSize="20sp"
+        android:autoSizeMinTextSize="1sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
+        android:fontFamily="@font/open_sans_semibold"
+        android:gravity="end"
+        android:text="Value"
+        android:textAlignment="viewEnd"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/text_view_category_name_transaction"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentStart="false"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Linked Bank Name"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#000000"
+
+        android:fontFamily="@font/open_sans_semibold"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="1sp"
+        android:autoSizeMaxTextSize="30sp"
+        android:autoSizeStepGranularity="1sp"
+        />
+
+    <TextView
+        android:id="@+id/text_view_description_transaction"
+        android:layout_width="wrap_content"
+        android:layout_height="15dp"
+        android:layout_below="@id/text_view_category_name_transaction"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@+id/text_view_value_transaction"
+        android:autoSizeMaxTextSize="20sp"
+        android:autoSizeMinTextSize="1sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
+        android:fontFamily="@font/open_sans_semibold"
+        android:text="Description"
+        android:textColor="#d3d3d3" />
+
+    <!--ImageView
+        android:id="@+id/add_more_sub_items_transaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:srcCompat="@drawable/ic_action_add"/-->
+
+    <ImageView
+        android:id="@+id/remove_item"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="8dp"
+        android:padding="12dp"
+        app:srcCompat="@drawable/ic_add_white" />
+
+
+</RelativeLayout>

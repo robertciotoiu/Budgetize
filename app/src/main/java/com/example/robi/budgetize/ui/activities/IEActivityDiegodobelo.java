@@ -204,7 +204,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         String walletAsString = gson.toJson(wallet);
         //Toast.makeText(this, "clicked icon: " + position, Toast.LENGTH_SHORT).show();
         if (position == 3) {
-            Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateIEActivity.class);
+            Intent myIntent = new Intent(IEActivityDiegodobelo.this, ImportTransactionsActivity.class);
             myIntent.putExtra("wallet", walletAsString); //Optional parameters
             IEActivityDiegodobelo.this.startActivity(myIntent);
         } else if (position == 2) {
