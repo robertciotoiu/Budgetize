@@ -23,7 +23,6 @@
     app:indicator_margin_right="16dp"
     app:indicator_size="50dp"
     app:item_layout="@layout/expanding_item_white"
-    app:separator_layout="@layout/separator_layout"
     app:show_animation="true"
     app:show_indicator="true"
     app:start_collapsed="true"

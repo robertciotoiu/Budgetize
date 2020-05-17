@@ -165,7 +165,7 @@ public class CreateIEActivity extends AppCompatActivity implements DatePickerDia
                 ieCategoryID = categoryHashMap.get(ieCategoryName);
             }
 
-            IEObject ieObject = new IEObject(currentWalletID, ieName, ieAmount, ieCategoryID, ieType, pickedDate.getText().toString(), occurrenceSpinner.getSelectedItem().toString());
+            IEObject ieObject = new IEObject(currentWalletID, ieName, ieAmount, ieCategoryID, ieType, pickedDate.getText().toString(), occurrenceSpinner.getSelectedItem().toString(),null);
 
             long status = mainActivityViewModel.addIEObject(ieObject);
 

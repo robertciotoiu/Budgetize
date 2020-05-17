@@ -11,18 +11,20 @@ import com.example.robi.budgetize.data.localdatabase.dao.CategoryDao;
 import com.example.robi.budgetize.data.localdatabase.dao.IEObjectDao;
 import com.example.robi.budgetize.data.localdatabase.dao.LinkedBankDao;
 import com.example.robi.budgetize.data.localdatabase.dao.WalletDao;
+import com.example.robi.budgetize.data.localdatabase.dao.WalletLinkedBankAccountsDao;
 import com.example.robi.budgetize.data.localdatabase.entities.AccountTransaction;
 import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
+import com.example.robi.budgetize.data.localdatabase.entities.WalletLinkedBankAccounts;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 import com.example.robi.budgetize.data.remotedatabase.remote.OBPRetroClass;
 
 import java.util.List;
 
-public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, LinkedBankDao, BankAccountDao, AccountTransactionDao {
+public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, LinkedBankDao, BankAccountDao, AccountTransactionDao, WalletLinkedBankAccountsDao {
 
     private static DataRepository sInstance;
 
@@ -110,6 +112,11 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     @Override
     public LiveData<CategoryObject> getCategoryByID(long category_id) {
         return mDatabase.categoryDao().getCategoryByID(category_id);
+    }
+
+    @Override
+    public long getCategoryID(long wallet_id, String bank_account_id){
+        return mDatabase.categoryDao().getCategoryID(wallet_id, bank_account_id);
     }
 
     @Override
@@ -222,6 +229,9 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     @Override
     public void deleteWallet(Wallet wallet) {
         mDatabase.walletDao().deleteWallet(wallet);
+
+        //other cleaning
+        //deleteAllWalletLinkedAccounts(wallet.getId());
     }
 
     //LINKEDBANKDAO
@@ -253,7 +263,12 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
     @Override
     public long updateLinkStatus(long id, String link_status){
-        return mDatabase.linkedBankDao().updateLinkStatus(id,link_status);
+        long status = mDatabase.linkedBankDao().updateLinkStatus(id,link_status);
+        if(status>0 && link_status=="UNLINKED"){
+            //TODO: remove all txns from all wallets, and all bank accounts from
+            //TODO: I think it is done automatically using foreign keys and cascade on delete, if not do the above todo.
+        }
+        return status;
     }
 
     @Override
@@ -275,13 +290,23 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
+    public BankAccount getBankAccount(String bank_account_id){
+        return mDatabase.bankAccountDao().getBankAccount(bank_account_id);
+    }
+
+    @Override
     public LiveData<List<BankAccount>> getAllBankAccounts() {
         return mDatabase.bankAccountDao().getAllBankAccounts();
     }
 
     @Override
-    public LiveData<List<BankAccount>> getBankAccountsFromALinkedBank(String bank_id) {
-        return mDatabase.bankAccountDao().getBankAccountsFromALinkedBank(bank_id);
+    public long getNrOfAccountsFromLinkedBank(long internal_bank_id) {
+        return mDatabase.bankAccountDao().getNrOfAccountsFromLinkedBank(internal_bank_id);
+    }
+
+    @Override
+    public LiveData<List<BankAccount>> getBankAccountsFromALinkedBank(long internal_bank_id) {
+        return mDatabase.bankAccountDao().getBankAccountsFromALinkedBank(internal_bank_id);
     }
 
     @Override
@@ -318,6 +343,11 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
+    public List<AccountTransaction> getAllTransactionsFromABankAccountNOTLIVEDATA(String bank_account_id){
+        return mDatabase.accountTransactionDao().getAllTransactionsFromABankAccountNOTLIVEDATA(bank_account_id);
+    }
+
+    @Override
     public int deleteTransaction(String id) {
         return mDatabase.accountTransactionDao().deleteTransaction(id);
     }
@@ -328,8 +358,68 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
-    public List<BankAccount> getBankAccountsFromALinkedBankNOTLIVEDATA(String bank_id) {
+    public List<BankAccount> getBankAccountsFromALinkedBankNOTLIVEDATA(long bank_id) {
         return mDatabase.bankAccountDao().getBankAccountsFromALinkedBankNOTLIVEDATA(bank_id);
+    }
+
+    //WalletLinkedBankAccountsDao
+
+    @Override
+    public long[] insertListOfWalletLinkedBankAccount(List<WalletLinkedBankAccounts> walletLinkedBankAccounts) {
+        long[] results = mDatabase.walletLinkedBankAccountsDao().insertListOfWalletLinkedBankAccount(walletLinkedBankAccounts);
+        //TODO: also we need to add all bank accountS txns correspondent to that accounts in wallet. Txns should be converted to IEs and added to a bank account converted to a category.
+        for(WalletLinkedBankAccounts walletLinkedBankAccount:walletLinkedBankAccounts){
+            walletLinkedBankAccount.getBank_account_id();
+            //CategoryObject categoryObject = new CategoryObject();
+        }
+        return results;
+    }
+
+    @Override
+    public long insertWalletLinkedBankAccount(WalletLinkedBankAccounts walletLinkedBankAccounts) {
+        long result = mDatabase.walletLinkedBankAccountsDao().insertWalletLinkedBankAccount(walletLinkedBankAccounts);
+        //TODO: also we need to add all bank account txns correspondent to that accounts in wallet.
+        return result;
+    }
+
+    @Override
+    public long getNrOfLinkedBankFromWallet(long wallet_id, long linked_bank_id) {
+        return mDatabase.walletLinkedBankAccountsDao().getNrOfLinkedBankFromWallet(wallet_id,linked_bank_id);
+    }
+
+    @Override
+    public WalletLinkedBankAccounts getLinkedBanksFromWallet(long wallet_id, String bank_account_id) {
+        return mDatabase.walletLinkedBankAccountsDao().getLinkedBanksFromWallet(wallet_id, bank_account_id);
+    }
+
+    @Override
+    public List<WalletLinkedBankAccounts> getLinkedBankAccountsFromWallet(long wallet_id) {
+        return mDatabase.walletLinkedBankAccountsDao().getLinkedBankAccountsFromWallet(wallet_id);
+    }
+
+    @Override
+    public WalletLinkedBankAccounts getLinkedAccountFromWallet(long wallet_id, String bank_account_id) {
+        return mDatabase.walletLinkedBankAccountsDao().getLinkedAccountFromWallet(wallet_id, bank_account_id);
+    }
+
+    @Override
+    public List<WalletLinkedBankAccounts> getLinkedAccountFromBankAccount(String bank_account_id) {
+        return mDatabase.walletLinkedBankAccountsDao().getLinkedAccountFromBankAccount(bank_account_id);
+    }
+
+    @Override
+    public int unlinkBankAccountFromWallet(long wallet_id, String bank_account_id) {
+        return mDatabase.walletLinkedBankAccountsDao().unlinkBankAccountFromWallet(wallet_id,bank_account_id);
+    }
+
+    @Override
+    public int unlinkLinkedBankAccountsFromWallets(long wallet_id, String linked_bank_id) {
+        return mDatabase.walletLinkedBankAccountsDao().unlinkLinkedBankAccountsFromWallets(wallet_id,linked_bank_id);
+    }
+
+    @Override
+    public int deleteAllWalletLinkedAccounts(long wallet_id) {
+        return mDatabase.walletLinkedBankAccountsDao().deleteAllWalletLinkedAccounts(wallet_id);
     }
 
     //REMOTE REST APIS

@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -235,12 +236,6 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         //Add Categories and IEs
         for (CategoryObject categoryObject : categoryObjectsList) {
             addItem(categoryObject);
-//            executor.execute(new Runnable() {
-//                @Override
-//                public void run() {
-//
-//                }
-//            });
         }
     }
 
@@ -295,43 +290,61 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
             if (item != null) {
                 //setAllColors(ie_value);
                 item.setIndicatorColor(Color.WHITE);
+                item.setIndicatorSize(35, 35, this);
                 //item.setIndicatorColorRes(getIconIndicatorColor(ie_value));//R.color.positiveBackgroundColor);
                 item.setIndicatorIcon(getIcon(ie_value));//R.drawable.house_icon);
                 //1. ImageView category_icon
-                ((TextView) item.findViewById(R.id.text_view_value_white)).setText(String.valueOf(ie_value));
-                ((TextView) item.findViewById(R.id.text_view_category_name_white)).setText(categoryObject.getName());
-                ((TextView) item.findViewById(R.id.text_view_description_white)).setText(categoryObject.getDescription());
+                TextView valueTextView = (TextView) item.findViewById(R.id.text_view_value_white);
+                valueTextView.setText(String.valueOf(ie_value));
+                valueTextView.setTooltipText(String.valueOf(ie_value));
+
+                TextView nameTextView = ((TextView) item.findViewById(R.id.text_view_category_name_white));
+                nameTextView.setText(categoryObject.getName());
+                nameTextView.setTooltipText(String.valueOf(categoryObject.getName()));
+
+                TextView descriptionTextView = ((TextView) item.findViewById(R.id.text_view_description_white));
+                descriptionTextView.setText(categoryObject.getDescription());
+                descriptionTextView.setTooltipText(String.valueOf(categoryObject.getDescription()));
+
                 item.createSubItems(ieObjectList.size());
                 for (int i = 0; i < item.getSubItemsCount(); i++) {
-                    //Let's get the created sub item by its index
                     final View view = item.getSubItemView(i);
-//                if(i== item.getSubItemsCount()-1) {
-//                    RelativeLayout layout = view.findViewById(R.id.layout_subitem);
-//                    ViewGroup.LayoutParams params = layout.getLayoutParams();
-//                    params.height = 300;
-//                    view.setLayoutParams(params);
-//                }
-                    //Let's set some values in
                     configureSubItem(item, view, ieObjectList.get(i), categoryObject);
                 }
-//            item.findViewById(R.id.add_more_sub_items).setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    //launch create Category activity
-//                    Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateIEActivity.class);
-//                    myIntent.putExtra("wallet", walletID); //Optional parameters
-//                    IEActivityDiegodobelo.this.startActivity(myIntent);
-//                }
-//            });
-                item.findViewById(R.id.remove_item).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        removeItemClickListener(categoryObject, item);
-                    }
-                });
+
+                if (categoryObject.getBank_account_id() != null) {
+                    //IF BANK ACCOUNT, PERSONALIZE
+
+                    //HIDE delete button and reset position of value
+                    final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(dpToPixels(100), dpToPixels(30));
+                    params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, R.id.text_view_category_name_white);
+                    params.addRule(RelativeLayout.ALIGN_PARENT_END);
+                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                    params.addRule(RelativeLayout.TEXT_ALIGNMENT_TEXT_END);
+                    params.topMargin = dpToPixels(22);
+                    params.leftMargin = dpToPixels(5);
+                    params.rightMargin = dpToPixels(5);
+                    params.width = dpToPixels(110);
+                    valueTextView.setLayoutParams(params);
+                    item.findViewById(R.id.remove_item).setVisibility(View.INVISIBLE);
+
+                    item.setIndicatorIcon(personalizeIcon(R.drawable.bankaccounts, R.color.gold));
+                    item.setBackground(getDrawable(R.drawable.item_shape_gold));
+                } else {
+                    item.findViewById(R.id.remove_item).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            removeItemClickListener(categoryObject, item);
+                        }
+                    });
+                }
             }
             Log.d("UI thread", "I am the UI thread");
         });
+    }
+
+    public int dpToPixels(int dp) {
+        return (int) (dp * (getResources().getDisplayMetrics().density));
     }
 
     private void removeItemClickListener(Object object, final ExpandingItem expandingItem) {
@@ -400,21 +413,52 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         return wrappedDrawable;
     }
 
+    private Drawable personalizeIcon(int iconID, int color) {
+        Drawable unwrappedDrawable = AppCompatResources.getDrawable(this, iconID).mutate();
+        Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
+        DrawableCompat.setTint(wrappedDrawable, getResources().getColor(color));
+
+        return unwrappedDrawable;
+    }
+
     private void configureSubItem(final ExpandingItem item, final View view, final IEObject ieObject, final CategoryObject categoryObject) {
         //subItemViewHolder.ieIcon.setText(ieObject.getSubItemTitle()); //to be implemented
+        TextView valueTextView = ((TextView) view.findViewById(R.id.text_view_ie_value_white));
         if (ieObject.type == 1) {
-            ((TextView) view.findViewById(R.id.text_view_ie_value_white)).setText("-" + String.valueOf(ieObject.amount));
-        } else {
-            ((TextView) view.findViewById(R.id.text_view_ie_value_white)).setText(String.valueOf(ieObject.amount));
-        }
-        ((TextView) view.findViewById(R.id.text_view_title_white)).setText(String.valueOf(ieObject.name));
-        //((TextView) view.findViewById(R.id.text_view_ie_description_white)).setText("TO BE IMPLEMENTED");
-        view.findViewById(R.id.remove_sub_item_white).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeSubItemClickListener(ieObject.getId(), item, view, categoryObject);
+            if (ieObject.amount >= 0) {
+                valueTextView.setText("-" + String.valueOf(ieObject.amount));
+                valueTextView.setTooltipText(String.valueOf("-"+ieObject.amount));
+            } else {
+                valueTextView.setText(String.valueOf(ieObject.amount));
+                valueTextView.setTooltipText(String.valueOf(ieObject.amount));
             }
-        });
+        } else {
+            valueTextView.setText(String.valueOf(ieObject.amount));
+            valueTextView.setTooltipText(String.valueOf(ieObject.amount));
+        }
+        TextView ieNameTextView = ((TextView) view.findViewById(R.id.text_view_title_white));
+        ieNameTextView.setText(String.valueOf(ieObject.name));
+        ieNameTextView.setTooltipText(String.valueOf(ieObject.name));
+        //((TextView) view.findViewById(R.id.text_view_ie_description_white)).setText("TO BE IMPLEMENTED");
+        if (ieObject.txn_id != null) {
+            view.findViewById(R.id.remove_sub_item_white).setVisibility(View.INVISIBLE);
+
+            final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(dpToPixels(100), dpToPixels(20));
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, R.id.text_view_title_white);
+            params.addRule(RelativeLayout.ALIGN_PARENT_END);
+            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            params.addRule(RelativeLayout.TEXT_ALIGNMENT_TEXT_END);
+            params.leftMargin = dpToPixels(1);
+            params.rightMargin = dpToPixels(10);
+            valueTextView.setLayoutParams(params);
+        } else {
+            view.findViewById(R.id.remove_sub_item_white).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    removeSubItemClickListener(ieObject.getId(), item, view, categoryObject);
+                }
+            });
+        }
     }
 
     private void removeSubItemClickListener(final long ieID, final ExpandingItem expandingItem, final View view, final CategoryObject categoryObject) {
@@ -429,11 +473,6 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                             Toast.makeText(IEActivityDiegodobelo.this, "I/E Deleted", Toast.LENGTH_SHORT).show();
                             expandingItem.removeSubItem(view);
                             recalculateCategorySum(expandingItem, categoryObject);
-//                            mExpandingList.removeAllViews();
-//                            populateLists();
-
-                            //mExpandingList.replaceItem(expandingItem);
-                            //refresh_category(expandingItem, view, categoryObject);
                         } catch (Exception e) {
                             e.printStackTrace();
                             System.out.println(e.getMessage());
@@ -445,30 +484,12 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                         //Yes button clicked
                         break;
                     }
-
                     case DialogInterface.BUTTON_NEGATIVE: {
                         //No button clicked
                         break;
                     }
                 }
             }
-            /*
-            private void refresh_category(ExpandingItem expandingItem, View view, CategoryObject categoryObject) {
-                double ieValue = MainActivity.myDatabase.categoryDao().getCategoryIESUM(wallet.getId(), categoryObject.getName());
-                expandingItem.setIndicatorIcon(getIcon(ieValue));
-
-                if (ieValue > 0) {
-                    expandingItem.setBackgroundResource(R.drawable.item_shape_positive);
-                } else if (ieValue < 0) {
-                    expandingItem.setBackgroundResource(R.drawable.item_shape_negative);
-                } else {
-                    expandingItem.setBackgroundResource(R.drawable.item_shape_neutral);
-                }
-                TextView value = (TextView) expandingItem.findViewById(R.id.text_view_value_white);
-                value.setText(String.valueOf(ieValue));
-            }
-
-             */
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Are you sure you want do DELETE permanently this I/E?").setPositiveButton("Yes", dialogClickListener)
@@ -522,9 +543,4 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
             return R.color.neutralBackgroundColor;
         }
     }
-
-    private void refresh_category(ExpandingItem expandingItem, View view, CategoryObject categoryObject) {
-
-    }
-
 }

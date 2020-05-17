@@ -60,7 +60,7 @@ public class CreateCategoryActivity extends AppCompatActivity {
 
         try{
             long currentWalletID = wallet.getId();
-            CategoryObject categoryObject = new CategoryObject(categoryName,categoryDescription,currentWalletID);
+            CategoryObject categoryObject = new CategoryObject(categoryName,categoryDescription,currentWalletID,null);
 
             long status = mainActivityViewModel.addCategory(categoryObject);//MainActivity.myDatabase.categoryDao().addCategory(categoryObject);
 

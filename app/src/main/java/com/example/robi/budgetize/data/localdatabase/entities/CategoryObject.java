@@ -11,17 +11,23 @@ import static androidx.room.ForeignKey.CASCADE;
 
 @Entity(tableName = "categories", foreignKeys = {
         @ForeignKey(onDelete = CASCADE, entity = Wallet.class,
-                parentColumns = "id", childColumns = "wallet_id")}
+                parentColumns = "id", childColumns = "wallet_id"),
+
+        @ForeignKey(onDelete = CASCADE , entity = BankAccount.class,
+        parentColumns = "id", childColumns = "bank_account_id")
+}
         , indices = {
-        @Index("wallet_id")
+        @Index("wallet_id"),
+        @Index("bank_account_id")
 })
 public class CategoryObject {
 
-    public CategoryObject(String name, String description, long wallet_id) {
+    public CategoryObject(String name, String description, long wallet_id, String bank_account_id) {
         this.category_id = System.nanoTime();
         this.name = name;
         this.description = description;
         this.wallet_id = wallet_id;
+        this.bank_account_id = bank_account_id;
     }
 
     public long getCategory_id() {
@@ -56,6 +62,14 @@ public class CategoryObject {
         this.description = description;
     }
 
+    public String getBank_account_id() {
+        return bank_account_id;
+    }
+
+    public void setBank_account_id(String bank_account_id) {
+        this.bank_account_id = bank_account_id;
+    }
+
     @PrimaryKey
     @ColumnInfo(name = "category_id")
     private long category_id;
@@ -69,5 +83,8 @@ public class CategoryObject {
 
     @ColumnInfo(name = "description")
     private String description;
+
+    @ColumnInfo(name = "bank_account_id")
+    private String bank_account_id;
 
 }

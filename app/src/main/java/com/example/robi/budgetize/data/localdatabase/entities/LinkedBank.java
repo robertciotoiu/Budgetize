@@ -14,6 +14,9 @@ public class LinkedBank {
     @ColumnInfo(name ="obp_bank_id")
     private String obp_bank_id;
 
+    @ColumnInfo(name ="demo_obp_bank_id")
+    private String demo_obp_bank_id;
+
     @ColumnInfo(name = "short_name")
     private String short_name;
 
@@ -37,6 +40,9 @@ public class LinkedBank {
         this.logo = logo;//also bank ID of OBP
         this.website = website;
         this.link_status = link_status;
+
+        //test
+        this.demo_obp_bank_id = "inv.01.us.inv";
     }
 
     public void setId(long id) {
@@ -93,5 +99,13 @@ public class LinkedBank {
 
     public void setLink_status(String link_status) {
         this.link_status = link_status;
+    }
+
+    public String getDemo_obp_bank_id() {
+        return demo_obp_bank_id;
+    }
+
+    public void setDemo_obp_bank_id(String demo_obp_bank_id) {
+        this.demo_obp_bank_id = demo_obp_bank_id;
     }
 }

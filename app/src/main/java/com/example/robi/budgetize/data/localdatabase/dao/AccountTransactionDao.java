@@ -16,7 +16,7 @@ public interface AccountTransactionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public long[] insertAllAccountTransactions(List<AccountTransaction> accountTransactions);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     public long addAccountTransaction(AccountTransaction accountTransactions);
 
     @Query("SELECT * FROM account_transactions")
@@ -24,6 +24,9 @@ public interface AccountTransactionDao {
 
     @Query("SELECT * FROM account_transactions WHERE bank_account_id=:bank_account_id")
     public LiveData<List<AccountTransaction>> getAllTransactionsFromABankAccount(String bank_account_id);
+
+    @Query("SELECT * FROM account_transactions WHERE bank_account_id=:bank_account_id")
+    public List<AccountTransaction> getAllTransactionsFromABankAccountNOTLIVEDATA(String bank_account_id);
 
     @Query("DELETE FROM account_transactions WHERE id=:id")
     public int deleteTransaction(String id);

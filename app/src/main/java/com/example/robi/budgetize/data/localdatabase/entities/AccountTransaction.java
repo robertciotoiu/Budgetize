@@ -3,9 +3,25 @@ package com.example.robi.budgetize.data.localdatabase.entities;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "account_transactions")
+import static androidx.room.ForeignKey.CASCADE;
+
+@Entity(tableName = "account_transactions",foreignKeys = {
+        @ForeignKey(onDelete = CASCADE, entity = BankAccount.class, parentColumns = "id", childColumns = "bank_account_id")
+//        ,
+//        @ForeignKey(onDelete = CASCADE, entity = BankAccount.class, parentColumns = "id", childColumns = "bank_account_id"),
+//        @ForeignKey(onDelete = CASCADE, entity = LinkedBank.class, parentColumns = "id", childColumns = "linked_bank_id")
+}
+        , indices = {
+        @Index("bank_account_id")
+//        ,
+//        @Index("linked_bank_id"),
+//        @Index("bank_account_id")
+}
+)
 public class AccountTransaction {
 
     @PrimaryKey
@@ -26,7 +42,7 @@ public class AccountTransaction {
     private String other_account_name;
 
     @ColumnInfo(name = "type")
-    private long type;
+    private String type;
 
     @ColumnInfo(name = "description")
     private String description;
@@ -53,7 +69,7 @@ public class AccountTransaction {
 
     public AccountTransaction(@NonNull String id, String bank_account_id, String bank_account_name,
                               String other_account_id, String other_account_name,
-                              long type, String description, String posted,
+                              String type, String description, String posted,
                               String completed,
                               double new_balance_amount, String new_balance_currency,
                               double txn_value, String txn_currency) {
@@ -113,11 +129,11 @@ public class AccountTransaction {
         this.other_account_name = other_account_name;
     }
 
-    public long getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(long type) {
+    public void setType(String type) {
         this.type = type;
     }
 

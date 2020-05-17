@@ -15,6 +15,7 @@ package com.example.robi.budgetize.backend.APIs.expandingviewAPI;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -26,6 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -188,6 +191,8 @@ public class ExpandingItem extends RelativeLayout {
     private OnItemStateChanged mListener;
 
     private int layoutID;
+
+    public String itemIDHolder;
 
     public void setLayoutID(int layoutId) {
         this.layoutID = layoutId;
@@ -440,6 +445,62 @@ public class ExpandingItem extends RelativeLayout {
      */
     public void setIndicatorIcon(Drawable icon) {
         mIndicatorImage.setImageDrawable(icon);
+    }
+
+    public void setIndicatorSize(int maxWidth, int maxHeight,Context context){
+//        mIndicatorImage.setMaxWidth(dpToPixels(maxWidth,context));
+        mIndicatorImage.getLayoutParams().height = dpToPixels(maxHeight,context);
+//        mIndicatorImage.setMaxHeight(dpToPixels(maxHeight,context));
+        mIndicatorImage.getLayoutParams().width = dpToPixels(maxWidth,context);
+    }
+
+    /*
+    * Set indicator click listener
+     */
+    public void setIndicatorOnClickListener(OnClickListener onClickListener){
+        mIndicatorImage.setOnClickListener(onClickListener);
+    }
+
+    public void removeIndicatorOnClickListeners(){
+        mIndicatorImage.setOnClickListener(null);
+    }
+
+
+
+    public ObjectAnimator startIndicatorAnimation(){
+//        ObjectAnimator imageViewObjectAnimator = ObjectAnimator.ofFloat(mIndicatorImage ,
+////                "rotation", 360f);
+////        imageViewObjectAnimator.setDuration(1200); // miliseconds
+////        imageViewObjectAnimator.start();
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mIndicatorImage, View.ROTATION, 0.0f, 360.0f);
+
+        objectAnimator.setDuration(2000);
+        objectAnimator.setRepeatCount(Animation.INFINITE);
+        objectAnimator.setInterpolator(new LinearInterpolator());
+
+        objectAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                animation.end();
+            }
+        });
+
+        objectAnimator.start();
+
+        mIndicatorImage.setOnClickListener((v) -> stopIndicatorAnimation(objectAnimator));
+
+        return objectAnimator;
+    }
+
+    public void stopIndicatorAnimation(ObjectAnimator objectAnimator){
+//        imageViewObjectAnimator.cancel();
+        objectAnimator.cancel();
+        mIndicatorImage.clearAnimation();
+        mIndicatorImage.setOnClickListener((v) -> startIndicatorAnimation());
+    }
+
+    public static int dpToPixels(int dp, Context context) {
+        return (int)(dp * (context.getResources().getDisplayMetrics().density));
     }
 
     /**

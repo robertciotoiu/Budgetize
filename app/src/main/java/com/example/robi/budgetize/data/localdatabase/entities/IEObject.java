@@ -2,14 +2,19 @@ package com.example.robi.budgetize.data.localdatabase.entities;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "incomes_expenses")//,foreignKeys ={
-//        @ForeignKey(onDelete = CASCADE, entity = CategoryObject.class,
-//                parentColumns = "category_id",childColumns = "category_id")})
-//        , indices = {
-//        @Index("category_id")
-//})
+import static androidx.room.ForeignKey.CASCADE;
+
+@Entity(tableName = "incomes_expenses"
+,foreignKeys ={
+        @ForeignKey(onDelete = CASCADE, entity = AccountTransaction.class,
+                parentColumns = "id",childColumns = "txn_id")}
+        , indices = {
+        @Index("txn_id")
+})
 public class IEObject {
 
     @PrimaryKey
@@ -38,7 +43,13 @@ public class IEObject {
     @ColumnInfo(name="type")
     public int type;//0 means income, 1 means expense
 
-    public IEObject(long wallet_id,String name, double amount, long category_id, int type, String date, String occurrence) {
+    @ColumnInfo(name = "txn_id")
+    public String txn_id;//Reference to txns from OBP like 5fb61a56-85cf-45e2-84b5-f272b08b4ac4
+
+//    @ColumnInfo(name = "bank_account")
+
+
+    public IEObject(long wallet_id,String name, double amount, long category_id, int type, String date, String occurrence, String txn_id) {
         this.id = System.nanoTime();
         this.wallet_id = wallet_id;
         this.name = name;
@@ -54,6 +65,7 @@ public class IEObject {
 
         this.type = type;
 
+        this.txn_id = txn_id;
 
     }
 
@@ -103,5 +115,13 @@ public class IEObject {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public String getTxn_id() {
+        return txn_id;
+    }
+
+    public void setTxn_id(String txn_id) {
+        this.txn_id = txn_id;
     }
 }

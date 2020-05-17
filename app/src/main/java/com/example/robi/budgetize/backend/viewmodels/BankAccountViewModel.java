@@ -14,11 +14,17 @@ import com.example.robi.budgetize.DataRepository;
 import com.example.robi.budgetize.backend.services.DoOAuthService;
 import com.example.robi.budgetize.data.localdatabase.entities.AccountTransaction;
 import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;
+import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
+import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
+import com.example.robi.budgetize.data.localdatabase.entities.WalletLinkedBankAccounts;
+import com.example.robi.budgetize.data.localdatabase.enums.IEOccurrenceEnum;
 import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.lang.Thread.sleep;
 
@@ -55,6 +61,7 @@ public class BankAccountViewModel extends AndroidViewModel{// implements DataRep
             public void onChanged(List<AccountTransaction> transactions) {
                 transactionList.clear();
                 transactionList.addAll(transactions);
+                autoTxnSync(transactionList);
             }
         });
     }
@@ -189,8 +196,8 @@ public class BankAccountViewModel extends AndroidViewModel{// implements DataRep
         return repository.getAllBankAccounts();
     }
 
-    public LiveData<List<BankAccount>> getBankAccountsFromALinkedBank(String bank_id) {
-        return repository.getBankAccountsFromALinkedBank(bank_id);
+    public LiveData<List<BankAccount>> getBankAccountsFromALinkedBank(long internal_bank_id) {
+        return repository.getBankAccountsFromALinkedBank(internal_bank_id);
     }
 
     public int deleteBankAccount(String id) {
@@ -215,8 +222,107 @@ public class BankAccountViewModel extends AndroidViewModel{// implements DataRep
         return repository.deleteAllTransactionsFromABankAccount(bank_account_id);
     }
 
+    //Operations with WalletLinkedBankAccounts
+    public long insertWalletLinkedBankAccount(WalletLinkedBankAccounts walletLinkedBankAccounts) {
+        return repository.insertWalletLinkedBankAccount(walletLinkedBankAccounts);
+    }
+
+    public long getNrOfLinkedBankFromWallet(long wallet_id, long linked_banked){
+        return repository.getNrOfLinkedBankFromWallet(wallet_id,linked_banked);
+    }
+
+    public WalletLinkedBankAccounts getLinkedAccountFromWallet(long wallet_id, String bank_account_id){
+        return repository.getLinkedAccountFromWallet(wallet_id,bank_account_id);
+    }
+
     //test
-    public List<BankAccount> getBankAccountsFromALinkedBankNOTLIVEDATA(String bank_id){
+    public List<BankAccount> getBankAccountsFromALinkedBankNOTLIVEDATA(long bank_id){
         return repository.getBankAccountsFromALinkedBankNOTLIVEDATA(bank_id);
+    }
+
+    public boolean isSyncLinkedBank(long wallet_id, LinkedBank linkedBank){
+        return repository.getNrOfLinkedBankFromWallet(wallet_id, linkedBank.getId()) == repository.getNrOfAccountsFromLinkedBank(linkedBank.getId());
+    }
+
+    public boolean isSyncLinkedBank(long wallet_id, long linkBankID){
+        return repository.getNrOfLinkedBankFromWallet(wallet_id, linkBankID) == repository.getNrOfAccountsFromLinkedBank(linkBankID);
+    }
+
+    public boolean isSyncBankAccount(long wallet_id, BankAccount bankAccount){
+        return getLinkedAccountFromWallet(wallet_id, bankAccount.getId()) != null;
+    }
+
+    //logic
+    public boolean syncBankAccount(long wallet_id, BankAccount bankAccount) {
+        WalletLinkedBankAccounts walletLinkedBankAccounts = getLinkedAccountFromWallet(wallet_id, bankAccount.getId());
+        if(walletLinkedBankAccounts==null){
+            //TODO: then sync it
+            long status = insertWalletLinkedBankAccount(new WalletLinkedBankAccounts(wallet_id, bankAccount.getInternal_bank_id(), bankAccount.getId()));
+            if(status >0) {
+                startSyncTransactionsBankAcc(wallet_id, bankAccount);
+                return true;
+            }
+            else
+                return false;
+        }else{
+            return true;
+        }
+    }
+
+    private void startSyncTransactionsBankAcc(long wallet_id, BankAccount bankAccount) {
+        findOrCategoryAndSyncTxns(wallet_id, bankAccount);
+    }
+
+    private void findOrCategoryAndSyncTxns(long wallet_id, BankAccount bankAccount) {
+        long category_id = 0;
+        long status = 0;
+        if((category_id = repository.getCategoryID(wallet_id,bankAccount.getId()))!=0){
+            status = 1;
+        }else {
+            CategoryObject categoryObject = new CategoryObject(bankAccount.getLabel(), bankAccount.getAccount_type(), wallet_id, bankAccount.getId());
+            category_id = categoryObject.getCategory_id();
+            status = repository.addCategory(categoryObject);//MainActivity.myDatabase.categoryDao().addCategory(categoryObject);
+        }
+        if(status>0) syncTxns(wallet_id, bankAccount, category_id);
+    }
+
+    private void syncTxns(long wallet_id, BankAccount bankAccount, long category_id) {
+        List<IEObject> ieObjects = new ArrayList<>();
+        List<AccountTransaction> transactions = repository.getAllTransactionsFromABankAccountNOTLIVEDATA(bankAccount.getId());
+        for(AccountTransaction transaction:transactions){
+            ieObjects.add(new IEObject(wallet_id, transaction.getDescription(),transaction.getTxn_value(), category_id, 1, transaction.getCompleted(), IEOccurrenceEnum.Never.toString(), transaction.getId()));
+        }
+        repository.insertAllIEObjects(ieObjects);
+    }
+
+    public boolean syncLinkedBankAccounts(long wallet_id, LinkedBank linkedBank) {
+        //TODO: getListOfBankAccounts from this linkedBank
+        //TODO: insert all BankAccounts which are not in the wallet_linked_bankaccounts table
+        List<BankAccount> bankAccounts = repository.getBankAccountsFromALinkedBankNOTLIVEDATA(linkedBank.getId());
+        for (BankAccount bankAccount : bankAccounts) {
+            syncBankAccount(wallet_id, bankAccount);
+        }
+        return true;
+    }
+
+    //autoTxnSync
+    public void autoTxnSync(List<AccountTransaction> transactionList){
+        Set<String> bankAccountIDs = new HashSet<String>();
+        for(AccountTransaction accountTransaction:transactionList){
+            bankAccountIDs.add(accountTransaction.getBank_account_id());
+        }
+
+        Set<WalletLinkedBankAccounts> walletLinkedBankAccounts = new HashSet<>();
+
+        for(String bankAccountID:bankAccountIDs){
+            walletLinkedBankAccounts.retainAll(repository.getLinkedAccountFromBankAccount(bankAccountID));
+        }
+
+        for(WalletLinkedBankAccounts walletLinkedBankAccount:walletLinkedBankAccounts){
+            findOrCategoryAndSyncTxns(walletLinkedBankAccount.getWallet_id(), repository.getBankAccount(walletLinkedBankAccount.getBank_account_id()));
+        }
+//        watchAccountTransaction();
+//        onChanged();
+        //add for all from wallet_linked_bank_accounts with wallet_id and bank_account_id;
     }
 }

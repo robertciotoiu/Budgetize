@@ -92,6 +92,7 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
             String code = data.getQueryParameter("oauth_verifier");
             if (code != null) {
                 getAccessToken(code);
+                getIntent().setData(null);
             }
         }
     }

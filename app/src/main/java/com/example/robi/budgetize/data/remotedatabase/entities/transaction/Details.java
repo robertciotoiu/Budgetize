@@ -1,14 +1,14 @@
 package com.example.robi.budgetize.data.remotedatabase.entities.transaction;
 
 public class Details {
-    private long type;
+    private String type;
     private String description;
     private String posted;
     private String completed;
     private NewBalance new_balance;
     private Value value;
 
-    public Details(long type, String description, String posted, String completed, NewBalance new_balance, Value value) {
+    public Details(String type, String description, String posted, String completed, NewBalance new_balance, Value value) {
         this.type = type;
         this.description = description;
         this.posted = posted;
@@ -17,11 +17,11 @@ public class Details {
         this.value = value;
     }
 
-    public long getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(long type) {
+    public void setType(String type) {
         this.type = type;
     }
 

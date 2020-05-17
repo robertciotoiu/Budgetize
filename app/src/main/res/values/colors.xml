@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#000000</color>
 
-
+    <color name="gold">#FFD4AF37</color>
         <color name="positiveBackgroundColor">#00C853</color>
         <color name="positiveCircleColor">#B9F6CA</color> <!--#E8F5E9-->
             <color name="positiveCircleColorNew">#1B5E20</color> <!--#E8F5E9-->

@@ -10,17 +10,19 @@
             android:id="@+id/text_view_ie_value_white"
             android:layout_width="20dp"
             android:layout_height="35dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="4dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="6dp"
             android:layout_toStartOf="@id/remove_sub_item_white"
             android:layout_toEndOf="@+id/text_view_title_white"
-            android:autoSizeMaxTextSize="15sp"
-            android:autoSizeMinTextSize="1sp"
-            android:autoSizeStepGranularity="1sp"
-            android:autoSizeTextType="uniform"
+
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="15sp"
+
             android:fontFamily="@font/open_sans_semibold"
-            android:text="Value"
             android:gravity="center_vertical|right"
+            android:text="Value"
+            android:tooltipText="android:text"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#FFFFFF" />
 
@@ -29,14 +31,13 @@
             android:layout_width="100dp"
             android:layout_height="35dp"
             android:layout_alignParentStart="false"
-            android:autoSizeMaxTextSize="15sp"
-            android:autoSizeMinTextSize="1sp"
-            android:autoSizeStepGranularity="1sp"
-            android:autoSizeTextType="uniform"
+
             android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="15sp"
+
             android:fontFamily="@font/open_sans_semibold"
             android:gravity="center_vertical"
-            android:maxLines="1"
             android:text="Category Name"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#FFFFFF" />

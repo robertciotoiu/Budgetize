@@ -12,7 +12,7 @@ import java.util.List;
 
 @Dao
 public interface IEObjectDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAllIEObjects(List<IEObject> ieObjects);
 
     @Insert

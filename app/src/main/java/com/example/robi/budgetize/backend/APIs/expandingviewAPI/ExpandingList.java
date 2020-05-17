@@ -96,6 +96,10 @@ public class ExpandingList extends ScrollView {
         }
         return (ExpandingItem) mContainer.getChildAt(index);
     }
+//
+//    public List<ExpandingItem> getItems(){
+//        return
+//    }
 
     /**
      * Return the items count.

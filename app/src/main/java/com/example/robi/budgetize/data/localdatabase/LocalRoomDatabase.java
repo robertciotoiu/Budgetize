@@ -20,16 +20,18 @@ import com.example.robi.budgetize.data.localdatabase.dao.CategoryDao;
 import com.example.robi.budgetize.data.localdatabase.dao.IEObjectDao;
 import com.example.robi.budgetize.data.localdatabase.dao.LinkedBankDao;
 import com.example.robi.budgetize.data.localdatabase.dao.WalletDao;
+import com.example.robi.budgetize.data.localdatabase.dao.WalletLinkedBankAccountsDao;
 import com.example.robi.budgetize.data.localdatabase.entities.AccountTransaction;
 import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
+import com.example.robi.budgetize.data.localdatabase.entities.WalletLinkedBankAccounts;
 
 import java.util.List;
 
-@Database(entities = {Wallet.class, IEObject.class, CategoryObject.class, LinkedBank.class, BankAccount.class, AccountTransaction.class},version = 1)//specify the tables(wallets,incomes,expenses,etc) and versions
+@Database(entities = {Wallet.class, IEObject.class, CategoryObject.class, LinkedBank.class, BankAccount.class, AccountTransaction.class, WalletLinkedBankAccounts.class},version = 1)//specify the tables(wallets,incomes,expenses,etc) and versions
 public abstract class LocalRoomDatabase extends RoomDatabase {
     @VisibleForTesting
     public static final String DATABASE_NAME = "budgetize-db";
@@ -45,6 +47,8 @@ public abstract class LocalRoomDatabase extends RoomDatabase {
     public abstract BankAccountDao bankAccountDao();
 
     public abstract AccountTransactionDao accountTransactionDao();
+
+    public abstract WalletLinkedBankAccountsDao walletLinkedBankAccountsDao();
 
     private static LocalRoomDatabase sInstance;
 
