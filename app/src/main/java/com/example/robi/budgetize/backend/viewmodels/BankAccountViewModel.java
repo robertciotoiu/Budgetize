@@ -290,7 +290,7 @@ public class BankAccountViewModel extends AndroidViewModel{// implements DataRep
         List<IEObject> ieObjects = new ArrayList<>();
         List<AccountTransaction> transactions = repository.getAllTransactionsFromABankAccountNOTLIVEDATA(bankAccount.getId());
         for(AccountTransaction transaction:transactions){
-            ieObjects.add(new IEObject(wallet_id, transaction.getDescription(),transaction.getTxn_value(), category_id, 1, transaction.getCompleted(), IEOccurrenceEnum.Never.toString(), transaction.getId()));
+            ieObjects.add(new IEObject(wallet_id, transaction.getDescription(),transaction.getTxn_value(), category_id, 1, transaction.getCompleted(), IEOccurrenceEnum.Never.toString(), transaction.getId(),transaction.getTxn_currency()));
         }
         repository.insertAllIEObjects(ieObjects);
     }

@@ -63,7 +63,7 @@ public class CreateWalletActivity extends AppCompatActivity {
 
             financialStatus = Double.parseDouble(FinancialStatus.getText().toString());
 
-            Wallet wallet = new Wallet(walletName, financialStatus , financialGoal);
+            Wallet wallet = new Wallet(walletName, financialStatus , financialGoal,"USD");
 
             Long status = mainActivityViewModel.addWallet(wallet);
 

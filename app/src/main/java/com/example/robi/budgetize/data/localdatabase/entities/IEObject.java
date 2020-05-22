@@ -43,13 +43,16 @@ public class IEObject {
     @ColumnInfo(name="type")
     public int type;//0 means income, 1 means expense
 
+    @ColumnInfo(name="currency")
+    public String currency;
+
     @ColumnInfo(name = "txn_id")
     public String txn_id;//Reference to txns from OBP like 5fb61a56-85cf-45e2-84b5-f272b08b4ac4
 
 //    @ColumnInfo(name = "bank_account")
 
 
-    public IEObject(long wallet_id,String name, double amount, long category_id, int type, String date, String occurrence, String txn_id) {
+    public IEObject(long wallet_id,String name, double amount, long category_id, int type, String date, String occurrence, String txn_id, String currency) {
         this.id = System.nanoTime();
         this.wallet_id = wallet_id;
         this.name = name;
@@ -65,8 +68,9 @@ public class IEObject {
 
         this.type = type;
 
-        this.txn_id = txn_id;
+        this.currency = currency;
 
+        this.txn_id = txn_id;
     }
 
     public long getId() {
@@ -123,5 +127,13 @@ public class IEObject {
 
     public void setTxn_id(String txn_id) {
         this.txn_id = txn_id;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 }

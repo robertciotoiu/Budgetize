@@ -38,6 +38,9 @@ public interface WalletDao {
     @Query("SELECT latest_income_update FROM wallets LIMIT 1")
     public String getLatestDate();
 
+    @Query("UPDATE wallets SET currency = :currency where id = :wallet_id")
+    public long updateCurrency(long wallet_id, String currency);
+
     //UPDATE THE FINANCIAL STATUS OF A WALLET
     @Query("UPDATE wallets set financial_status = financial_status+(SELECT (SELECT COALESCE(SUM(ie.amount),0) AS wallet_ie FROM wallets w, incomes_expenses ie where w.id = ie.wallet_id and w.id = :wallet_id and ie.type=0) - (SELECT COALESCE(SUM(ie.amount),0) AS wallet_ie FROM wallets w, incomes_expenses ie where w.id = ie.wallet_id and w.id = :wallet_id AND ie.type=1) AS Difference), latest_income_update = :date ")
     public void financialStatusUpdate(long wallet_id, String date);

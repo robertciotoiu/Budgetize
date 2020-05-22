@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +31,9 @@ import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.createActivities.CreateCategoryActivity;
 import com.example.robi.budgetize.ui.activities.createActivities.CreateIEActivity;
 import com.google.gson.Gson;
+import com.mynameismidori.currencypicker.CurrencyPicker;
+import com.mynameismidori.currencypicker.CurrencyPickerListener;
+import com.mynameismidori.currencypicker.ExtendedCurrency;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout;
@@ -230,12 +234,65 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         //Display Wallet Name:
         ExpandingItem first_item = mExpandingList.createNewItem(R.layout.first_ie_item);
         if (first_item != null) {
-            ((TextView) first_item.findViewById(R.id.wallet_name_ie_screen)).setText(wallet.getName());//TODO
+            //1. Wallet name
+            ((TextView) first_item.findViewById(R.id.wallet_name_ie_screen)).setText(wallet.getName());
+
+            String currency = wallet.getCurrency();
+            CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");
+            ExtendedCurrency currencyCode = ExtendedCurrency.getCurrencyByISO(currency);
+            ((TextView) first_item.findViewById(R.id.currency_textview)).setText(currencyCode.getCode());
+            ((ImageView) first_item.findViewById(R.id.currency_imageview)).setImageDrawable(getDrawable(currencyCode.getFlag()));
+
+
+            ((TextView) first_item.findViewById(R.id.currency_textview)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
+                    picker.setListener(new CurrencyPickerListener() {
+                        @Override
+                        public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
+                            // Implement your code here
+                            doSelectCurrencyLogic(first_item, code, flagDrawableResID, picker);
+                        }
+                    });
+                    picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
+                }
+            });
+
+            ((ImageView) first_item.findViewById(R.id.currency_imageview)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
+                    picker.setListener(new CurrencyPickerListener() {
+                        @Override
+                        public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
+                            // Implement your code here
+                            doSelectCurrencyLogic(first_item, code, flagDrawableResID, picker);
+                        }
+                    });
+                    picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
+                }
+            });
         }
 
         //Add Categories and IEs
         for (CategoryObject categoryObject : categoryObjectsList) {
             addItem(categoryObject);
+        }
+    }
+
+    private void doSelectCurrencyLogic(ExpandingItem first_item, String code, int flagDrawableResID, CurrencyPicker picker) {
+        long status = mainActivityViewModel.updateCurrency(walletID, code);
+
+        if(status>0) {
+            ((TextView) first_item.findViewById(R.id.currency_textview)).setText(code);
+            ((ImageView) first_item.findViewById(R.id.currency_imageview)).setImageDrawable(getDrawable(flagDrawableResID));
+            picker.dismiss();
+        }else{
+            Toast toast = Toast.makeText(IEActivityDiegodobelo.this, "Cannot change currency! Contact support team!", Toast.LENGTH_LONG);
+            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+            v.setTextColor(Color.RED);
+            toast.show();
         }
     }
 

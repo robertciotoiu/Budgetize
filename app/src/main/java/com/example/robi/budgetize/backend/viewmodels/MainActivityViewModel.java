@@ -63,6 +63,10 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
 //        mObservableCategories.postValue(repository.getAllCategories().getValue());
     }
 
+    public long updateCurrency(long wallet_id, String currency) {
+        return repository.updateCurrency(wallet_id, currency);
+    }
+
     public LiveData<List<Wallet>> getAllWallets() {
         return repository.getAllWallets();
     }

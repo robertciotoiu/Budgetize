@@ -11,11 +11,12 @@ import java.util.Date;
 @Entity(tableName = "wallets")
 public class Wallet {
 
-    public Wallet(String name,double financialStatus, double financialGoal) {
+    public Wallet(String name,double financialStatus, double financialGoal,String currency) {
         this.id = System.nanoTime();
         this.name = name;
         this.financialGoal = financialGoal;
         this.financialStatus = financialStatus;
+        this.currency = currency;
 
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM");//dd/MM/yyyy
         Date now = new Date();
@@ -39,6 +40,9 @@ public class Wallet {
 
     @ColumnInfo(name = "latest_income_update")
     private String lastDate;
+
+    @ColumnInfo(name = "currency")
+    private String currency;
 
     public String getLastDate() {
         return lastDate;
@@ -82,4 +86,11 @@ public class Wallet {
         this.name = name;
     }
 
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
 }

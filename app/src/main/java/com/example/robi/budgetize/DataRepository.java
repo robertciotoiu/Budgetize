@@ -97,6 +97,56 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         return sInstance;
     }
 
+    //WALLETDAO
+
+    @Override
+    public void insertAllWallets(List<Wallet> wallets) {
+        mDatabase.walletDao().insertAllWallets(wallets);
+    }
+
+    @Override
+    public long addWallet(Wallet wallet) {
+        return mDatabase.walletDao().addWallet(wallet);
+    }
+
+    @Override
+    public long updateCurrency(long wallet_id, String currency) {
+        return mDatabase.walletDao().updateCurrency(wallet_id, currency);
+    }
+
+    @Override
+    public LiveData<Wallet> getWalletById(long id) {
+        return mDatabase.walletDao().getWalletById(id);
+    }
+
+    @Override
+    public LiveData<List<Wallet>> getAllWallets() {
+        return mDatabase.walletDao().getAllWallets();
+    }
+
+    @Override
+    public double getIE(long wallet_id) {
+        return mDatabase.walletDao().getIE(wallet_id);
+    }
+
+    @Override
+    public String getLatestDate() {
+        return mDatabase.walletDao().getLatestDate();
+    }
+
+    @Override
+    public void financialStatusUpdate(long wallet_id, String date) {
+        mDatabase.walletDao().financialStatusUpdate(wallet_id,date);
+    }
+
+    @Override
+    public void deleteWallet(Wallet wallet) {
+        mDatabase.walletDao().deleteWallet(wallet);
+
+        //other cleaning
+        //deleteAllWalletLinkedAccounts(wallet.getId());
+    }
+
     //CATEGORYDAO
 
     @Override
@@ -187,51 +237,6 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     @Override
     public void deleteAllIEofACategory(long category_id) {
         mDatabase.ieoDao().deleteAllIEofACategory(category_id);
-    }
-
-    //WALLETDAO
-
-    @Override
-    public void insertAllWallets(List<Wallet> wallets) {
-        mDatabase.walletDao().insertAllWallets(wallets);
-    }
-
-    @Override
-    public long addWallet(Wallet wallet) {
-        return mDatabase.walletDao().addWallet(wallet);
-    }
-
-    @Override
-    public LiveData<Wallet> getWalletById(long id) {
-        return mDatabase.walletDao().getWalletById(id);
-    }
-
-    @Override
-    public LiveData<List<Wallet>> getAllWallets() {
-        return mDatabase.walletDao().getAllWallets();
-    }
-
-    @Override
-    public double getIE(long wallet_id) {
-        return mDatabase.walletDao().getIE(wallet_id);
-    }
-
-    @Override
-    public String getLatestDate() {
-        return mDatabase.walletDao().getLatestDate();
-    }
-
-    @Override
-    public void financialStatusUpdate(long wallet_id, String date) {
-        mDatabase.walletDao().financialStatusUpdate(wallet_id,date);
-    }
-
-    @Override
-    public void deleteWallet(Wallet wallet) {
-        mDatabase.walletDao().deleteWallet(wallet);
-
-        //other cleaning
-        //deleteAllWalletLinkedAccounts(wallet.getId());
     }
 
     //LINKEDBANKDAO
