@@ -20,6 +20,7 @@ import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.IEActivityDiegodobelo;
 import com.google.gson.Gson;
+import com.mynameismidori.currencypicker.ExtendedCurrency;
 
 import java.util.List;
 
@@ -95,6 +96,10 @@ public class WalletViewPagerAdapter extends PagerAdapter {
             TextView walletName = null;
             ProgressBar pb = null;
 
+            String currency = wallet.getCurrency();
+            ExtendedCurrency currencyCode = ExtendedCurrency.getCurrencyByISO(currency);
+            String currencySymbol = currencyCode.getSymbol();
+
             if (ie > 0) {
                 view = layoutInflater.inflate(R.layout.page_positive, container, false);
                 //views.add(view);
@@ -113,7 +118,7 @@ public class WalletViewPagerAdapter extends PagerAdapter {
                 pb.setProgress(0, true);
 
                 b = (Button) view.findViewById(R.id.ie_button);
-                b.setText("+" + ie + "$");
+                b.setText("+" + ie + currencySymbol);
 
                 init_pb_listener(view, position);
             } else if (ie < 0) {
@@ -123,7 +128,7 @@ public class WalletViewPagerAdapter extends PagerAdapter {
                 pb = (ProgressBar) view.findViewById(R.id.progressBar);
                 pb.setProgress(0, true);
                 b = (Button) view.findViewById(R.id.ie_button);
-                b.setText(ie + "$");
+                b.setText(ie + currencySymbol);
 
                 init_pb_listener(view, position);
             } else {
@@ -134,7 +139,7 @@ public class WalletViewPagerAdapter extends PagerAdapter {
                 pb.setProgress(0, true);
                 //ObjectAnimator progressAnimator = ObjectAnimator.ofInt(pb, "progress", 10000, 0);
                 b = (Button) view.findViewById(R.id.ie_button);
-                b.setText(ie + "$");
+                b.setText(ie + currencySymbol);
 
                 init_pb_listener(view, position);
             }

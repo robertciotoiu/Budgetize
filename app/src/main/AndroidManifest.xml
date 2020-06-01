@@ -36,7 +36,10 @@
         </activity> <!-- android:launchMode="singleInstance" BE AWARE OF THIS! -->
         <activity android:name=".ui.activities.IEActivityDiegodobelo" />
         <activity android:name=".ui.activities.createActivities.CreateCategoryActivity" />
-        <activity android:name=".ui.activities.createActivities.CreateIEActivity" />
+        <activity
+            android:name=".ui.activities.createActivities.CreateIEActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
+            />
         <activity android:name=".ui.activities.createActivities.CreateWalletActivity" />
         <activity
             android:name=".data.remotedatabase.remote.oauth1.activity.OAuthActivity"

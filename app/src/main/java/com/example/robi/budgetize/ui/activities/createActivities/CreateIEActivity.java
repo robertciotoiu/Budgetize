@@ -90,7 +90,7 @@ public class CreateIEActivity extends AppCompatActivity implements DatePickerDia
             }
         };
         mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId()).observe(this,getCategoryListObsever);
-        String[] occArr = ArrayUtils.concat(new String[]{"Select ie occurrence"},getOccurrencesOptions(IEOccurrenceEnum.class));
+        String[] occArr = ArrayUtils.concat(new String[]{"Select transaction's occurrence"},getOccurrencesOptions(IEOccurrenceEnum.class));
         occurrenceSpinner = init_spinner(R.id.pick_occurence_spinner, occArr);
     }
     @Override
