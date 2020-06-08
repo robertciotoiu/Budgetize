@@ -13,11 +13,9 @@ import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.robi.budgetize.ApplicationObj;
-import com.example.robi.budgetize.data.DataRepository;
 import com.example.robi.budgetize.backend.services.DoOAuthService;
-import com.example.robi.budgetize.backend.services.DownloadBankImagesService;
-import com.example.robi.budgetize.backend.services.RetrieveBanksService;
 import com.example.robi.budgetize.backend.viewmodels.helpers.BankImagesDownloader;
+import com.example.robi.budgetize.data.DataRepository;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 
 import java.util.ArrayList;
@@ -131,22 +129,4 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
         });
         t.start();
     }
-
-    //    2nd Service
-    private void getAllBanksService() {
-        if (obpOAuthOK) {
-            //if it is available we can download banks
-            Intent serviceIntent = new Intent(applicationObj.getApplicationContext(), RetrieveBanksService.class);
-            serviceIntent.putExtra("getAllBanks", true);
-            applicationObj.startService(serviceIntent);
-        }
-    }
-
-    //3nd Service
-    private void syncAllImagesService() {
-        Intent serviceIntent = new Intent(applicationObj.getApplicationContext(), DownloadBankImagesService.class);
-        serviceIntent.putExtra("syncImages", true);
-        applicationObj.startService(serviceIntent);
-    }
-
 }

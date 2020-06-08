@@ -13,9 +13,9 @@ import com.example.robi.budgetize.data.remotedatabase.entities.account.Account;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 import com.example.robi.budgetize.data.remotedatabase.entities.transaction.Holder;
 import com.example.robi.budgetize.data.remotedatabase.entities.transaction.Transaction;
-import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.ExpiredAccessTokenException;
-import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
-import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.ObpApiCallFailedException;
+import com.example.robi.budgetize.data.remotedatabase.remote.OBPlib.ExpiredAccessTokenException;
+import com.example.robi.budgetize.data.remotedatabase.remote.OBPlib.OBPRestClient;
+import com.example.robi.budgetize.data.remotedatabase.remote.OBPlib.ObpApiCallFailedException;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;

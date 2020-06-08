@@ -19,7 +19,7 @@ import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.localdatabase.entities.WalletLinkedBankAccounts;
 import com.example.robi.budgetize.data.localdatabase.enums.TransactionOccurrenceEnum;
-import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
+import com.example.robi.budgetize.data.remotedatabase.remote.OBPlib.OBPRestClient;
 
 import java.util.ArrayList;
 import java.util.HashSet;

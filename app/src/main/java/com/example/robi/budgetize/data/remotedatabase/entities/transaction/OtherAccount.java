@@ -1,6 +1,6 @@
 package com.example.robi.budgetize.data.remotedatabase.entities.transaction;
 
-import com.example.robi.budgetize.data.remotedatabase.entities.AccountRouting;
+import com.example.robi.budgetize.data.remotedatabase.entities.account.AccountRouting;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.BankRouting;
 
 import java.util.List;

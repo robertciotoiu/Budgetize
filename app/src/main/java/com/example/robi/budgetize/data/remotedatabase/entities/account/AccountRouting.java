@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.data.remotedatabase.entities;
+package com.example.robi.budgetize.data.remotedatabase.entities.account;
 
 public class AccountRouting {
     String scheme;

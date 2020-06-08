@@ -42,7 +42,7 @@
             />
         <activity android:name=".ui.activities.createActivities.CreateWalletActivity" />
         <activity
-            android:name=".data.remotedatabase.remote.oauth1.activity.OAuthActivity"
+            android:name=".data.remotedatabase.remote.OBPlib.activity.OAuthActivity"
             android:noHistory="true"
             android:theme="@android:style/Theme.NoTitleBar"></activity>
         <activity android:name=".ui.activities.MainActivity">
@@ -53,21 +53,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".backend.services.DownloadBankImagesService" />
         <service android:name=".backend.services.DoOAuthService">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <!--
-            You will want to set customAppProtocol to something unique to avoid having Android
-            give the user more than one app to pick from to handle the oauth callback
-                -->
-                <data android:scheme="@string/customAppProtocol" />
-            </intent-filter>
-        </service>
-        <service android:name=".backend.services.RetrieveBanksService">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

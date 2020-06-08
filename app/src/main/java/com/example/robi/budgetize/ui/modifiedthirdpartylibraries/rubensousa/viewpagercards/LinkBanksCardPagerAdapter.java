@@ -19,7 +19,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
-import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
+import com.example.robi.budgetize.data.remotedatabase.remote.OBPlib.OBPRestClient;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,5 @@
 package com.example.robi.budgetize.data.remotedatabase.entities.account;
 
-import com.example.robi.budgetize.data.remotedatabase.entities.AccountRouting;
-
 import java.util.List;
 
 public class Account {

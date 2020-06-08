@@ -26,7 +26,7 @@ import com.example.robi.budgetize.backend.viewmodels.factories.BankAccountViewMo
 import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
-import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
+import com.example.robi.budgetize.data.remotedatabase.remote.OBPlib.OBPRestClient;
 import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.LinkBanksCardFragmentPagerAdapter;
 import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.LinkBanksCardPagerAdapter;
 import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.LinkBanksShadowTransformer;

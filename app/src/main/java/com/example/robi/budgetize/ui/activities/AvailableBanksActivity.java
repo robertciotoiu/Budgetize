@@ -1,6 +1,5 @@
 package com.example.robi.budgetize.ui.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -13,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.backend.services.DownloadBankImagesService;
 import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerViewModelFactory;
 import com.example.robi.budgetize.backend.viewmodels.helpers.ImageDownloader;
@@ -150,13 +148,6 @@ public class AvailableBanksActivity extends AppCompatActivity {
     private boolean isExternalStorageWritable() {
         return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED;
     }
-
-    private void syncAllImagesService() {
-        Intent serviceIntent = new Intent(this, DownloadBankImagesService.class);
-        serviceIntent.putExtra("syncImages", true);
-        startService(serviceIntent);
-    }
-
 }
 
 // Data class to be used for ListGridAdapter demo.

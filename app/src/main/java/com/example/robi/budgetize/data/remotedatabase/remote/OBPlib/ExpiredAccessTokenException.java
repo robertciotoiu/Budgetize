@@ -191,13 +191,13 @@
    limitations under the License.
 
  */
-package com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib;
+package com.example.robi.budgetize.data.remotedatabase.remote.OBPlib;
 
-public class ObpApiCallFailedException extends Exception {
+public class ExpiredAccessTokenException extends Exception {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8906841349527670945L;
+	private static final long serialVersionUID = -7181187099829972716L;
 
 }
