@@ -21,8 +21,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.backend.APIs.expandingviewAPI.ExpandingItem;
-import com.example.robi.budgetize.backend.APIs.expandingviewAPI.ExpandingList;
+import com.example.robi.budgetize.ui.thirdPartyLibraries.ExpandingItem;
+import com.example.robi.budgetize.ui.thirdPartyLibraries.ExpandingList;
 import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.MainActivityViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;

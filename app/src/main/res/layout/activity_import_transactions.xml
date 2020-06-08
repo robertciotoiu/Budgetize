@@ -9,7 +9,7 @@
     android:backgroundTint="#B1BCBE"
     >
 
-    <com.example.robi.budgetize.backend.APIs.expandingviewAPI.ExpandingList
+    <com.example.robi.budgetize.ui.thirdPartyLibraries.ExpandingList
         android:id="@+id/expanding_list_main_transactions"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

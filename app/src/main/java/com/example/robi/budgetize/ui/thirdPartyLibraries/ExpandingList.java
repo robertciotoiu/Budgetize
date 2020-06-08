@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.backend.APIs.expandingviewAPI;
+package com.example.robi.budgetize.ui.thirdPartyLibraries;
 
 /**
  Copyright (c) 2016, Diego Bezerra <diego.bezerra@gmail.com>

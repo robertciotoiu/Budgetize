@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.backend.APIs.expandingviewAPI;
+package com.example.robi.budgetize.ui.thirdPartyLibraries;
 
 import android.view.View;
 import android.view.ViewGroup;

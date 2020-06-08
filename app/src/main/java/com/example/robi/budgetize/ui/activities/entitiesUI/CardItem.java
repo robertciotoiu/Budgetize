@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.backend.APIs.viewpagerforbankaccounts;
+package com.example.robi.budgetize.ui.activities.entitiesUI;
 
 public class CardItem {
 
