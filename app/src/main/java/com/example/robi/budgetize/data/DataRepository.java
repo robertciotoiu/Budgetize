@@ -1,4 +1,4 @@
-package com.example.robi.budgetize;
+package com.example.robi.budgetize.data;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;

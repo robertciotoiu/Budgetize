@@ -10,8 +10,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
-import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.activity.OAuthActivity;
-import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
 
 import java.util.ArrayList;
 
@@ -30,11 +28,12 @@ public class RetrieveBanksService extends Service {
     }
 
 
-    private void redoOAuth() {
-        OBPRestClient.clearAccessToken(0);//TODO:be aware of this
-        Intent oauthActivity = new Intent(this, OAuthActivity.class);
-        startActivity(oauthActivity);
-    }
+//    private void redoOAuth() {
+    //TODO: reimplement this where it should be
+//        OBPRestClient.clearAccessToken(0);//TODO:be aware of this
+//        Intent oauthActivity = new Intent(this, OAuthActivity.class);
+//        startActivity(oauthActivity);
+//    }
 
     @Nullable
     @Override

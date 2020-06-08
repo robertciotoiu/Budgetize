@@ -10,7 +10,7 @@
     <string name="intro_text">CREATE WALLET</string>
 
 
-    <!-- LinkedBankAccounts.java Strings -->
+    <!-- LinkedBankAccountsActivity.java Strings -->
     <!-- Bank accounts titles-->
     <string name="revolut_title">Revolut</string>
     <string name="ing_title">ING</string>

@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.ui.adapters.viewpager;
+package com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards;
 
 
 import androidx.cardview.widget.CardView;

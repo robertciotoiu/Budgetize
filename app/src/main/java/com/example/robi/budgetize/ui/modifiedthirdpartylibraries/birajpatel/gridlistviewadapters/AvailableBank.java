@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.ui.adapters.gridlistview;
+package com.example.robi.budgetize.ui.modifiedthirdpartylibraries.birajpatel.gridlistviewadapters;
 
 public class AvailableBank {
     private int position;

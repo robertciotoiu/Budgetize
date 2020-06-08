@@ -19,7 +19,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.ui.activities.entitiesUI.CardItem;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.CardItem;
 import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
 import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.BankAccountViewModelFactory;
@@ -27,15 +27,15 @@ import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerVi
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
-import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksCardFragmentPagerAdapter;
-import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksCardPagerAdapter;
-import com.example.robi.budgetize.ui.adapters.viewpager.LinkBanksShadowTransformer;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.LinkBanksCardFragmentPagerAdapter;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.LinkBanksCardPagerAdapter;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.LinkBanksShadowTransformer;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class LinkedBankAccounts extends AppCompatActivity implements View.OnClickListener,
+public class LinkedBankAccountsActivity extends AppCompatActivity implements View.OnClickListener,
         CompoundButton.OnCheckedChangeListener {
     private final int SELECTED_BANK = 0;
 
@@ -98,7 +98,7 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
     }
 
     public void getAccessToken(String verifyCode) {
-        new LinkedBankAccounts.AccessTokenTask(this).execute(verifyCode);
+        new LinkedBankAccountsActivity.AccessTokenTask(this).execute(verifyCode);
     }
 
     private class AccessTokenTask extends AsyncTask<String, Void, Boolean> {
@@ -200,7 +200,7 @@ public class LinkedBankAccounts extends AppCompatActivity implements View.OnClic
 
     }
 
-    public LinkedBankAccounts getActivityContext() {
+    public LinkedBankAccountsActivity getActivityContext() {
         return this;
     }
 

@@ -11,7 +11,7 @@
     DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
     ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 -->
-<com.example.robi.budgetize.ui.thirdPartyLibraries.ExpandingItem
+<com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingItem
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"

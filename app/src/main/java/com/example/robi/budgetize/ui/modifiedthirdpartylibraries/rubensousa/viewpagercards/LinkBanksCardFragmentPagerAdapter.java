@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.ui.adapters.viewpager;
+package com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards;
 
 
 
@@ -8,8 +8,6 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-
-import com.example.robi.budgetize.ui.fragments.LinkBanksCardFragment;
 
 import java.util.ArrayList;
 import java.util.List;

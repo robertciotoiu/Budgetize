@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.robi.budgetize.ApplicationObj;
-import com.example.robi.budgetize.backend.viewmodels.helpers.BasicImageDownloader;
+import com.example.robi.budgetize.backend.viewmodels.helpers.ImageDownloader;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 
 import java.io.File;
@@ -91,9 +91,9 @@ public class DownloadBankImagesService extends Service {
             File file = new File(fileLocation.getPath() + File.separator + banks.get(i).getId() + ".png");
 
             final int finalI = i;
-            final BasicImageDownloader downloader = new BasicImageDownloader(new BasicImageDownloader.OnImageLoaderListener() {
+            final ImageDownloader downloader = new ImageDownloader(new ImageDownloader.OnImageLoaderListener() {
                 @Override
-                public void onError(BasicImageDownloader.ImageError error) {
+                public void onError(ImageDownloader.ImageError error) {
                     Log.d("Error code ", error.getErrorCode() + ": " + error.getMessage());
                     error.printStackTrace();
                 }
@@ -108,7 +108,7 @@ public class DownloadBankImagesService extends Service {
                     final Bitmap.CompressFormat mFormat = Bitmap.CompressFormat.PNG;
                     /* don't forget to include the extension into the file name */
                     final File myImageFile = new File(fileLocation.getPath() + File.separator + banks.get(finalI).getId() + ".png");
-                    BasicImageDownloader.writeToDisk(myImageFile, result, new BasicImageDownloader.OnBitmapSaveListener() {
+                    ImageDownloader.writeToDisk(myImageFile, result, new ImageDownloader.OnBitmapSaveListener() {
                         @Override
                         public void onBitmapSaved() {
                             //Toast.makeText(ImageActivity.this, "Image saved as: " + myImageFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
@@ -116,7 +116,7 @@ public class DownloadBankImagesService extends Service {
                         }
 
                         @Override
-                        public void onBitmapSaveError(BasicImageDownloader.ImageError error) {
+                        public void onBitmapSaveError(ImageDownloader.ImageError error) {
                             Log.d("Error code ", error.getErrorCode() + ": " +
                                     error.getMessage());
                             error.printStackTrace();
@@ -146,11 +146,11 @@ public class DownloadBankImagesService extends Service {
 
 
     private class DownloadTask implements Runnable {
-        BasicImageDownloader downloader;
+        ImageDownloader downloader;
         String logoUrl;
         boolean displayProgress;
 
-        public DownloadTask(BasicImageDownloader downloader, String logoUrl, boolean displayProgress) {
+        public DownloadTask(ImageDownloader downloader, String logoUrl, boolean displayProgress) {
             this.displayProgress = displayProgress;
             this.downloader = downloader;
             this.logoUrl = logoUrl;

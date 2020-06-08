@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.ui.adapters.gridlistview;
+package com.example.robi.budgetize.ui.modifiedthirdpartylibraries.birajpatel.gridlistviewadapters;
 
 import android.widget.ImageView;
 import android.widget.TextView;

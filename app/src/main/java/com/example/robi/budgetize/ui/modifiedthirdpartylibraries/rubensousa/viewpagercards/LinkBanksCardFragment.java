@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.ui.fragments;
+package com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,7 +10,6 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.ui.adapters.viewpager.LinkedBanksCardAdapter;
 
 public class LinkBanksCardFragment extends Fragment {
 

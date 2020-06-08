@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.ui.adapters.viewpager;
+package com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,7 +18,6 @@ import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.ui.activities.entitiesUI.CardItem;
 import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
 import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
 

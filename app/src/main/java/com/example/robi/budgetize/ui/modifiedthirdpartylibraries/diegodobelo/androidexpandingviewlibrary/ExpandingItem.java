@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.ui.thirdPartyLibraries;
+package com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary;
 
 /**
  Copyright (c) 2016, Diego Bezerra <diego.bezerra@gmail.com>

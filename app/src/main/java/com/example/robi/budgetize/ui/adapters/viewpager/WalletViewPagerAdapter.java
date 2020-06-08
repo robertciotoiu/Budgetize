@@ -18,7 +18,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
-import com.example.robi.budgetize.ui.activities.IEActivityDiegodobelo;
+import com.example.robi.budgetize.ui.activities.TransactionsActivity;
 import com.google.gson.Gson;
 import com.mynameismidori.currencypicker.ExtendedCurrency;
 
@@ -160,7 +160,7 @@ public class WalletViewPagerAdapter extends PagerAdapter {
                 Gson gson = new Gson();
                 String walletAsString = gson.toJson(wallets.get(p));
                 mainActivityViewModel.lastWalletPosition = position;
-                Intent myIntent = new Intent(context, IEActivityDiegodobelo.class);
+                Intent myIntent = new Intent(context, TransactionsActivity.class);
                 myIntent.putExtra("wallet", walletAsString); //Optional parameters
                 mainActivityViewModel.lastWalletPosition = position;
                 context.startActivity(myIntent);

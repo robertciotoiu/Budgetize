@@ -13,7 +13,7 @@ import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.robi.budgetize.ApplicationObj;
-import com.example.robi.budgetize.DataRepository;
+import com.example.robi.budgetize.data.DataRepository;
 import com.example.robi.budgetize.backend.services.DoOAuthService;
 import com.example.robi.budgetize.backend.services.DownloadBankImagesService;
 import com.example.robi.budgetize.backend.services.RetrieveBanksService;

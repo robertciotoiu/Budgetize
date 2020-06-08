@@ -16,10 +16,10 @@ import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.services.DownloadBankImagesService;
 import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerViewModelFactory;
-import com.example.robi.budgetize.backend.viewmodels.helpers.BasicImageDownloader;
+import com.example.robi.budgetize.backend.viewmodels.helpers.ImageDownloader;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
-import com.example.robi.budgetize.ui.adapters.gridlistview.AvailableBank;
-import com.example.robi.budgetize.ui.adapters.gridlistview.AvailableBanksAdapter;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.birajpatel.gridlistviewadapters.AvailableBank;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.birajpatel.gridlistviewadapters.AvailableBanksAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -142,7 +142,7 @@ public class AvailableBanksActivity extends AppCompatActivity {
         // Add data
         for (int i = 0; i < banks.size(); i++) {
             bankFullName = banks.get(i).getFull_name();
-            if (BasicImageDownloader.readFromDisk(new File(fileLocation.getPath() + File.separator + banks.get(i).getId() + ".png")) != null)
+            if (ImageDownloader.readFromDisk(new File(fileLocation.getPath() + File.separator + banks.get(i).getId() + ".png")) != null)
                 dataList.add(new AvailableBank(bankFullName != null ? bankFullName : "null", i, banks.get(i).getId()));
         }
     }

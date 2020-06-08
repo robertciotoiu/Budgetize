@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.robi.budgetize.ApplicationObj;
-import com.example.robi.budgetize.DataRepository;
+import com.example.robi.budgetize.data.DataRepository;
 import com.example.robi.budgetize.backend.services.DoOAuthService;
 import com.example.robi.budgetize.data.localdatabase.entities.AccountTransaction;
 import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;
@@ -18,7 +18,7 @@ import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.localdatabase.entities.WalletLinkedBankAccounts;
-import com.example.robi.budgetize.data.localdatabase.enums.IEOccurrenceEnum;
+import com.example.robi.budgetize.data.localdatabase.enums.TransactionOccurrenceEnum;
 import com.example.robi.budgetize.data.remotedatabase.remote.oauth1.lib.OBPRestClient;
 
 import java.util.ArrayList;
@@ -290,7 +290,7 @@ public class BankAccountViewModel extends AndroidViewModel{// implements DataRep
         List<IEObject> ieObjects = new ArrayList<>();
         List<AccountTransaction> transactions = repository.getAllTransactionsFromABankAccountNOTLIVEDATA(bankAccount.getId());
         for(AccountTransaction transaction:transactions){
-            ieObjects.add(new IEObject(wallet_id, transaction.getDescription(),transaction.getTxn_value(), category_id, 1, transaction.getCompleted(), IEOccurrenceEnum.Never.toString(), transaction.getId(),transaction.getTxn_currency()));
+            ieObjects.add(new IEObject(wallet_id, transaction.getDescription(),transaction.getTxn_value(), category_id, 1, transaction.getCompleted(), TransactionOccurrenceEnum.Never.toString(), transaction.getId(),transaction.getTxn_currency()));
         }
         repository.insertAllIEObjects(ieObjects);
     }

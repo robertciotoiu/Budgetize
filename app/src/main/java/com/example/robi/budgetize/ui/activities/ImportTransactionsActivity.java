@@ -24,8 +24,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.ui.thirdPartyLibraries.ExpandingItem;
-import com.example.robi.budgetize.ui.thirdPartyLibraries.ExpandingList;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingItem;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingList;
 import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.BankAccountViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;

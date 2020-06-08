@@ -28,7 +28,7 @@ import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.MainActivityViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
-import com.example.robi.budgetize.data.localdatabase.enums.IEOccurrenceEnum;
+import com.example.robi.budgetize.data.localdatabase.enums.TransactionOccurrenceEnum;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.google.android.gms.common.util.ArrayUtils;
 import com.google.gson.Gson;
@@ -39,7 +39,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class CreateIEActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
+public class CreateTransactionActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
     private static ArrayList<CategoryObject> categoryObjects = new ArrayList<CategoryObject>();
     private HashMap<String,Long> categoryHashMap = new HashMap<String, Long>();
     private Wallet wallet;
@@ -83,14 +83,14 @@ public class CreateIEActivity extends AppCompatActivity implements DatePickerDia
         getCategoryListObsever = new Observer<List<CategoryObject>>() {
             @Override
             public void onChanged(List<CategoryObject> categoryObjects) {
-                CreateIEActivity.categoryObjects.addAll(categoryObjects);
+                CreateTransactionActivity.categoryObjects.addAll(categoryObjects);
                 categoryHashMap.clear();
                 String[] categoriesArr = getCategories();
                 categorySpinner = init_spinner(R.id.create_ie_category, categoriesArr);
             }
         };
         mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId()).observe(this,getCategoryListObsever);
-        String[] occArr = ArrayUtils.concat(new String[]{"Select transaction's occurrence"},getOccurrencesOptions(IEOccurrenceEnum.class));
+        String[] occArr = ArrayUtils.concat(new String[]{"Select transaction's occurrence"},getOccurrencesOptions(TransactionOccurrenceEnum.class));
         occurrenceSpinner = init_spinner(R.id.pick_occurence_spinner, occArr);
     }
     @Override
@@ -113,8 +113,8 @@ public class CreateIEActivity extends AppCompatActivity implements DatePickerDia
         mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId()).removeObserver(getCategoryListObsever);
     }
 
-    public static String[] getOccurrencesOptions(Class<? extends Enum> e) {
-        return Arrays.stream(e.getEnumConstants()).map(Enum::name).toArray(String[]::new);
+    public static String[] getOccurrencesOptions(Class<? extends TransactionOccurrenceEnum> e) {
+        return Arrays.stream(e.getEnumConstants()).map(TransactionOccurrenceEnum::getOccurrence).toArray(String[]::new);
     }
 
     public void init_listeners() {

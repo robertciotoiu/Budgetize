@@ -6,7 +6,7 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.robi.budgetize.DataRepository;
+import com.example.robi.budgetize.data.DataRepository;
 import com.example.robi.budgetize.data.localdatabase.entities.AccountTransaction;
 import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;
 import com.example.robi.budgetize.data.remotedatabase.entities.account.Account;
@@ -27,7 +27,6 @@ import java.util.List;
 
 public class OBPRetroClass {
 
-    @SuppressLint("StaticFieldLeak")
     public static void getAllAvailableBanks(MutableLiveData<List<Bank>> mObservableBanks) {
         /**
          * @return A String containing the json representing the available banks, or an error message

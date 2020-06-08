@@ -1,4 +1,19 @@
-package com.example.robi.budgetize.ui.adapters.gridlistview;
+/**
+ * Copyright 2014-present Biraj Patel
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+package com.example.robi.budgetize.ui.modifiedthirdpartylibraries.birajpatel.gridlistviewadapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,10 +33,10 @@ import com.birin.gridlistviewadapters.dataholders.CardDataHolder;
 import com.birin.gridlistviewadapters.utils.ChildViewsClickHandler;
 import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.ApplicationObj;
+import com.example.robi.budgetize.backend.viewmodels.helpers.ImageDownloader;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
-import com.example.robi.budgetize.backend.viewmodels.helpers.BasicImageDownloader;
 import com.example.robi.budgetize.ui.activities.AvailableBanksActivity;
-import com.example.robi.budgetize.ui.activities.LinkedBankAccounts;
+import com.example.robi.budgetize.ui.activities.LinkedBankAccountsActivity;
 import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
@@ -79,7 +94,7 @@ public class AvailableBanksAdapter extends ListGridAdapter<AvailableBank, Availa
     protected void setCardView(CardDataHolder<AvailableBank> cardDataHolder,
                                AvailableBankViewHolder cardViewHolder) {
         AvailableBank item = cardDataHolder.getData();
-        Bitmap bankIcon = BasicImageDownloader.readFromDisk(new File(fileLocation.getPath()+File.separator+item.getBankImg()+".png"));
+        Bitmap bankIcon = ImageDownloader.readFromDisk(new File(fileLocation.getPath()+File.separator+item.getBankImg()+".png"));
         if(bankIcon!=null) {
             cardViewHolder.bankLogo.setImageBitmap(bankIcon);
             cardViewHolder.bankName.setText(item.getBankName());
@@ -89,7 +104,7 @@ public class AvailableBanksAdapter extends ListGridAdapter<AvailableBank, Availa
     //TODO: Implement the functionality when a bank is selected
     @Override
     protected void onCardClicked(AvailableBank cardData) {
-        startActivity(LinkedBankAccounts.class, cardData);
+        startActivity(LinkedBankAccountsActivity.class, cardData);
         Toast.makeText(getContext(),
                 "Card click " + cardData.getPositionText(), Toast.LENGTH_LONG)
                 .show();

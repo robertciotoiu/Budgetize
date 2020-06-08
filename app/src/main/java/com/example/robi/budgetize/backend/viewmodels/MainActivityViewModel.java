@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.robi.budgetize.DataRepository;
+import com.example.robi.budgetize.data.DataRepository;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;

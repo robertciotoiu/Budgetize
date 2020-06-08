@@ -21,15 +21,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.ui.thirdPartyLibraries.ExpandingItem;
-import com.example.robi.budgetize.ui.thirdPartyLibraries.ExpandingList;
+import com.example.robi.budgetize.ui.activities.createActivities.CreateTransactionActivity;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingItem;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingList;
 import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.MainActivityViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.createActivities.CreateCategoryActivity;
-import com.example.robi.budgetize.ui.activities.createActivities.CreateIEActivity;
 import com.google.gson.Gson;
 import com.mynameismidori.currencypicker.CurrencyPicker;
 import com.mynameismidori.currencypicker.CurrencyPickerListener;
@@ -46,7 +46,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 //TODO: display at the bottom all the IEs without a category
-public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
+public class TransactionsActivity extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
     private ExpandingList mExpandingList = null;
     long walletID = 0;
     boolean firstStart = true;
@@ -98,8 +98,8 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         categoryListObsever = new Observer<List<CategoryObject>>() {
             @Override
             public void onChanged(List<CategoryObject> categoryObjects) {
-                IEActivityDiegodobelo.categoryObjectsList.clear();
-                IEActivityDiegodobelo.categoryObjectsList.addAll(categoryObjects);
+                TransactionsActivity.categoryObjectsList.clear();
+                TransactionsActivity.categoryObjectsList.addAll(categoryObjects);
                 if (firstStart) {
                     populateLists();
                     firstStart = false;
@@ -111,8 +111,8 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
 //        ieListObserver = new Observer<List<IEObject>>() {
 //            @Override
 //            public void onChanged(List<IEObject> ieObjects) {
-//                IEActivityDiegodobelo.ieObjects.clear();
-//                IEActivityDiegodobelo.ieObjects.addAll(ieObjects);
+//                TransactionsActivity.ieObjects.clear();
+//                TransactionsActivity.ieObjects.addAll(ieObjects);
 //            }
 //        };
 //        mainActivityViewModel.getAllIE().observe(this,ieListObserver);
@@ -120,8 +120,8 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         orphanIEsObserver = new Observer<List<IEObject>>() {
             @Override
             public void onChanged(List<IEObject> orphanIEs) {
-                IEActivityDiegodobelo.orphanIEs.clear();
-                IEActivityDiegodobelo.orphanIEs.addAll(orphanIEs);
+                TransactionsActivity.orphanIEs.clear();
+                TransactionsActivity.orphanIEs.addAll(orphanIEs);
                 if (firstStartOrphane) {
                     addOrphaneCategories();
                     firstStartOrphane = false;
@@ -129,7 +129,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                 //addOrphaneCategories();
             }
         };
-        mainActivityViewModel.getAllIEofAWalletWithoutCategoriesAssigned(walletID).observe(IEActivityDiegodobelo.this, orphanIEsObserver);
+        mainActivityViewModel.getAllIEofAWalletWithoutCategoriesAssigned(walletID).observe(TransactionsActivity.this, orphanIEsObserver);
     }
 
     @Override
@@ -209,19 +209,19 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         String walletAsString = gson.toJson(wallet);
         //Toast.makeText(this, "clicked icon: " + position, Toast.LENGTH_SHORT).show();
         if (position == 3) {
-            Intent myIntent = new Intent(IEActivityDiegodobelo.this, ImportTransactionsActivity.class);
+            Intent myIntent = new Intent(TransactionsActivity.this, ImportTransactionsActivity.class);
             myIntent.putExtra("wallet", walletAsString); //Optional parameters
-            IEActivityDiegodobelo.this.startActivity(myIntent);
+            TransactionsActivity.this.startActivity(myIntent);
         } else if (position == 2) {
             //launch create IE activity
-            Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateIEActivity.class);
+            Intent myIntent = new Intent(TransactionsActivity.this, CreateTransactionActivity.class);
             myIntent.putExtra("wallet", walletAsString); //Optional parameters
-            IEActivityDiegodobelo.this.startActivity(myIntent);
+            TransactionsActivity.this.startActivity(myIntent);
         } else if (position == 1) {
             //launch create Category activity
-            Intent myIntent = new Intent(IEActivityDiegodobelo.this, CreateCategoryActivity.class);
+            Intent myIntent = new Intent(TransactionsActivity.this, CreateCategoryActivity.class);
             myIntent.putExtra("wallet", walletAsString); //Optional parameters
-            IEActivityDiegodobelo.this.startActivity(myIntent);
+            TransactionsActivity.this.startActivity(myIntent);
         }
         rfabHelper.toggleContent();
     }
@@ -289,7 +289,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
             ((ImageView) first_item.findViewById(R.id.currency_imageview)).setImageDrawable(getDrawable(flagDrawableResID));
             picker.dismiss();
         }else{
-            Toast toast = Toast.makeText(IEActivityDiegodobelo.this, "Cannot change currency! Contact support team!", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(TransactionsActivity.this, "Cannot change currency! Contact support team!", Toast.LENGTH_LONG);
             TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
             v.setTextColor(Color.RED);
             toast.show();
@@ -307,7 +307,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         //double ie_value = mainActivityViewModel.getCategoryIESUM(orphaneIEObject.getWallet_id(), orphaneIEObject.getName());
         //List<IEObject> ieObjectList = mainActivityViewModel.getCategorysIE(walletID, orphaneIEObject.getName());
 
-        IEActivityDiegodobelo.this.runOnUiThread(() -> {
+        TransactionsActivity.this.runOnUiThread(() -> {
             final ExpandingItem item;
             if (orphaneIEObject.type == 0) {
                 item = getCorrectItem(orphaneIEObject.amount);
@@ -342,7 +342,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
         double ie_value = mainActivityViewModel.getCategoryIESUM(categoryObject.getCategory_id());
         List<IEObject> ieObjectList = mainActivityViewModel.getCategorysIE(categoryObject.getCategory_id());
 
-        IEActivityDiegodobelo.this.runOnUiThread(() -> {
+        TransactionsActivity.this.runOnUiThread(() -> {
             final ExpandingItem item = getCorrectItem(ie_value);
             if (item != null) {
                 //setAllColors(ie_value);
@@ -421,7 +421,7 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                         } catch (Exception e) {
                             e.printStackTrace();
                             System.out.println(e.getMessage());
-                            Toast toast = Toast.makeText(IEActivityDiegodobelo.this, "Unable to delete the Category", Toast.LENGTH_SHORT);
+                            Toast toast = Toast.makeText(TransactionsActivity.this, "Unable to delete the Category", Toast.LENGTH_SHORT);
                             TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
                             v.setTextColor(Color.RED);
                             toast.show();
@@ -527,13 +527,13 @@ public class IEActivityDiegodobelo extends AppCompatActivity implements RapidFlo
                         try {
                             //TODO:issue here, when we delete one IE, we must removeSubItem() and recalculate category
                             mainActivityViewModel.deleteIE(ieID);
-                            Toast.makeText(IEActivityDiegodobelo.this, "I/E Deleted", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TransactionsActivity.this, "I/E Deleted", Toast.LENGTH_SHORT).show();
                             expandingItem.removeSubItem(view);
                             recalculateCategorySum(expandingItem, categoryObject);
                         } catch (Exception e) {
                             e.printStackTrace();
                             System.out.println(e.getMessage());
-                            Toast toast = Toast.makeText(IEActivityDiegodobelo.this, "Unable to delete the I/E", Toast.LENGTH_SHORT);
+                            Toast toast = Toast.makeText(TransactionsActivity.this, "Unable to delete the I/E", Toast.LENGTH_SHORT);
                             TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
                             v.setTextColor(Color.RED);
                             toast.show();

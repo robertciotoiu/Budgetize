@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BasicImageDownloader {
+public class ImageDownloader {
 
     private OnImageLoaderListener mImageLoaderListener;
     private Set<String> mUrlsInProgress = new HashSet<>();
@@ -31,7 +31,7 @@ public class BasicImageDownloader {
     Context applicationContext = null;
     File fileLocation;
 
-    public BasicImageDownloader(@NonNull OnImageLoaderListener listener) {
+    public ImageDownloader(@NonNull OnImageLoaderListener listener) {
         this.mImageLoaderListener = listener;
         this.applicationContext = applicationContext;
 
@@ -60,7 +60,7 @@ public class BasicImageDownloader {
             if(readFromDisk()==null) {
                 //download that icon and save it
                 download(banks.get(i).getLogo(),false);
-                writeToDisk(file, result, new BasicImageDownloader.OnBitmapSaveListener() {
+                writeToDisk(file, result, new ImageDownloader.OnBitmapSaveListener() {
                     @Override
                     public void onBitmapSaved() {
                         Log.d("Image saved as: " + file.getAbsolutePath());

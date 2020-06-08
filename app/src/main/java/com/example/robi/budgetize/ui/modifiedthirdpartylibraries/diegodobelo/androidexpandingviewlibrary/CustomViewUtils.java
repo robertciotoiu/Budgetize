@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.ui.thirdPartyLibraries;
+package com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary;
 
 import android.view.View;
 import android.view.ViewGroup;

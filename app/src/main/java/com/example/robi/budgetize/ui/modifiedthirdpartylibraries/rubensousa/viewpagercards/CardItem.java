@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.ui.activities.entitiesUI;
+package com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards;
 
 public class CardItem {
 
