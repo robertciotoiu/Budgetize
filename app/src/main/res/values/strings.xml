@@ -40,4 +40,5 @@
 
     <!-- Google sign-in -->
     <string name="server_client_id">303651643981-94fdb3hltvfkapfef1e4fnsmgsnggdad.apps.googleusercontent.com</string>
+    <string name="permission_denied_write_external_storage">The following permission is used in order to use the \"Import transactions from bank accounts\" feature. This will make that feature unavailable.\nAre you sure you want to deny this permission?</string>
 </resources>

@@ -48,7 +48,6 @@ public class DoOAuthService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // TODO Auto-generated method stub
         if(intent.getBooleanExtra("checkStatus",false)) {
             checkOAuth();
         }

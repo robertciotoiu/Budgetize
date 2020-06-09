@@ -9,34 +9,40 @@ import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 
 import java.io.File;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class BankImagesDownloader {
     private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
-    // Random number generator
-    private final Random mGenerator = new Random();
-    File fileLocation = new File(Environment.getExternalStorageDirectory()+
-            "/Android/data/"
-            + ApplicationObj.getAppContext().getPackageName()
-            + "/BankIcons");
+    private File fileLocation;
 
-    public BankImagesDownloader(){
+    public BankImagesDownloader() {
+        if(ImageDownloader.isExternalStorageWritable()) {
+            fileLocation = new File(Environment.getExternalStorageDirectory() +
+                    "/Android/data/"
+                    + ApplicationObj.getAppContext().getPackageName()
+                    + "/BankIcons");
+        }else{
+            fileLocation = new File(ApplicationObj.getAppContext().getFilesDir()
+                    + "/BankIcons");
+        }
     }
 
     public void doSync(List<Bank> banks) {
+        // Get the location where to save the logos
         File folder = new File(fileLocation.getPath());
         boolean success = true;
+        // If the folder does not exist, create it
         if (!folder.exists()) {
             success = folder.mkdirs();
         }
-        Log.d("SUCCES MAKING THE DIRS?", success + "!");
+        // Log for Debug purposes
+        Log.d("Dir created successfully? ", success + "!");
         for (int i = 0; i < banks.size(); i++) {
             File file = new File(fileLocation.getPath() + File.separator + banks.get(i).getId() + ".png");
-
-            final int finalI = i;
+            int finalI = i;
             final ImageDownloader downloader = new ImageDownloader(new ImageDownloader.OnImageLoaderListener() {
+                // Here we handle the different statuses of the bank logo download
                 @Override
                 public void onError(ImageDownloader.ImageError error) {
                     Log.d("Error code ", error.getErrorCode() + ": " + error.getMessage());
@@ -49,19 +55,21 @@ public class BankImagesDownloader {
 
                 @Override
                 public void onComplete(Bitmap result) {
-                    /* save the image - I'm gonna use PNG */
+                    // Set the format to save the file
                     final Bitmap.CompressFormat mFormat = Bitmap.CompressFormat.PNG;
-                    /* don't forget to include the extension into the file name */
-                    final File myImageFile = new File(fileLocation.getPath() + File.separator + banks.get(finalI).getId() + ".png");
-                    ImageDownloader.writeToDisk(myImageFile, result, new ImageDownloader.OnBitmapSaveListener() {
+                    // Create the file on the disk
+                    final File imageFileLocation = new File(fileLocation.getPath() + File.separator + banks.get(finalI).getId() + ".png");
+                    // Save the downloaded bitmap to the imageFileLocation
+                    ImageDownloader.writeToDisk(imageFileLocation, result, new ImageDownloader.OnBitmapSaveListener() {
                         @Override
                         public void onBitmapSaved() {
-                            //Toast.makeText(ImageActivity.this, "Image saved as: " + myImageFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                            Log.d("SAVED","IMAGE SAVED TO LOCATION:"+myImageFile.getAbsolutePath());
+                            // Debug purposes
+                            Log.d("SAVED", "IMAGE SAVED TO LOCATION:" + imageFileLocation.getAbsolutePath());
                         }
 
                         @Override
                         public void onBitmapSaveError(ImageDownloader.ImageError error) {
+                            // Debug purposes
                             Log.d("Error code ", error.getErrorCode() + ": " +
                                     error.getMessage());
                             error.printStackTrace();
@@ -69,15 +77,17 @@ public class BankImagesDownloader {
                     }, mFormat, false);
                 }
             });
-            if (downloader.readFromDisk(file) == null) {
+            // Check if the file if Bank's Logo is already downloaded
+            if (ImageDownloader.readFromDisk(file) == null) {
                 String logoUrl = banks.get(i).getLogo();
+                // Check if Bank's Logo URL is valid
                 if (logoUrl != null && !logoUrl.contentEquals("")) {
+                    // Start the DownloadTask on a new Thread
                     executor.execute(new DownloadTask(downloader, logoUrl, true));
-                    //downloader.download(logoUrl, true);
                 }
             }
         }
-        Log.d("BankImagesDownloader.doSync(): ","Bank images downloaded");
+        Log.d("BankImagesDownloader.doSync(): ", "Bank images downloaded");
     }
 
     private class DownloadTask implements Runnable {

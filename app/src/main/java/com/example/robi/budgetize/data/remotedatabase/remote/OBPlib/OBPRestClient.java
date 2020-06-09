@@ -332,7 +332,6 @@ public class OBPRestClient {
         // set it if it exists
         if (exists)
             getConsumer(bankID).setTokenWithSecret(token, secret);
-
         return exists;
     }
 //

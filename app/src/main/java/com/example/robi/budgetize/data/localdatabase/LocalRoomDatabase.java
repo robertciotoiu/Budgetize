@@ -79,23 +79,19 @@ public abstract class LocalRoomDatabase extends RoomDatabase {
                     public void onCreate(@NonNull SupportSQLiteDatabase db) {
                         super.onCreate(db);
                         executors.diskIO().execute(() -> {
-                            // Add a delay to simulate a long-running operation
-                            //addDelay();
-                            // Generate the data for pre-population
+                            // Generate the test data
                             LocalRoomDatabase database = LocalRoomDatabase.getInstance(appContext, executors);
                             List<Wallet> wallets = DataGenerator.generateWallets();
                             List<CategoryObject> categories = DataGenerator.generateCategoriesForWallets(wallets);
                             List<IEObject> ieobjects = DataGenerator.generateIEForCategories(categories);
-
+                            // Seed the generated data into the database
                             insertData(database, wallets, categories,ieobjects);
-                            // notify that the database was created and it's ready to be used
+                            // Notify that the database has been created
                             database.setDatabaseCreated();
                         });
                     }
                 })
                 .allowMainThreadQueries()
-//                .fallbackToDestructiveMigration()
-                //.addMigrations(MIGRATION_1_2)
                 .build();
     }
 

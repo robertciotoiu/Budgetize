@@ -51,118 +51,6 @@ public class ImageDownloader {
         void onProgressChange(int percent);
         void onComplete(Bitmap result);
     }
-    /*
-    public void getListOfBanksImgsToDownload(){
-        ArrayList<Bank> banks = new ArrayList<Bank>();
-        banks.addAll(((ApplicationObj) applicationContext).banks);
-        for(int i = 0; i<banks.size();i++) {
-            File file = new File(fileLocation.getPath()+ File.separator +banks.get(i).getId()+".jpg");
-            if(readFromDisk()==null) {
-                //download that icon and save it
-                download(banks.get(i).getLogo(),false);
-                writeToDisk(file, result, new ImageDownloader.OnBitmapSaveListener() {
-                    @Override
-                    public void onBitmapSaved() {
-                        Log.d("Image saved as: " + file.getAbsolutePath());
-                    }
-
-                    @Override
-                    public void onBitmapSaveError(ImageError error) {
-                        Toast.makeText(ImageActivity.this, "Error code " + error.getErrorCode() + ": " +
-                                error.getMessage(), Toast.LENGTH_LONG).show();
-                        error.printStackTrace();
-                    }
-
-
-                }, mFormat, false);
-            }
-        }
-    }
-    */
-/**
- * Old method of downloading.
- * Deprecated because of AsyncTask
-    @SuppressLint("StaticFieldLeak")
-    public void download(@NonNull final String imageUrl, final boolean displayProgress) {
-        if (mUrlsInProgress.contains(imageUrl)) {
-            Log.w(TAG, "a download for this url is already running, " +
-                    "no further download will be started");
-            return;
-        }
-        new AsyncTask<Void, Integer, Bitmap>() {
-
-            private ImageError error;
-
-            @Override
-            protected void onPreExecute() {
-                mUrlsInProgress.add(imageUrl);
-                Log.d(TAG, "starting download");
-            }
-
-            @Override
-            protected void onCancelled() {
-                mUrlsInProgress.remove(imageUrl);
-                mImageLoaderListener.onError(error);
-            }
-
-            @Override
-            protected void onProgressUpdate(Integer... values) {
-                mImageLoaderListener.onProgressChange(values[0]);
-            }
-
-            @Override
-            protected Bitmap doInBackground(Void... params) {
-                Bitmap bitmap = null;
-                //HttpURLConnection connection = null;
-                InputStream is = null;
-                ByteArrayOutputStream out = null;
-                try {
-                    URL url=new URL(imageUrl);
-                    HttpURLConnection.setFollowRedirects(false);
-                    HttpURLConnection httpURLConnection=(HttpURLConnection) url.openConnection();
-                    httpURLConnection.setDoInput(true);
-                    httpURLConnection.connect();
-                    boolean isRedirect;
-                    do {
-                        if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM || httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
-                            isRedirect = true;
-                            String newURL = httpURLConnection.getHeaderField("Location");
-                            httpURLConnection = (HttpURLConnection) new URL(newURL).openConnection();
-                        } else {
-                            isRedirect = false;
-                        }
-                    } while (isRedirect);
-
-                    InputStream inptStream=httpURLConnection.getInputStream();
-                    bitmap = BitmapFactory.decodeStream(inptStream);
-                } catch (Throwable e) {
-                    if (!this.isCancelled()) {
-                        error = new ImageError(e).setErrorCode(ImageError.ERROR_GENERAL_EXCEPTION);
-                        this.cancel(true);
-                    }
-                } finally {
-                }
-                return bitmap;
-            }
-
-            @Override
-            protected void onPostExecute(Bitmap result) {
-                if (result == null){// || result.getByteCount()==0) {
-                    Log.e(TAG, "factory returned a null result");
-                    mImageLoaderListener.onError(new ImageError("downloaded file could not be decoded as bitmap"+imageUrl)
-                            .setErrorCode(ImageError.ERROR_DECODE_FAILED));
-                } else {
-                    Log.d(TAG, "download complete, " + result.getByteCount() +
-                            " bytes transferred");
-                    mImageLoaderListener.onComplete(result);
-                }
-                mUrlsInProgress.remove(imageUrl);
-                System.gc();
-            }
-        }.execute();
-    }
-
- */
 
     public void download(@NonNull final String imageUrl, final boolean displayProgress){
 
@@ -191,12 +79,8 @@ public class ImageDownloader {
             bitmap = BitmapFactory.decodeStream(inptStream);
         } catch (Throwable e) {
             e.printStackTrace();
-//            if (!this.isCancelled()) {
-//                error = new ImageError(e).setErrorCode(ImageError.ERROR_GENERAL_EXCEPTION);
-//                this.cancel(true);
-//            }
         } finally {
-            if (bitmap == null){// || result.getByteCount()==0) {
+            if (bitmap == null){
                 Log.e(TAG, "factory returned a null result");
                 mImageLoaderListener.onError(new ImageError("downloaded file could not be decoded as bitmap"+imageUrl)
                         .setErrorCode(ImageError.ERROR_DECODE_FAILED));
@@ -295,8 +179,8 @@ public class ImageDownloader {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    private boolean isExternalStorageWritable() {
-        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED;
+    static boolean isExternalStorageWritable() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 
     public static Bitmap readFromDisk(@NonNull File imageFile) {

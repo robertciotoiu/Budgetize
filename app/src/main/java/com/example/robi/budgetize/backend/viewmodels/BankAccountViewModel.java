@@ -10,8 +10,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.robi.budgetize.ApplicationObj;
-import com.example.robi.budgetize.data.DataRepository;
 import com.example.robi.budgetize.backend.services.DoOAuthService;
+import com.example.robi.budgetize.data.DataRepository;
 import com.example.robi.budgetize.data.localdatabase.entities.AccountTransaction;
 import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static java.lang.Thread.sleep;
 
 public class BankAccountViewModel extends AndroidViewModel{// implements DataRepository.OnBankDataChanged {
     //private final MutableLiveData<List<Bank>> mObservableBanks = new MutableLiveData<>();
@@ -67,10 +65,13 @@ public class BankAccountViewModel extends AndroidViewModel{// implements DataRep
     }
 
     public void appFirstStartLogicInit(){
+        // Get all the linked banks from the local database
         linkedBanksList = this.getAllLinkedBanks();
+        // Start observing the changes on that table
         linkedBanksList.observeForever(linkedBanks -> {
             for (LinkedBank linkedBank : linkedBanks) {
-                //also get all accounts from linked bank accounts
+                // For every linked bank, we retrieve from the Open Bank Project API
+                // All the bank accounts, and we check
                 this.getAccounts(linkedBank.getId());
                 if (!OBPRestClient.consumers.containsKey(linkedBank.getId())) {
                     OBPRestClient.retrieveConsumer(linkedBank.getId());
@@ -80,31 +81,13 @@ public class BankAccountViewModel extends AndroidViewModel{// implements DataRep
                 }
             }
         });
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         bankAccounts = this.getAllBankAccounts();
-        bankAccounts.observeForever(new Observer<List<BankAccount>>() {
-            @Override
-            public void onChanged(List<BankAccount> accounts) {
-                accountList.clear();
-                accountList.addAll(accounts);
-                Log.d("ACCOUNTSCHANGED: ","BANKACCOUNTVIEWMODEL");
-                //sync with database
-
-
-                //retrieve transactions only at 3 minutes or restart of the app
-//                if(System.currentTimeMillis()-ApplicationObj.lastTransactionsDownload>=60000*3) {
-                //TODO: here we have a bug: because we add all lists and all transactions, transactions are added multiple times for the same account!
-                    for (BankAccount bankAccount : accountList) {
-                        Log.d("transactions will be added: ","BANKACCOUNTVIEWMODEL");
-                        getTransactions(bankAccount.getInternal_bank_id(), bankAccount.getBank_id(), bankAccount.getId());
-                    }
-//                    ApplicationObj.lastTransactionsDownload = System.currentTimeMillis();
-//                }
-            }
+        bankAccounts.observeForever(accounts -> {
+            accountList.clear();
+            accountList.addAll(accounts);
+                for (BankAccount bankAccount : accountList) {
+                    getTransactions(bankAccount.getInternal_bank_id(), bankAccount.getBank_id(), bankAccount.getId());
+                }
         });
     }
 
