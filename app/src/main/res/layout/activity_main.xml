@@ -71,7 +71,7 @@
             android:text="@string/intro_text"
             android:textColor="#FFFFFF"
             android:textSize="51dp"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/intro_arrow_imgview"
@@ -86,7 +86,7 @@
             android:layout_marginEnd="0dp"
             android:layout_marginBottom="0dp"
             android:rotation="15"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:srcCompat="@drawable/intro_arrow_white" />
 
 

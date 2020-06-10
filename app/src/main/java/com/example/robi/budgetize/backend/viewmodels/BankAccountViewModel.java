@@ -67,24 +67,30 @@ public class BankAccountViewModel extends AndroidViewModel{// implements DataRep
     public void appFirstStartLogicInit(){
         // Get all the linked banks from the local database
         linkedBanksList = this.getAllLinkedBanks();
-        // Start observing the changes on that table
+        // Start observing changes on linked_banks table
         linkedBanksList.observeForever(linkedBanks -> {
             for (LinkedBank linkedBank : linkedBanks) {
-                // For every linked bank, we retrieve from the Open Bank Project API
-                // All the bank accounts, and we check
-                this.getAccounts(linkedBank.getId());
+                // For every linked bank, we retrieve the consumer and provider
+                // in order to be able to request from the linked bank
+                // new user's transactions
                 if (!OBPRestClient.consumers.containsKey(linkedBank.getId())) {
-                    OBPRestClient.retrieveConsumer(linkedBank.getId());
+                    OBPRestClient.retrieveConsumerAndProvider(linkedBank.getId());
                 }
-                if (!OBPRestClient.providers.containsKey(linkedBank.getId())) {
-                    OBPRestClient.retrieveProvider(linkedBank.getId());
-                }
+                // We retrieve from OBP API, new user's accounts
+                // from the already linked bank accounts
+                // and we insert them into the database
+                this.getAccounts(linkedBank.getId());
             }
         });
+        // We retrieve the bank accounts from the database
         bankAccounts = this.getAllBankAccounts();
+        // Start observing changes on bank_accounts table
         bankAccounts.observeForever(accounts -> {
+            // Refresh list of bank accounts
             accountList.clear();
             accountList.addAll(accounts);
+            // Get all the new transactions for each bank account
+            // and we insert them into the database
                 for (BankAccount bankAccount : accountList) {
                     getTransactions(bankAccount.getInternal_bank_id(), bankAccount.getBank_id(), bankAccount.getId());
                 }
@@ -136,6 +142,8 @@ public class BankAccountViewModel extends AndroidViewModel{// implements DataRep
         repository.getAccounts(bankID, repository);
     }
 
+
+    @SuppressWarnings("WeakerAccess")
     //Operations with bank transactions:
     public void getTransactions(long bankID, String obpBankID, String accountID){
         repository.getTransactions(bankID, obpBankID, accountID, repository);

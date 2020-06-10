@@ -21,7 +21,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     private final MutableLiveData<List<CategoryObject>> mObservableCategories = new MutableLiveData<>();
     private final MutableLiveData<List<IEObject>> mObservableIEs = new MutableLiveData<>();
     public int lastWalletPosition = 0;
-    public boolean onFirstCreationForPBFirstElementAnimation = false;
+    public boolean firstAnimation = true;
 
 
     public MainActivityViewModel(@NonNull Application application, DataRepository repository) {

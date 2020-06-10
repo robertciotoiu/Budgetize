@@ -36,7 +36,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     //TODO: MediatorLiveData for IE and Category
 
     //TODO: delete this! DB debug purposes
-    public LocalRoomDatabase getDB(){
+    public LocalRoomDatabase getDB() {
         return mDatabase;
     }
 
@@ -56,7 +56,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         ObservableWallet.addSource(mDatabase.walletDao().getAllWallets(),
                 wallets -> {
                     if (mDatabase.getDatabaseCreated().getValue() != null) {
-                        if(listener != null)
+                        if (listener != null)
                             listener.onWalletDataChanged(wallets);
 //                        ObservableWallet.postValue(wallets);
                     }
@@ -65,7 +65,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         ObservableCategory.addSource(mDatabase.categoryDao().getAllCategories(),
                 categories -> {
                     if (mDatabase.getDatabaseCreated().getValue() != null) {
-                        if(listener!=null)
+                        if (listener != null)
                             listener.onCategoryDataChanged(categories);
                         //ObservableCategory.postValue(categories);
                     }
@@ -73,14 +73,14 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
         ObservableIE.addSource(mDatabase.ieoDao().getAllIE(),
                 ieObjects -> {
-                if(mDatabase.getDatabaseCreated().getValue()!=null)
-                    if(listener!=null)
-                        listener.onIEDataChanged(ieObjects);
+                    if (mDatabase.getDatabaseCreated().getValue() != null)
+                        if (listener != null)
+                            listener.onIEDataChanged(ieObjects);
                 });
 
         ObservableLinkedBanks.addSource(mDatabase.linkedBankDao().getAllLinkedBanks(),
                 linkedBanks -> {
-                    if(mDatabase.getDatabaseCreated().getValue()!=null){
+                    if (mDatabase.getDatabaseCreated().getValue() != null) {
                         ObservableLinkedBanks.setValue(linkedBanks);
                     }
                 });
@@ -136,7 +136,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
     @Override
     public void financialStatusUpdate(long wallet_id, String date) {
-        mDatabase.walletDao().financialStatusUpdate(wallet_id,date);
+        mDatabase.walletDao().financialStatusUpdate(wallet_id, date);
     }
 
     @Override
@@ -165,7 +165,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
-    public long getCategoryID(long wallet_id, String bank_account_id){
+    public long getCategoryID(long wallet_id, String bank_account_id) {
         return mDatabase.categoryDao().getCategoryID(wallet_id, bank_account_id);
     }
 
@@ -181,7 +181,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
     @Override
     public void deleteCategory(long category_id) {
-        if(category_id!=0) {//category_id is 0 when IE doesn't have a category. So we don't want all independent IEs to be deleted at deletion of only one
+        if (category_id != 0) {//category_id is 0 when IE doesn't have a category. So we don't want all independent IEs to be deleted at deletion of only one
             deleteAllIEofACategory(category_id);
         }
         mDatabase.categoryDao().deleteCategory(category_id);
@@ -257,19 +257,19 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
-    public String getLinkedBankStatus(long id){
+    public String getLinkedBankStatus(long id) {
         return mDatabase.linkedBankDao().getLinkedBankStatus(id);
     }
 
     @Override
-    public String getLinkedBankOBPID(long id){
+    public String getLinkedBankOBPID(long id) {
         return mDatabase.linkedBankDao().getLinkedBankOBPID(id);
     }
 
     @Override
-    public long updateLinkStatus(long id, String link_status){
-        long status = mDatabase.linkedBankDao().updateLinkStatus(id,link_status);
-        if(status>0 && link_status=="UNLINKED"){
+    public long updateLinkStatus(long id, String link_status) {
+        long status = mDatabase.linkedBankDao().updateLinkStatus(id, link_status);
+        if (status > 0 && link_status == "UNLINKED") {
             //TODO: remove all txns from all wallets, and all bank accounts from
             //TODO: I think it is done automatically using foreign keys and cascade on delete, if not do the above todo.
         }
@@ -295,7 +295,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
-    public BankAccount getBankAccount(String bank_account_id){
+    public BankAccount getBankAccount(String bank_account_id) {
         return mDatabase.bankAccountDao().getBankAccount(bank_account_id);
     }
 
@@ -348,7 +348,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
-    public List<AccountTransaction> getAllTransactionsFromABankAccountNOTLIVEDATA(String bank_account_id){
+    public List<AccountTransaction> getAllTransactionsFromABankAccountNOTLIVEDATA(String bank_account_id) {
         return mDatabase.accountTransactionDao().getAllTransactionsFromABankAccountNOTLIVEDATA(bank_account_id);
     }
 
@@ -373,7 +373,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     public long[] insertListOfWalletLinkedBankAccount(List<WalletLinkedBankAccounts> walletLinkedBankAccounts) {
         long[] results = mDatabase.walletLinkedBankAccountsDao().insertListOfWalletLinkedBankAccount(walletLinkedBankAccounts);
         //TODO: also we need to add all bank accountS txns correspondent to that accounts in wallet. Txns should be converted to IEs and added to a bank account converted to a category.
-        for(WalletLinkedBankAccounts walletLinkedBankAccount:walletLinkedBankAccounts){
+        for (WalletLinkedBankAccounts walletLinkedBankAccount : walletLinkedBankAccounts) {
             walletLinkedBankAccount.getBank_account_id();
             //CategoryObject categoryObject = new CategoryObject();
         }
@@ -389,7 +389,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
     @Override
     public long getNrOfLinkedBankFromWallet(long wallet_id, long linked_bank_id) {
-        return mDatabase.walletLinkedBankAccountsDao().getNrOfLinkedBankFromWallet(wallet_id,linked_bank_id);
+        return mDatabase.walletLinkedBankAccountsDao().getNrOfLinkedBankFromWallet(wallet_id, linked_bank_id);
     }
 
     @Override
@@ -414,12 +414,12 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
     @Override
     public int unlinkBankAccountFromWallet(long wallet_id, String bank_account_id) {
-        return mDatabase.walletLinkedBankAccountsDao().unlinkBankAccountFromWallet(wallet_id,bank_account_id);
+        return mDatabase.walletLinkedBankAccountsDao().unlinkBankAccountFromWallet(wallet_id, bank_account_id);
     }
 
     @Override
     public int unlinkLinkedBankAccountsFromWallets(long wallet_id, String linked_bank_id) {
-        return mDatabase.walletLinkedBankAccountsDao().unlinkLinkedBankAccountsFromWallets(wallet_id,linked_bank_id);
+        return mDatabase.walletLinkedBankAccountsDao().unlinkLinkedBankAccountsFromWallets(wallet_id, linked_bank_id);
     }
 
     @Override
@@ -429,33 +429,31 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
     //REMOTE REST APIS
     //USED BY ServiceHandlerViewModel.java
-    public void getAllAvailableBanks(MutableLiveData<List<Bank>> mObservableBanks){
-        obpRetroClass.getAllAvailableBanks(mObservableBanks);
+    public void getAllAvailableBanks(MutableLiveData<List<Bank>> mObservableBanks) {
+        OBPRetroClass.getAllAvailableBanks(mObservableBanks);
     }
 
     //REMOTE REST APIS
     //USED BY BankAccountViewModel.java
+
     /**
      * Get the list of products from the database and get notified when the data changes.
      */
-    public LiveData<List<LinkedBank>> getLinkedBanksObserver() {
-        return ObservableLinkedBanks;
+    public void getAccounts(long bankID, DataRepository repository) {
+        OBPRetroClass.getAllAccounts(bankID, repository);
     }
 
-    public void getAccounts(long bankID, DataRepository repository ){
-        obpRetroClass.getAllAccounts(bankID, repository);
-    }
-
-    public void getTransactions(long bankID, String obpBankID, String accountID, DataRepository dataRepository){
-        obpRetroClass.getAllTransactions(bankID, obpBankID, accountID, dataRepository);
-
+    public void getTransactions(long bankID, String obpBankID, String accountID,
+                                DataRepository dataRepository) {
+        OBPRetroClass.getAllTransactions(bankID, obpBankID, accountID, dataRepository);
     }
 
     //Listeners
-
-    public interface OnDataChangedRepositoryListener{
+    public interface OnDataChangedRepositoryListener {
         void onWalletDataChanged(List<Wallet> walletList);
+
         void onCategoryDataChanged(List<CategoryObject> categoryObjects);
+
         void onIEDataChanged(List<IEObject> ieObjects);
     }
 //
@@ -465,7 +463,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
 //    public void addListener(OnBankDataChanged bankDataListener){ this.bankDataListener = bankDataListener;}
 
-    public void addListener(OnDataChangedRepositoryListener listener){
+    public void addListener(OnDataChangedRepositoryListener listener) {
         this.listener = listener;
     }
 
@@ -495,10 +493,6 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 //    public LiveData<CategoryObject> getCategoryByName(final long walletID, final String categoryName){
 //        return mDatabase.categoryDao().getCategoryByName(walletID,categoryName);
 //    }
-
-
-
-
 
 
 //    public LiveData<List<CommentEntity>> loadComments(final int productId) {

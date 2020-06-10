@@ -263,14 +263,10 @@ public class OBPRestClient {
     public static HashMap<Long, OAuthProvider> providers = new HashMap<>();
 
     //Util methods
-    public static void retrieveConsumer(long bankID){
+    public static void retrieveConsumerAndProvider(long bankID) {
         addConsumer(bankID);
         addProvider(bankID);
         setAccessTokenFromSharedPrefs(bankID);
-    }
-
-    public static void retrieveProvider(long bankID){
-
     }
 
     private static void addConsumer(long bankID) {
@@ -408,7 +404,6 @@ public class OBPRestClient {
     }
 
     public static JSONObject getOAuthedJson(String urlString, long bankID) throws ExpiredAccessTokenException, ObpApiCallFailedException {
-
         try {
             HttpClient httpclient = new DefaultHttpClient();
             HttpGet request = new HttpGet(urlString);
@@ -482,14 +477,9 @@ public class OBPRestClient {
      * OBP OAuth.
      *
      * @return
-     * @throws ExpiredAccessTokenException
-     * @throws ObpApiCallFailedException
      */
-    public static JSONObject getBanksJson() throws ExpiredAccessTokenException,
-            ObpApiCallFailedException {
-        //return getOAuthedJson(BASE_URL + "/obp/v1.2/banks");
+    public static JSONObject getBanksJson() {
         return new BanksProvider().doInBackground();
-//        return getOAuthedJson(BASE_URL_OBP_SANDBOX + "/obp/v3.1.0/banks");
     }
 
 //    //HSBC API
@@ -504,7 +494,7 @@ public class OBPRestClient {
         //return getOAuthedJson(BASE_URL + "/obp/v1.2/banks");
         //return getOAuthedJson(BASE_URL_OBP_SANDBOX + "/obp/v3.1.0/banks/hsbc.01.hk.hsbc/accounts");
         //return getOAuthedJson(OBPBankProvider.BASE_URL_OBP_SANDBOX + "/obp/v1.2.1/accounts/private",bankID);
-        return getOAuthedJson(OBPBankProvider.BASE_URL_OBP_SANDBOX + "/obp/v4.0.0/my/accounts",bankID);
+        return getOAuthedJson(OBPBankProvider.BASE_URL_OBP_SANDBOX + "/obp/v4.0.0/my/accounts", bankID);
     }
 
 //    //HSBC API
@@ -515,16 +505,15 @@ public class OBPRestClient {
 //        return getOAuthedJson(OBPBankProvider.BASE_URL_OBP_SANDBOX + "/obp/v1.2/banks/"+obpBankID+"/accounts",bankID);
 //    }
 
-    //HSBC API
-    public static JSONObject getTransactions(long bankID, String obpBankID, String accountID) throws ExpiredAccessTokenException,
-            ObpApiCallFailedException {
-        //return getOAuthedJson(BASE_URL + "/obp/v1.2/banks");
-        return getOAuthedJson(OBPBankProvider.BASE_URL_OBP_SANDBOX + "/obp/v4.0.0/my/banks/"+obpBankID+"/accounts/"+accountID+"/transactions", bankID);
+
+    public static JSONObject getTransactions(long bankID, String obpBankID, String accountID)
+            throws ExpiredAccessTokenException, ObpApiCallFailedException {
+        return getOAuthedJson(OBPBankProvider.BASE_URL_OBP_SANDBOX
+                + "/obp/v4.0.0/my/banks/" + obpBankID + "/accounts/" + accountID + "/transactions", bankID);
     }
 
     //synch method to get bank names;
     private static class BanksProvider {
-
         protected JSONObject doInBackground() {
             try {
                 OkHttpClient client = new OkHttpClient();
