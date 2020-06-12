@@ -194,6 +194,7 @@
             android:layout_centerInParent="true"
             android:layout_alignParentBottom="true"
             android:layout_margin="40dp"
+            android:backgroundTint="#00000000"
             app:tabMaxWidth="10dp"
             app:tabMinWidth="10dp"
             app:tabBackground="@drawable/tab_selector"

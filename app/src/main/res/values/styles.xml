@@ -1,22 +1,22 @@
 <resources>
 
-    <!-- Base application theme. -->
+    <!-- Old base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
         <!-- Activity transitions
-
         <item name="android:windowActivityTransitions">true</item>
-
-
         <item name="android:windowEnterTransition">@anim/slide_in_right</item>
         <item name="android:windowExitTransition">@anim/slide_in_left</item>-->
     </style>
 
-    <style name="AppTheme.NoActionBar">
+    <!-- Base application theme. -->
+    <style name="AppTheme.NoActionBar" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
         <item name = "android:windowDrawsSystemBarBackgrounds">true</item>
         <item name = "android:statusBarColor">@android:color/transparent</item>
@@ -24,6 +24,8 @@
         <item name = "windowActionBar">false</item>
         <item name = "windowNoTitle">true</item>
     </style>
+
+
 
     <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>

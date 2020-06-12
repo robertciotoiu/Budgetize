@@ -38,13 +38,9 @@
         <activity android:name=".ui.activities.createActivities.CreateCategoryActivity" />
         <activity
             android:name=".ui.activities.createActivities.CreateTransactionActivity"
-            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
+
             />
         <activity android:name=".ui.activities.createActivities.CreateWalletActivity" />
-        <activity
-            android:name=".data.remotedatabase.remote.OBPlib.activity.OAuthActivity"
-            android:noHistory="true"
-            android:theme="@android:style/Theme.NoTitleBar"></activity>
         <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/create_ie_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    tools:context=".ui.activities.createActivities.CreateTransactionActivity"
+    android:fitsSystemWindows="true"
+    >
+
+    <RadioGroup
+        android:checkedButton="@+id/toggle"
+        android:id="@+id/ie_switch"
+        android:layout_height="80dp"
+        android:layout_width="match_parent"
+
+        app:layout_constraintTop_toBottomOf="@+id/pick_date_textinput"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:background="@drawable/pick_outline_negative"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="2dp"
+            android:id="@+id/ie_switch_income"
+            android:background="@color/negativeBackgroundColor"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:gravity="center"
+            android:text="Income"
+            android:textColor="#ffffff" />
+
+        <RadioButton
+            android:textSize="15dp"
+            android:layout_marginRight="3.5dp"
+            android:layout_marginTop="3.5dp"
+            android:layout_marginBottom="3.5dp"
+            android:id="@+id/ie_switch_expense"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/transaction_ie_selected_shape"
+            android:button="@null"
+            android:gravity="center"
+            android:text="Expense"
+            android:textColor="#8A000000" />
+    </RadioGroup>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/create_ie_name"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="2.5dp"
+        android:layout_marginEnd="2.5dp"
+
+        android:backgroundTint="#FFFFFF"
+        android:hint="Transaction Name"
+
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+
+        app:layout_constraintTop_toBottomOf="@+id/ie_switch"
+        app:startIconDrawable="@drawable/name_icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="2.5dp"
+        android:layout_marginEnd="2.5dp"
+        android:hint="Amount"
+        app:startIconDrawable="@drawable/amount_icon"
+        android:drawingCacheQuality="high"
+        android:id="@+id/create_ie_amount"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_name"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--EditText
+        android:id="@+id/category_dropdown_textfield"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:ems="10"
+        android:hint="Category"
+        android:inputType="textPersonName"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_amount" /-->
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+        android:id="@+id/category_dropdown_textfield"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:hint="Transaction Category"
+        app:startIconDrawable="@drawable/category_icon"
+        android:layout_marginStart="2.5dp"
+        android:layout_marginEnd="2.5dp"
+
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_amount">
+
+        <AutoCompleteTextView
+            android:id="@+id/category_dropdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+        android:id="@+id/occurrence_dropdown_textfield"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:hint="Transaction Occurrence"
+        android:focusable="false"
+        android:layout_marginStart="2.5dp"
+        android:layout_marginEnd="2.5dp"
+
+        app:startIconDrawable="@drawable/occurrence_icon"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/category_dropdown_textfield">
+
+        <AutoCompleteTextView
+            android:id="@+id/occurrence_dropdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <Switch
+        android:visibility="gone"
+        android:id="@+id/create_ie_switch_income"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text=""
+        android:theme="@style/ThemeOverlay.MySwitch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/occurrence_dropdown_textfield" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/income_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="44dp"
+        android:text="Income"
+        android:textColor="@color/positiveBackgroundColor"
+        app:layout_constraintEnd_toStartOf="@+id/create_ie_switch_income"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/occurrence_dropdown_textfield" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/expense_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="60dp"
+        android:text="Expense"
+        android:textColor="@color/negativeBackgroundColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/create_ie_switch_income"
+        app:layout_constraintTop_toBottomOf="@+id/occurrence_dropdown_textfield" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="2.5dp"
+        android:layout_marginEnd="2.5dp"
+        android:hint="Transaction Date"
+        app:startIconDrawable="@drawable/calendar_icon"
+        android:drawingCacheQuality="high"
+        android:id="@+id/pick_date_textinput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_switch_income">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/date_picked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.skydoves.elasticviews.ElasticButton
+        android:id="@+id/create_ie_add_button"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="70dp"
+
+        android:backgroundTint="@color/negativeBackgroundColor"
+        android:clickable="true"
+        android:focusable="true"
+
+        android:text="Add transaction"
+
+        android:textColor="#ffffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.375"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pick_date_textinput" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

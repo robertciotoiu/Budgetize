@@ -3,16 +3,19 @@ package com.example.robi.budgetize.ui.activities.createActivities;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,10 +31,12 @@ import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.MainActivityViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
-import com.example.robi.budgetize.data.localdatabase.enums.TransactionOccurrenceEnum;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
-import com.google.android.gms.common.util.ArrayUtils;
+import com.example.robi.budgetize.data.localdatabase.enums.TransactionOccurrenceEnum;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
+import com.skydoves.elasticviews.ElasticButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,11 +49,58 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     private HashMap<String,Long> categoryHashMap = new HashMap<String, Long>();
     private Wallet wallet;
     private long wallet_id = 0;
-    private TextView pickedDate;
-    private Spinner categorySpinner;
-    private Spinner occurrenceSpinner;
-    private String selectedDate;
 
+    ElasticButton addButton;
+
+    //Switch
+    private RadioGroup ieSwitch;
+    private RadioButton ieSwitchIncome;
+    private RadioButton ieSwitchExpense;
+
+    public void initRadioButtons(){
+        ieSwitchIncome = findViewById(R.id.ie_switch_income);
+        ieSwitchExpense = findViewById(R.id.ie_switch_expense);
+        ieSwitch = findViewById(R.id.ie_switch);
+
+        ieSwitchIncome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Income selected, update UI
+                ieSwitch.setBackgroundColor(getColor(R.color.positiveBackgroundColor));
+                ieSwitchIncome.setBackground(getDrawable(R.drawable.transaction_ie_selected_shape));
+                ieSwitchExpense.setBackgroundColor(getColor(R.color.positiveBackgroundColor));
+
+                ieSwitchIncome.setTextColor(0x8A000000);
+                ieSwitchExpense.setTextColor(0xffffffff);
+                addButton.getBackground().setColorFilter(getColor(R.color.positiveBackgroundColor), PorterDuff.Mode.MULTIPLY);
+                addButton.setBackgroundColor(Color.parseColor("#000000"));
+                addButton.setBackgroundResource(R.color.positiveBackgroundColor);
+                GradientDrawable drawable = new GradientDrawable();
+                drawable.setCornerRadius(0f);
+                drawable.setColor(getColor(R.color.positiveBackgroundColor));
+                addButton.setBackground(drawable);
+                addButton.setBackgroundDrawable(drawable);
+                addButton.setBackgroundColor(getColor(R.color.positiveBackgroundColor));
+
+            }
+        });
+    }
+
+    // New design approach using Material
+    ArrayAdapter<String> categoryAdapter;
+    ArrayAdapter<String> occurrenceAdapter;
+    private TextInputLayout transactionNameTextInput;
+    private TextInputLayout transactionAmountTextInput;
+    private TextInputLayout categorySelectorTextInput;
+    private TextInputLayout occurrenceSelectorTextInput;
+    private TextInputLayout transactionDateTextInput;
+
+    private AutoCompleteTextView categoryDropDown;
+    private AutoCompleteTextView occurrenceDropdown;
+
+    private TextInputEditText pickedDate;
+
+    // MVVM
     private MainActivityViewModel mainActivityViewModel;
     private Observer<List<CategoryObject>> categoryListObsever;
     private Observer<List<CategoryObject>> getCategoryListObsever;
@@ -56,20 +108,30 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_ie);
+        setContentView(R.layout.activity_create_transaction);
         Bundle bundle = getIntent().getExtras();
         if(bundle.get("wallet")!=null) {
             Gson gson = new Gson();
             String walletAsString = (String) bundle.get("wallet");
             this.wallet = gson.fromJson(walletAsString, Wallet.class);
             wallet_id = wallet.getId();
-
-            pickedDate = (TextView) this.findViewById(R.id.selected_date_textView);
-
-            //spinner = init_spinner();
-            //init activity
+            pickedDate = (TextInputEditText) this.findViewById(R.id.date_picked);
+            initUIElements();
         }
     }
+
+    private void initUIElements() {
+        transactionNameTextInput = findViewById(R.id.create_ie_name);
+        transactionAmountTextInput = findViewById(R.id.create_ie_amount);
+        categorySelectorTextInput = findViewById(R.id.category_dropdown_textfield);
+        occurrenceSelectorTextInput = findViewById(R.id.occurrence_dropdown_textfield);
+        transactionDateTextInput = findViewById(R.id.pick_date_textinput);
+
+
+        categoryDropDown = findViewById(R.id.category_dropdown);
+        occurrenceDropdown = findViewById(R.id.occurrence_dropdown);
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     protected void handleOnDestroy(){
         mainActivityViewModel.getAllCategoriesOfAWallet(wallet_id).removeObserver(getCategoryListObsever);
@@ -86,18 +148,23 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
                 CreateTransactionActivity.categoryObjects.addAll(categoryObjects);
                 categoryHashMap.clear();
                 String[] categoriesArr = getCategories();
-                categorySpinner = init_spinner(R.id.create_ie_category, categoriesArr);
+                categoryAdapter = new ArrayAdapter<>(CreateTransactionActivity.this, R.layout.dropdown_item, categoriesArr);
+                categoryDropDown.setAdapter(categoryAdapter);
+//                categorySpinner = init_spinner(R.id.create_ie_category, categoriesArr);
             }
         };
         mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId()).observe(this,getCategoryListObsever);
-        String[] occArr = ArrayUtils.concat(new String[]{"Select transaction's occurrence"},getOccurrencesOptions(TransactionOccurrenceEnum.class));
-        occurrenceSpinner = init_spinner(R.id.pick_occurence_spinner, occArr);
+        String[] occArr = getOccurrencesOptions(TransactionOccurrenceEnum.class);
+        occurrenceAdapter = new ArrayAdapter<>(CreateTransactionActivity.this,R.layout.dropdown_item,occArr);
+        occurrenceDropdown.setAdapter(occurrenceAdapter);
+
     }
     @Override
     public void onResume(){
         super.onResume();
         init_mvvm();
         init_listeners();
+        initRadioButtons();
     }
 
 //    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -118,15 +185,15 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     }
 
     public void init_listeners() {
-        Button add_button = (Button) this.findViewById(R.id.create_ie_add_button);
+        addButton = (ElasticButton) this.findViewById(R.id.create_ie_add_button);
 
-        add_button.setOnClickListener(new View.OnClickListener() {
+        addButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 createIE();
             }
         });
 
-        findViewById(R.id.pick_ie_date_button).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.date_picked).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDatePickerDialog();
@@ -140,23 +207,23 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     private void createIE() {
         EditText IEName = (EditText) this.findViewById(R.id.create_ie_name);
         EditText IEAmount = (EditText) this.findViewById(R.id.create_ie_amount);
-        Switch IEType = (Switch) this.findViewById(R.id.create_ie_switch);
+        //Switch IEType = (Switch) this.findViewById(R.id.create_ie_switch);
         String ieName = IEName.getText().toString();
         double ieAmount = 0.0;
-        String ieCategoryName = categorySpinner.getSelectedItem().toString();
+        String ieCategoryName = categoryDropDown.getText().toString();
         long ieCategoryID = 0;
         int ieType = 0;
-        if(IEType.isChecked()) {
+        //if(IEType.isChecked()) {
             ieType = 1;
-        }
+       //}
         try{
             ieAmount = Double.parseDouble(IEAmount.getText().toString());
             long currentWalletID = wallet.getId();
-            if(pickedDate.getText().toString().contentEquals("Press Transaction Date")){
+            if(pickedDate.getText().toString().contentEquals("")){
                 Toast.makeText(this,"Press on Date Icon to selected Transaction Date!",Toast.LENGTH_LONG).show();
                 return;
             }
-            if(occurrenceSpinner.getSelectedItem().toString().contentEquals("Select ie occurrence")){
+            if(occurrenceDropdown.getText().toString().contentEquals("")){
                 Toast.makeText(this,"Pick occurrence!",Toast.LENGTH_LONG).show();
                 return;
             }
@@ -165,7 +232,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
                 ieCategoryID = categoryHashMap.get(ieCategoryName);
             }
 
-            IEObject ieObject = new IEObject(currentWalletID, ieName, ieAmount, ieCategoryID, ieType, pickedDate.getText().toString(), occurrenceSpinner.getSelectedItem().toString(),null,"USD");//TODO:Choosable
+            IEObject ieObject = new IEObject(currentWalletID, ieName, ieAmount, ieCategoryID, ieType, pickedDate.getText().toString(), occurrenceDropdown.getText().toString(),null,"USD");//TODO:Choosable
 
             long status = mainActivityViewModel.addIEObject(ieObject);
 
@@ -255,9 +322,9 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     private String[] getCategories() {
         long wallet_id = wallet.getId();
         //List<CategoryObject> categoryObjects = mainActivityViewModel.getAllCategoriesOfAWallet(wallet_id).getValue();
-        String[] categories = new String[categoryObjects.size()+1];
-        categories[0] = "Select Category";
-        int i=1;
+        String[] categories = new String[categoryObjects.size()];
+//        categories[0] = "Select Category";
+        int i=0;
         for(CategoryObject c:categoryObjects)
         {
             categories[i] = c.getName();

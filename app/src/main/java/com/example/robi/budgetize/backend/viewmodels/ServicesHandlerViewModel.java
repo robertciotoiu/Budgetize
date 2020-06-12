@@ -102,7 +102,7 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
     }
 
     //2nd "service"
-    private void syncAllImages() {
+    public void syncAllImages() {
         Thread syncImagesThread = new Thread(new Runnable() {
             @Override
             public void run() {

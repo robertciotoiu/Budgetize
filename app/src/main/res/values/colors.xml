@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--old colors
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#000000</color>
+    !-->
+    <color name="colorPrimary">#00E676</color>
+    <color name="colorPrimaryDark">#006835</color>
     <color name="colorAccent">#000000</color>
 
     <color name="gold">#FFD4AF37</color>
         <color name="positiveBackgroundColor">#00C853</color>
+        <color name="deactivePositiveBackgroundColor">#3000C853</color>
         <color name="positiveCircleColor">#B9F6CA</color> <!--#E8F5E9-->
             <color name="positiveCircleColorNew">#1B5E20</color> <!--#E8F5E9-->
         <color name="positiveMoneyColor">#B9F6CA</color>    <!--#E8F5E9-->
         <color name="positiveButton">#00E676</color>
 
         <color name="negativeBackgroundColor">#D50000</color>
+        <color name="deactiveNegativeBackgroundColor">#30D50000</color>
         <color name="negativeCircleColor">#FF8A80</color> <!-- FFEBEE-->
             <color name="negativeCircleColorNew">#B71C1C</color> <!-- FFEBEE-->
         <color name="negativeMoneyColor">#FF8A80</color>    <!-- FFEBEE-->
