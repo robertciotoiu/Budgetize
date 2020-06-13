@@ -270,7 +270,7 @@ public class BankAccountViewModel extends AndroidViewModel{// implements DataRep
         if((category_id = repository.getCategoryID(wallet_id,bankAccount.getId()))!=0){
             status = 1;
         }else {
-            CategoryObject categoryObject = new CategoryObject(bankAccount.getLabel(), bankAccount.getAccount_type(), wallet_id, bankAccount.getId());
+            CategoryObject categoryObject = new CategoryObject(bankAccount.getLabel(), bankAccount.getAccount_type(),0, wallet_id, bankAccount.getId());
             category_id = categoryObject.getCategory_id();
             status = repository.addCategory(categoryObject);//MainActivity.myDatabase.categoryDao().addCategory(categoryObject);
         }

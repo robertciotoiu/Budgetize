@@ -22,12 +22,12 @@ public class BankImagesDownloader {
     long noTasks = 0;
 
     public BankImagesDownloader() {
-        if(ImageDownloader.isExternalStorageWritable()) {
+        if (ImageDownloader.isExternalStorageWritable()) {
             fileLocation = new File(Environment.getExternalStorageDirectory() +
                     "/Android/data/"
                     + ApplicationObj.getAppContext().getPackageName()
                     + "/BankIcons");
-        }else{
+        } else {
             fileLocation = new File(ApplicationObj.getAppContext().getFilesDir()
                     + "/BankIcons");
         }
@@ -43,7 +43,7 @@ public class BankImagesDownloader {
         }
         // Log for Debug purposes
         Log.d("Dir created successfully? ", success + "!");
-        if(success) {
+        if (success) {
             startTime = System.currentTimeMillis();
             for (int i = 0; i < banks.size(); i++) {
                 File file = new File(fileLocation.getPath() + File.separator + banks.get(i).getId() + ".png");
@@ -54,10 +54,10 @@ public class BankImagesDownloader {
                     public void onError(ImageDownloader.ImageError error) {
                         Log.d("Error code ", error.getErrorCode() + ": " + error.getMessage());
                         error.printStackTrace();
-//                    Log.d(" completedTasks "," "+(++completedTasks)+" ; "+noTasks);
-//                    if(completedTasks == noTasks){
-//                        Log.d(" BankImagesDownloader.doSync(): ", "Bank images downloaded in: " +(System.currentTimeMillis()-startTime) +" milliseconds");
-//                    }
+                        Log.d(" completedTasks ", " " + (++completedTasks) + " ; " + noTasks);
+                        if (completedTasks == noTasks) {
+                            Log.d(" BankImagesDownloader.doSync(): ", "Bank images downloaded in: " + (System.currentTimeMillis() - startTime) + " milliseconds");
+                        }
                     }
 
                     @Override
@@ -86,10 +86,10 @@ public class BankImagesDownloader {
                                 error.printStackTrace();
                             }
                         }, mFormat, false);
-//                    Log.d(" completedTasks "," "+ (++completedTasks)+" ; "+noTasks);
-//                    if(completedTasks == noTasks){
-//                        Log.d(" BankImagesDownloader.doSync(): ", "Bank images downloaded in: " +(System.currentTimeMillis()-startTime) +" milliseconds");
-//                    }
+                        Log.d(" completedTasks ", " " + (++completedTasks) + " ; " + noTasks);
+                        if (completedTasks == noTasks) {
+                            Log.d(" BankImagesDownloader.doSync(): ", "Bank images downloaded in: " + (System.currentTimeMillis() - startTime) + " milliseconds");
+                        }
                     }
                 });
                 // Check if the file if Bank's Logo is already downloaded
@@ -99,12 +99,12 @@ public class BankImagesDownloader {
                     if (logoUrl != null && !logoUrl.contentEquals("")) {
                         // Start the DownloadTask on a new Thread
                         noTasks++;
-                        downloader.download(logoUrl, true);
-                        //executor.execute(new DownloadTask(downloader, logoUrl, true));
+//                        downloader.download(logoUrl, true);
+                        executor.execute(new DownloadTask(downloader, logoUrl, true));
                     }
                 }
             }
-            Log.d(" BankImagesDownloader.doSync(): ", "Bank images downloaded in: " + (System.currentTimeMillis() - startTime) + " milliseconds");
+//            Log.d(" BankImagesDownloader.doSync(): ", "Bank images downloaded in: " + (System.currentTimeMillis() - startTime) + " milliseconds");
         }
     }
 

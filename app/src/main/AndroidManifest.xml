@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/app_icon"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar"
+        android:theme="@style/AppTheme.NoActionBarPositive"
         android:usesCleartextTraffic="true">
         <activity android:name=".ui.activities.ImportTransactionsActivity"></activity>
         <activity android:name=".ui.activities.AvailableBanksActivity"></activity>

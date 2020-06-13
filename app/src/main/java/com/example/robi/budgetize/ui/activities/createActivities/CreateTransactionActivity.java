@@ -3,8 +3,6 @@ package com.example.robi.budgetize.ui.activities.createActivities;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -49,6 +46,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     private HashMap<String,Long> categoryHashMap = new HashMap<String, Long>();
     private Wallet wallet;
     private long wallet_id = 0;
+    private int ieType = 0;
 
     ElasticButton addButton;
 
@@ -69,19 +67,47 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
                 ieSwitch.setBackgroundColor(getColor(R.color.positiveBackgroundColor));
                 ieSwitchIncome.setBackground(getDrawable(R.drawable.transaction_ie_selected_shape));
                 ieSwitchExpense.setBackgroundColor(getColor(R.color.positiveBackgroundColor));
-
                 ieSwitchIncome.setTextColor(0x8A000000);
                 ieSwitchExpense.setTextColor(0xffffffff);
-                addButton.getBackground().setColorFilter(getColor(R.color.positiveBackgroundColor), PorterDuff.Mode.MULTIPLY);
-                addButton.setBackgroundColor(Color.parseColor("#000000"));
-                addButton.setBackgroundResource(R.color.positiveBackgroundColor);
-                GradientDrawable drawable = new GradientDrawable();
-                drawable.setCornerRadius(0f);
-                drawable.setColor(getColor(R.color.positiveBackgroundColor));
-                addButton.setBackground(drawable);
-                addButton.setBackgroundDrawable(drawable);
-                addButton.setBackgroundColor(getColor(R.color.positiveBackgroundColor));
+                addButton.setBackgroundTintList(getResources().getColorStateList(R.color.positiveBackgroundColor));
+                ieType = 0;
+                //addButton.setBackgroundColor(getColor(R.color.positiveBackgroundColor));
+            }
+        });
 
+
+        ieSwitchExpense.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Income selected, update UI
+                ieSwitch.setBackgroundColor(getColor(R.color.negativeBackgroundColor));
+                ieSwitchExpense.setBackground(getDrawable(R.drawable.transaction_ie_selected_shape));
+                ieSwitchIncome.setBackgroundColor(getColor(R.color.negativeBackgroundColor));
+                ieSwitchExpense.setTextColor(0x8A000000);
+                ieSwitchIncome.setTextColor(0xffffffff);
+                addButton.setBackgroundTintList(getResources().getColorStateList(R.color.negativeBackgroundColor));
+                ieType = 1;
+
+                //addButton.setBackgroundColor(getColor(R.color.positiveBackgroundColor));
+
+//                int[][] states = new int[][] {
+//                        new int[] { android.R.attr.state_focused}, // focused
+//                        new int[] { android.R.attr.state_hovered}, // hovered
+//                        new int[] { android.R.attr.state_enabled}, // enabled
+//                };
+//
+//                int[] colors = new int[] {
+//                        0x8A000000,
+//                        getColor(R.color.negativeBackgroundColor),
+//                        getColor(R.color.negativeBackgroundColor),
+//                };
+//
+//                ColorStateList myColorList = new ColorStateList(states, colors);
+//
+//                transactionNameTextInput.setBoxStrokeColorStateList(myColorList);
+//                transactionNameTextInput.setHintTextColor(getResources().getColorStateList(R.color.negativeBackgroundColor));
+                //transactionNameTextInput.setDefaultHintTextColor(getResources().getColorStateList(R.color.negativeBackgroundColor));
+                //transactionNameTextInput.setCounterTextColor(getResources().getColorStateList(R.color.negativeBackgroundColor));
             }
         });
     }
@@ -98,6 +124,8 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     private AutoCompleteTextView categoryDropDown;
     private AutoCompleteTextView occurrenceDropdown;
 
+    private TextInputEditText nameInputText;
+    private TextInputEditText amountInputText;
     private TextInputEditText pickedDate;
 
     // MVVM
@@ -107,6 +135,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.CreateTransactionActivityTheme_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_transaction);
         Bundle bundle = getIntent().getExtras();
@@ -115,7 +144,6 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
             String walletAsString = (String) bundle.get("wallet");
             this.wallet = gson.fromJson(walletAsString, Wallet.class);
             wallet_id = wallet.getId();
-            pickedDate = (TextInputEditText) this.findViewById(R.id.date_picked);
             initUIElements();
         }
     }
@@ -127,6 +155,9 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
         occurrenceSelectorTextInput = findViewById(R.id.occurrence_dropdown_textfield);
         transactionDateTextInput = findViewById(R.id.pick_date_textinput);
 
+        nameInputText = findViewById(R.id.name_input_text);
+        amountInputText = findViewById(R.id.amount_input_text);
+        pickedDate = findViewById(R.id.date_picked);
 
         categoryDropDown = findViewById(R.id.category_dropdown);
         occurrenceDropdown = findViewById(R.id.occurrence_dropdown);
@@ -205,19 +236,12 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
 
     @SuppressLint("ShowToast")
     private void createIE() {
-        EditText IEName = (EditText) this.findViewById(R.id.create_ie_name);
-        EditText IEAmount = (EditText) this.findViewById(R.id.create_ie_amount);
-        //Switch IEType = (Switch) this.findViewById(R.id.create_ie_switch);
-        String ieName = IEName.getText().toString();
+        String ieName = nameInputText.getText().toString();
         double ieAmount = 0.0;
         String ieCategoryName = categoryDropDown.getText().toString();
         long ieCategoryID = 0;
-        int ieType = 0;
-        //if(IEType.isChecked()) {
-            ieType = 1;
-       //}
         try{
-            ieAmount = Double.parseDouble(IEAmount.getText().toString());
+            ieAmount = Double.parseDouble(amountInputText.getText().toString());
             long currentWalletID = wallet.getId();
             if(pickedDate.getText().toString().contentEquals("")){
                 Toast.makeText(this,"Press on Date Icon to selected Transaction Date!",Toast.LENGTH_LONG).show();

@@ -22,25 +22,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
 
-        android:background="@drawable/pick_outline_negative"
+        android:background="@drawable/pick_outline_positive"
         android:orientation="horizontal">
 
         <RadioButton
+            android:textSize="16sp"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
             android:layout_marginLeft="2dp"
             android:id="@+id/ie_switch_income"
-            android:background="@color/negativeBackgroundColor"
+            android:background="@drawable/transaction_ie_selected_shape"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:button="@null"
             android:gravity="center"
             android:text="Income"
-            android:textColor="#ffffff" />
+            android:textColor="#8A000000"
+             />
 
         <RadioButton
-            android:textSize="15dp"
+            android:textSize="16sp"
             android:layout_marginRight="3.5dp"
             android:layout_marginTop="3.5dp"
             android:layout_marginBottom="3.5dp"
@@ -48,11 +50,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/transaction_ie_selected_shape"
+            android:background="@color/positiveBackgroundColor"
             android:button="@null"
             android:gravity="center"
             android:text="Expense"
-            android:textColor="#8A000000" />
+            android:textColor="#ffffff"/>
     </RadioGroup>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -76,6 +78,7 @@
         app:startIconDrawable="@drawable/name_icon">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/name_input_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -98,7 +101,7 @@
         app:layout_constraintTop_toBottomOf="@+id/create_ie_name"
         >
         <com.google.android.material.textfield.TextInputEditText
-
+            android:id="@+id/amount_input_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -226,16 +229,14 @@
 
     <com.skydoves.elasticviews.ElasticButton
         android:id="@+id/create_ie_add_button"
+        android:textSize="16sp"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginTop="70dp"
-
-        android:backgroundTint="@color/negativeBackgroundColor"
+        android:backgroundTint="@color/positiveBackgroundColor"
         android:clickable="true"
         android:focusable="true"
-
-        android:text="Add transaction"
-
+        android:text="Create Transaction"
         android:textColor="#ffffff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.375"

@@ -22,10 +22,11 @@ import static androidx.room.ForeignKey.CASCADE;
 })
 public class CategoryObject {
 
-    public CategoryObject(String name, String description, long wallet_id, String bank_account_id) {
+    public CategoryObject(String name, String description, int iconID, long wallet_id, String bank_account_id) {
         this.category_id = System.nanoTime();
         this.name = name;
         this.description = description;
+        this.iconID = iconID;
         this.wallet_id = wallet_id;
         this.bank_account_id = bank_account_id;
     }
@@ -70,6 +71,14 @@ public class CategoryObject {
         this.bank_account_id = bank_account_id;
     }
 
+    public int getIconID() {
+        return iconID;
+    }
+
+    public void setIconID(int iconID) {
+        this.iconID = iconID;
+    }
+
     @PrimaryKey
     @ColumnInfo(name = "category_id")
     private long category_id;
@@ -83,6 +92,9 @@ public class CategoryObject {
 
     @ColumnInfo(name = "description")
     private String description;
+
+    @ColumnInfo(name = "icon_id")
+    private int iconID;
 
     @ColumnInfo(name = "bank_account_id")
     private String bank_account_id;

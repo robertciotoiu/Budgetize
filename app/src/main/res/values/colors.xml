@@ -30,6 +30,7 @@
         <color name="neutralMoneyColor">#FFE57F</color>    <!-- FFF8E1-->
         <color name="neutralButton">#00E676</color>
 
+    <color name="grayTextColor">#8A000000</color>
 
         <color name="defaultTextColor">#FFFFFF</color>
 

@@ -37,17 +37,21 @@ public class OBPRetroClass {
                     ArrayList<Bank> bankArrayList = new ArrayList<>();
                     JSONObject banksJson = OBPRestClient.getBanksJson();
                     Gson gson = new Gson();
-                    JSONArray banksJsonJSONArray = banksJson.getJSONArray("banks");
-                    for (int i = 0; i < banksJsonJSONArray.length(); i++) {
-                        bankArrayList.add(gson.fromJson(banksJsonJSONArray.getJSONObject(i).toString(), Bank.class));
-                        Log.d("BANK:", bankArrayList.get(i).toString());
+                    while(banksJson==null) {
+                        //wait for bank list
                     }
-                    if (bankArrayList.size() != 0) {
-                        mObservableBanks.postValue(bankArrayList);
-                        Log.d("OBPRetroClass.getAllBanks(): ", "BanksAdded");
-                    } else {
-                        Log.d("OBPRetroClass.getAllBanks(): ", "BanksNOTAdded");//handle this
-                    }
+                        JSONArray banksJsonJSONArray = banksJson.getJSONArray("banks");
+                        for (int i = 0; i < banksJsonJSONArray.length(); i++) {
+                            bankArrayList.add(gson.fromJson(banksJsonJSONArray.getJSONObject(i).toString(), Bank.class));
+                            Log.d("BANK:", bankArrayList.get(i).toString());
+                        }
+                        if (bankArrayList.size() != 0) {
+                            mObservableBanks.postValue(bankArrayList);
+                            Log.d("OBPRetroClass.getAllBanks(): ", "BanksAdded");
+                        } else {
+                            Log.d("OBPRetroClass.getAllBanks(): ", "BanksNOTAdded");//handle this
+                        }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

@@ -6,41 +6,98 @@
     android:layout_height="match_parent"
     tools:context=".ui.activities.createActivities.CreateCategoryActivity">
 
-    <Button
-        android:id="@+id/add_button_category"
-        android:layout_width="wrap_content"
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/category_name"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ADD"
+        android:layout_marginStart="2.5dp"
+        android:layout_marginEnd="2.5dp"
+        android:backgroundTint="#FFFFFF"
+        android:hint="Category Name"
+        android:layout_marginTop="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:startIconDrawable="@drawable/category_icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/name_input_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/category_description"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="2.5dp"
+        android:layout_marginEnd="2.5dp"
+
+        android:backgroundTint="#FFFFFF"
+        android:hint="Category Description"
+
+        android:layout_marginTop="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/category_name"
+        app:startIconDrawable="@drawable/category_description_icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/description_input_text"
+            android:ems="10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/icon_picker"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="2.5dp"
+        android:layout_marginEnd="2.5dp"
+
+        android:backgroundTint="#FFFFFF"
+        android:hint="Pick Category Icon"
+
+        android:layout_marginTop="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/category_description"
+        app:startIconDrawable="@drawable/category_description_icon"
+        app:startIconContentDescription="LALALA"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/icon_input_text"
+            android:ems="10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.skydoves.elasticviews.ElasticButton
+        android:id="@+id/add_button_category"
+        android:textSize="16sp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="70dp"
+        android:backgroundTint="@color/positiveBackgroundColor"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Create Category"
+        android:textColor="#ffffff"
+        app:layout_constraintHorizontal_bias="0.375"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/category_description_category" />
-
-    <EditText
-        android:id="@+id/category_name_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="248dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Category Name"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <EditText
-        android:id="@+id/category_description_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:ems="10"
-        android:hint="Description"
-        android:inputType="textPersonName"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/category_name_category" />
+        app:layout_constraintTop_toBottomOf="@+id/category_description" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

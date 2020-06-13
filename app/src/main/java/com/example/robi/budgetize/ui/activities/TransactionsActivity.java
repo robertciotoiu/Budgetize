@@ -21,16 +21,17 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.ui.activities.createActivities.CreateTransactionActivity;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingItem;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingList;
 import com.example.robi.budgetize.backend.viewmodels.MainActivityViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.MainActivityViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.CategoryObject;
 import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.createActivities.CreateCategoryActivity;
+import com.example.robi.budgetize.ui.activities.createActivities.CreateTransactionActivity;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingItem;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingList;
 import com.google.gson.Gson;
+import com.maltaisn.icondialog.pack.IconPack;
 import com.mynameismidori.currencypicker.CurrencyPicker;
 import com.mynameismidori.currencypicker.CurrencyPickerListener;
 import com.mynameismidori.currencypicker.ExtendedCurrency;
@@ -55,6 +56,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     private RapidFloatingActionLayout rfaLayout;
     private RapidFloatingActionButton rfaBtn;
     private RapidFloatingActionHelper rfabHelper;
+    private IconPack iconPack;
     private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
 
     private MainActivityViewModel mainActivityViewModel;
@@ -79,6 +81,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             String walletAsString = (String) bundle.get("wallet");
             this.wallet = gson.fromJson(walletAsString, Wallet.class);
             walletID = wallet.getId();
+            iconPack = ((ApplicationObj) getApplication()).getIconPack();
         }
         //TODO: solve issue when enter in wallet there is no category/ie!
     }
@@ -349,7 +352,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                 item.setIndicatorColor(Color.WHITE);
                 item.setIndicatorSize(35, 35, this);
                 //item.setIndicatorColorRes(getIconIndicatorColor(ie_value));//R.color.positiveBackgroundColor);
-                item.setIndicatorIcon(getIcon(ie_value));//R.drawable.house_icon);
+                item.setIndicatorIcon(getIcon(categoryObject.getIconID(),ie_value));//R.drawable.house_icon);
                 //1. ImageView category_icon
                 TextView valueTextView = (TextView) item.findViewById(R.id.text_view_value_white);
                 valueTextView.setText(String.valueOf(ie_value));
@@ -456,10 +459,15 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 
     }
 
-    private Drawable getIcon(double ie) {
+    private Drawable getIcon(int iconID,double ie) {
+        Drawable icon=null;
+        try {
+             icon = iconPack.getIcon(iconID).getDrawable().getConstantState().newDrawable();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         //have to return icon id
-        Drawable unwrappedDrawable = AppCompatResources.getDrawable(this, R.drawable.house_icon);
-        Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
+        Drawable wrappedDrawable = DrawableCompat.wrap(icon);
         if (ie > 0) {
             DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.positiveBackgroundColor));
         } else if (ie < 0) {
@@ -563,7 +571,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         } else {
             expandingItem.setBackground(getResources().getDrawable(R.drawable.item_shape_neutral));
         }
-        expandingItem.setIndicatorIcon(getIcon(ie_value));
+        expandingItem.setIndicatorIcon(getIcon(categoryObject.getIconID(),ie_value));
     }
 
     private void setAllColors(double ie) {

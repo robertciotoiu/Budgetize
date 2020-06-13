@@ -12,8 +12,8 @@
         <item name="android:windowExitTransition">@anim/slide_in_left</item>-->
     </style>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme.NoActionBar" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+    <!-- Base application theme positive. -->
+    <style name="AppTheme.NoActionBarPositive" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -25,6 +25,37 @@
         <item name = "windowNoTitle">true</item>
     </style>
 
+    <!-- Base application theme negative. -->
+    <style name="AppTheme.NoActionBarNegative" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="colorPrimary">@color/negativeBackgroundColor</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
+        <item name = "android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name = "android:statusBarColor">@android:color/transparent</item>
+        <item name = "android:windowTranslucentStatus">true</item>
+        <item name = "windowActionBar">false</item>
+        <item name = "windowNoTitle">true</item>
+    </style>
+
+    <!-- Base application theme negative. -->
+    <style name="CreateTransactionActivityTheme.NoActionBar" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="colorPrimary">@color/grayTextColor</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
+        <item name = "android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name = "android:statusBarColor">@android:color/transparent</item>
+        <item name = "android:windowTranslucentStatus">true</item>
+        <item name = "windowActionBar">false</item>
+        <item name = "windowNoTitle">true</item>
+    </style>
+
+    <style name="TextBoxMaterial" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="colorPrimary">@color/positiveBackgroundColor</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 
 
     <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
