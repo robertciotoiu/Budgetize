@@ -179,7 +179,7 @@ public class ImageDownloader {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    static boolean isExternalStorageWritable() {
+    public static boolean isExternalStorageWritable() {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 

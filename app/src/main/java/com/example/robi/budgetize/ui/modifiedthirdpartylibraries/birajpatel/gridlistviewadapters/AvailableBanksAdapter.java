@@ -23,7 +23,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.Toast;
 
@@ -31,8 +30,8 @@ import com.birin.gridlistviewadapters.Card;
 import com.birin.gridlistviewadapters.ListGridAdapter;
 import com.birin.gridlistviewadapters.dataholders.CardDataHolder;
 import com.birin.gridlistviewadapters.utils.ChildViewsClickHandler;
-import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.ApplicationObj;
+import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.viewmodels.helpers.ImageDownloader;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 import com.example.robi.budgetize.ui.activities.AvailableBanksActivity;
@@ -80,7 +79,7 @@ public class AvailableBanksAdapter extends ListGridAdapter<AvailableBank, Availa
     //TODO: now we have the banks here, just we need to retrieve files from the folder and add them here.
     @Override
     protected Card<AvailableBankViewHolder> getNewCard(int cardwidth) {
-        int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64, activityContext.getResources().getDisplayMetrics());
+        //int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64, activityContext.getResources().getDisplayMetrics());
         // Create card through XML (can be created programmatically as well.)
         View cardView = getLayoutInflater().inflate(
                 R.layout.simple_card_layout, null);
@@ -154,7 +153,7 @@ public class AvailableBanksAdapter extends ListGridAdapter<AvailableBank, Availa
 
     @Override
     protected void setRowView(View rowView, int arg1) {
-        rowView.setBackgroundColor(0x000000);//getContext().getResources().getColor(R.color.positiveBackgroundColor));
+        rowView.setBackgroundColor(0xFAFAFA);//getContext().getResources().getColor(R.color.positiveBackgroundColor));
     }
 
     //Not used anymore

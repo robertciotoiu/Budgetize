@@ -5,11 +5,10 @@ public class CardItem {
     private long bankID;
     private int mTextResource;
     private int mTitleResource;
-
     private String mText;
     private String mTitle;
-
     private String mLinkStatus;
+    private String mBankLogo;
 
     public CardItem(int title, int text, String mLinkStatus) {
         mTitleResource = title;
@@ -17,11 +16,12 @@ public class CardItem {
         this.mLinkStatus = mLinkStatus;
     }
 
-    public CardItem(String title, String text, String mLinkStatus, long bankID) {
+    public CardItem(String title, String text, String mLinkStatus, String mBankLogo, long bankID) {
         this.mTitle = title;
         this.mText = text;
         this.mLinkStatus = mLinkStatus;
         this.bankID = bankID;
+        this.mBankLogo = mBankLogo;
     }
 
     public long getBankID() {
@@ -54,5 +54,13 @@ public class CardItem {
 
     public int getTitleResource() {
         return mTitleResource;
+    }
+
+    public String getmBankLogo() {
+        return mBankLogo;
+    }
+
+    public void setmBankLogo(String mBankLogo) {
+        this.mBankLogo = mBankLogo;
     }
 }

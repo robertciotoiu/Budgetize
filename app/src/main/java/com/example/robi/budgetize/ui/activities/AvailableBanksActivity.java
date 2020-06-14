@@ -93,14 +93,15 @@ public class AvailableBanksActivity extends AppCompatActivity {
         final int cardSpacing = listadapter.getCardSpacing();
 
         // Header View
-        headerView = getHeaderFooterView("HEADER", cardSpacing);
-        headerView.setPadding(cardSpacing, cardSpacing, cardSpacing, 0);
+        headerView = getHeaderFooterView("Available Banks", cardSpacing);
+        headerView.setPadding(0, 0, 0, 0);
         listview.addHeaderView(headerView);
+        listview.setFitsSystemWindows(true);
 
         // Footer View
-        footerView = getHeaderFooterView("FOOTER", cardSpacing);
-        footerView.setPadding(cardSpacing, 0, cardSpacing, cardSpacing);
-        listview.addFooterView(footerView);
+//        footerView = getHeaderFooterView("FOOTER", cardSpacing);
+//        footerView.setPadding(cardSpacing, 0, cardSpacing, cardSpacing);
+//        listview.addFooterView(footerView);
     }
 
     private View getHeaderFooterView(String text, int cardSpacing) {
@@ -114,7 +115,8 @@ public class AvailableBanksActivity extends AppCompatActivity {
                 - (2 * cardSpacing); // Left-right so *2
         int headerFooterHeight = listadapter.getCardWidth(MAX_CARDS);
         headerFooterView.getLayoutParams().width = headerFooterWidth;
-        headerFooterView.getLayoutParams().height = headerFooterHeight;
+        headerFooterView.getLayoutParams().height = 300;
+
 
         // Setting text value
         ((TextView) view.findViewById(R.id.name)).setText(text);

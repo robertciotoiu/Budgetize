@@ -8,8 +8,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,6 +33,7 @@ import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.view
 import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.LinkBanksCardPagerAdapter;
 import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.LinkBanksShadowTransformer;
 import com.google.gson.Gson;
+import com.skydoves.elasticviews.ElasticButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,10 @@ public class LinkedBankAccountsActivity extends AppCompatActivity implements Vie
     private LinkBanksShadowTransformer mCardShadowTransformer;
     private LinkBanksCardFragmentPagerAdapter mFragmentCardAdapter;
     private LinkBanksShadowTransformer mFragmentCardShadowTransformer;
-    private Button linkNewBankAccountButton;
+
+    private ElasticButton imageViewButton;
+    private ElasticButton linkNewBankAccountButton;
+    private TextView infoTitle;
 
     //ModelView
     private ServicesHandlerViewModel servicesHandlerViewModel;
@@ -78,35 +82,31 @@ public class LinkedBankAccountsActivity extends AppCompatActivity implements Vie
     }
 
     private void init_UI() {
-        if(mCardAdapter !=null && mCardAdapter.getCount()!=0){
+        if (mCardAdapter != null && mCardAdapter.getCount() != 0) {
             ConstraintSet constraintSet = new ConstraintSet();
-            //constraintSet.clone(this, R.id.linked_bank_accounts);
-
-            ConstraintLayout mConstraintLayout  = (ConstraintLayout)findViewById(R.id.linked_bank_accounts);
+            ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.linked_bank_accounts);
             constraintSet.clone(mConstraintLayout);
-
-            constraintSet.setVerticalBias(linkNewBankAccountButton.getId(),0.981f);
-            //for example lets change the vertical bias of tvDownVoteIcon
-            //you can do any other modification and then apply
+            constraintSet.setVerticalBias(imageViewButton.getId(), 0.801f);
             constraintSet.applyTo(mConstraintLayout);
-        }else {
-            // if empty screen
+            // Hide extra elements for empty screen
+            imageViewButton.setVisibility(View.GONE);
+            infoTitle.setVisibility(View.GONE);
+        } else {
+            // IF Empty Screen
+            // position buttons to center of the screen
             ConstraintSet constraintSet = new ConstraintSet();
-            //constraintSet.clone(this, R.id.linked_bank_accounts);
-
-            ConstraintLayout mConstraintLayout  = (ConstraintLayout)findViewById(R.id.linked_bank_accounts);
+            ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.linked_bank_accounts);
             constraintSet.clone(mConstraintLayout);
-
-            constraintSet.setVerticalBias(linkNewBankAccountButton.getId(),0.5f);
-            //for example lets change the vertical bias of tvDownVoteIcon
-            //you can do any other modification and then apply
+            constraintSet.setVerticalBias(imageViewButton.getId(), 0.5f);
             constraintSet.applyTo(mConstraintLayout);
-            linkNewBankAccountButton.setBackground(getDrawable(R.drawable.bank2));
+            // Show extra elements for empty screen
+            imageViewButton.setVisibility(View.VISIBLE);
+            infoTitle.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         // Check if we've got the verifier code available
         Uri data = getIntent().getData();
@@ -212,14 +212,21 @@ public class LinkedBankAccountsActivity extends AppCompatActivity implements Vie
 */
 
     private void init_listeners() {
+        infoTitle = findViewById(R.id.info_title);
         //Link new bank account button
-        linkNewBankAccountButton = this.findViewById(R.id.button_image_view);
-        linkNewBankAccountButton.setOnClickListener(new View.OnClickListener() {
+        imageViewButton = this.findViewById(R.id.button_image_view);
+        imageViewButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startActivity(AvailableBanksActivity.class);
             }
         });
 
+        linkNewBankAccountButton = this.findViewById(R.id.link_new_bank_account_button);
+        linkNewBankAccountButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startActivity(AvailableBanksActivity.class);
+            }
+        });
     }
 
     public LinkedBankAccountsActivity getActivityContext() {
@@ -245,7 +252,7 @@ public class LinkedBankAccountsActivity extends AppCompatActivity implements Vie
                 Gson gson = new Gson();
                 String selectedBank = data.getStringExtra("BANK");
                 Bank bank = gson.fromJson(selectedBank, Bank.class);
-                bankAccountViewModel.addLinkedBank(new LinkedBank(bank.getId(),bank.getShort_name(),bank.getFull_name(),bank.getLogo(),bank.getWebsite(),"unlinked"));
+                bankAccountViewModel.addLinkedBank(new LinkedBank(bank.getId(), bank.getShort_name(), bank.getFull_name(), bank.getLogo(), bank.getWebsite(), "unlinked"));
                 //Log.d("Msg","TEXTUL ESTE: "+selectedBank);
                 //addNewCard(selectedBank);
                 // Do something with the contact here (bigger example below)
@@ -256,7 +263,7 @@ public class LinkedBankAccountsActivity extends AppCompatActivity implements Vie
     private void addNewCard(String selectedBank) {
         if (!mCardAdapter.existCardItem(selectedBank)) {
             //TODO: here we have to save into Database! no to add card here!
-           // mCardAdapter.addCardItem(new CardItem(selectedBank, selectedBank));
+            // mCardAdapter.addCardItem(new CardItem(selectedBank, selectedBank));
             mViewPager.setAdapter(mCardAdapter);
         } else {
             Toast.makeText(this,
@@ -275,8 +282,8 @@ public class LinkedBankAccountsActivity extends AppCompatActivity implements Vie
         LiveData<List<LinkedBank>> linkedBanksList = bankAccountViewModel.getAllLinkedBanks();
         linkedBanksList.observe(this, linkedBanks -> {
             mCardAdapter = new LinkBanksCardPagerAdapter(this, bankAccountViewModel);
-            for(LinkedBank linkedBank:linkedBanks){
-                mCardAdapter.addCardItem(new CardItem(linkedBank.getFull_name(), linkedBank.getShort_name(),linkedBank.getLink_status(),linkedBank.getId()));
+            for (LinkedBank linkedBank : linkedBanks) {
+                mCardAdapter.addCardItem(new CardItem(linkedBank.getFull_name(), linkedBank.getShort_name(), linkedBank.getLink_status(), linkedBank.getObp_bank_id(), linkedBank.getId()));
             }
             mFragmentCardAdapter = new LinkBanksCardFragmentPagerAdapter(getSupportFragmentManager(),
                     dpToPixels(2, this));

@@ -3,7 +3,10 @@ package com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.vie
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Environment;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,15 +20,22 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
 import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
+import com.example.robi.budgetize.backend.viewmodels.helpers.ImageDownloader;
 import com.example.robi.budgetize.data.remotedatabase.remote.OBPlib.OBPRestClient;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.robi.budgetize.backend.viewmodels.helpers.ImageDownloader.isExternalStorageWritable;
+
 
 public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBanksCardAdapter {
+
+    File fileLocation;
 
     private List<CardView> mViews;
     private List<CardItem> mData;
@@ -40,6 +50,16 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         mViews = new ArrayList<>();
         this.activityContext = activityContext;
         this.bankAccountViewModel = bankAccountViewModel;
+        if(isExternalStorageWritable()) {
+            fileLocation = new File(Environment.getExternalStorageDirectory()
+                    + "/Android/data/"
+                    + ApplicationObj.getAppContext().getPackageName()
+                    + "/BankIcons");
+        }else{
+            fileLocation = new File(Environment.getExternalStorageDirectory()+
+                    "/Android/data/"
+                    + ApplicationObj.getAppContext().getPackageName()
+                    + "/BankIcons");}
     }
 
     public List<CardItem> getAllCardData(){
@@ -179,13 +199,13 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
         });
 
         Button button = (Button) view.findViewById(R.id.bank_account_sync_button);
-        ImageView icnView = (ImageView) view.findViewById(R.id.bank_link_img_status);
+        //ImageView icnView = (ImageView) view.findViewById(R.id.bank_link_img_status);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (bankAccountViewModel.getLinkedBankStatus(mData.get(position).getBankID()).contentEquals("LINKED")) {
                     bankAccountViewModel.unlinkBankAccount(mData.get(position).getBankID());
-                    updateUICard_BankLinked(button, icnView, position);
+                    updateUICard_BankLinked(button, position);
 //                    servicesHandlerViewModel.getAccounts();
                 } else {
 //                    need to do the OAUTH
@@ -194,23 +214,23 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
                 }
             }
         });
-        updateUICard_BankLinked(button, icnView, position);
+        updateUICard_BankLinked(button, position);
         bind(mData.get(position), view);
         CardView cardView = (CardView) view.findViewById(R.id.cardView);
-
         if (mBaseElevation == 0) {
             mBaseElevation = cardView.getCardElevation();
         }
-
         cardView.setMaxCardElevation(mBaseElevation * MAX_ELEVATION_FACTOR);
         mViews.set(position, cardView);
         return view;
     }
 
-    private void updateUICard_BankLinked(Button button, ImageView icnView, int position) {
+    private void updateUICard_BankLinked(Button button, int position) {
         if(bankAccountViewModel.getLinkedBankStatus(mData.get(position).getBankID()).contentEquals("LINKED")) {
-            button.setText("Press To UNLink\nBank Account");
-            icnView.setImageResource(R.drawable.ic_bookmark_linked_24dp);
+            button.setText("Unlink Bank Account");
+            //ebutton.setBackgroundColor(0xffffb84d);
+            button.setBackgroundTintList(ColorStateList.valueOf(0xffB0B0B0));
+            //icnView.setImageResource(R.drawable.ic_bookmark_linked_24dp);
 //            long bankID = mData.get(position).getBankID();
 
 //            if(!OBPRestClient.consumers.containsKey(mData.get(position).getBankID())){
@@ -220,8 +240,10 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
 //                OBPRestClient.retrieveProvider(bankID);
 //            }
         }else{
-            button.setText("Press To Link\nBank Account");
-            icnView.setImageResource(R.drawable.ic_bookmark_unlinked_24dp);
+            button.setText("Link Bank Account");
+            //button.setBackgroundColor(0xff000000);
+            button.setBackgroundTintList(ColorStateList.valueOf(0xCC000000));
+            //icnView.setImageResource(R.drawable.ic_bookmark_unlinked_24dp);
         }
     }
 
@@ -232,10 +254,15 @@ public class LinkBanksCardPagerAdapter extends PagerAdapter implements LinkedBan
     }
 
     private void bind(CardItem item, View view) {
-        TextView titleTextView = (TextView) view.findViewById(R.id.titleTextView);
-        TextView contentTextView = (TextView) view.findViewById(R.id.contentTextView);
-        titleTextView.setText(item.getTitle());
-        contentTextView.setText(item.getText());
+        //TextView titleTextView = (TextView) view.findViewById(R.id.titleTextView);
+//        TextView contentTextView = (TextView) view.findViewById(R.id.contentTextView);
+        ImageView bankLogo = view.findViewById(R.id.bank_logo);
+        //titleTextView.setText(item.getTitle());
+//        contentTextView.setText(item.getText());
+        Bitmap bankIcon = ImageDownloader.readFromDisk(new File(fileLocation.getPath()+File.separator+item.getmBankLogo()+".png"));
+        if(bankIcon!=null) {
+            bankLogo.setImageBitmap(bankIcon);
+        }
     }
 
     //COMMON FUNCTIONS FOR THIS ACTIVITY

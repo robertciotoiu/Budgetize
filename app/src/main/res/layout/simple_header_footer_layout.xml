@@ -15,28 +15,33 @@
     android:id="@+id/header_main_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="6dp" >
+    android:background="#4169e1"
+    android:layout_marginTop="150dp"
+    android:paddingTop="150dp"
+
+    >
 
     <LinearLayout
         android:id="@+id/card_main_parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="6dp" >
+        android:padding="6dp"
+        android:background="#00000000"
+        >
 
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="6dp"
+            android:textSize="28sp"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@android:color/black" />
+            android:textColor="#ffffff"/>
     </LinearLayout>
 
 </LinearLayout>
