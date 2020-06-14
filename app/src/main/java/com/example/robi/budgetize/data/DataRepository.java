@@ -448,6 +448,10 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         OBPRetroClass.getAllTransactions(bankID, obpBankID, accountID, dataRepository);
     }
 
+    public long noLinkedBanks() {
+        return mDatabase.linkedBankDao().noLinkedBanks();
+    }
+
     //Listeners
     public interface OnDataChangedRepositoryListener {
         void onWalletDataChanged(List<Wallet> walletList);

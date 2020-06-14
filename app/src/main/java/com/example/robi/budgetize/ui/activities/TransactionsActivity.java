@@ -3,6 +3,7 @@ package com.example.robi.budgetize.ui.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,6 +58,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     private RapidFloatingActionButton rfaBtn;
     private RapidFloatingActionHelper rfabHelper;
     private IconPack iconPack;
+    boolean showImportTransaction = false;
     private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
 
     private MainActivityViewModel mainActivityViewModel;
@@ -96,6 +98,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     }
 
     private void init() {
+        showImportTransaction = mainActivityViewModel.checkIfLinkedBankExists();
         init_floatingPointButton();
         //Observers
         categoryListObsever = new Observer<List<CategoryObject>>() {
@@ -153,44 +156,52 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         rfaLayout = this.findViewById(R.id.activity_main_rfal);
         rfaBtn = this.findViewById(R.id.activity_main_rfab);
 
+        Drawable transactionDrawable = getDrawable(R.drawable.income_expense_test_icon_small);
+        transactionDrawable.setColorFilter(0xffffffff,PorterDuff.Mode.SRC_ATOP);
+
+        Drawable categoryDrawable = getDrawable(R.drawable.category_icon_test);
+        categoryDrawable.setColorFilter(0xffffffff,PorterDuff.Mode.SRC_ATOP);
+
         items.add(new RFACLabelItem<Integer>()
                 .setLabel("Create new:")
+                .setLabelColor(0xff343434)
                 // .setResId(R.mipmap.ico_test_d)
-                .setIconNormalColor(0xffd84315)
+                .setIconNormalColor(0xff343434)
                 .setIconPressedColor(0xffbf360c)
                 .setWrapper(0)
         );
         items.add(new RFACLabelItem<Integer>()
-                .setLabel("Category")
-                .setResId(R.drawable.category_icon_test)
-                .setIconNormalColor(0xff056f00)
-                .setIconPressedColor(0xff0d5302)
-                .setLabelColor(0xff056f00)
+                .setLabel("Transaction")
+                .setLabelColor(0xff343434)
+                .setDrawable(transactionDrawable)
+                .setIconNormalColor(0xff343434)
+                .setIconPressedColor(0xff757575)
                 .setWrapper(1)
         );
         items.add(new RFACLabelItem<Integer>()
-                .setLabel("I/E")
-                .setResId(R.drawable.income_expense_test_icon)
-                .setIconNormalColor(0xff056f00)
-                .setIconPressedColor(0xff0d5302)
-                .setLabelColor(0xff056f00)
+                .setLabel("Category")
+                .setLabelColor(0xff343434)
+                .setDrawable(categoryDrawable)
+                .setIconNormalColor(0xff343434)
+                .setIconPressedColor(0xff757575)
                 .setWrapper(2)
         );
-        items.add(new RFACLabelItem<Integer>()
-                .setLabel("Import transactions")
-                .setResId(R.drawable.import_transactions)
-                //.setIconNormalColor(0xff056f00)
-                .setIconNormalColor(0xffcccccc)
-                .setIconPressedColor(0xff0d5302)
-                .setLabelColor(0xff056f00)
-                //.setLabelColor(0x000000)
-                .setWrapper(2)
-        );
+        if(showImportTransaction) {
+            items.add(new RFACLabelItem<Integer>()
+                    .setLabel("Import transactions")
+                    .setLabelColor(0xff343434)
+                    .setResId(R.drawable.import_transactions)
+                    //.setIconNormalColor(0xff056f00)
+                    .setIconNormalColor(0xff343434)
+                    .setIconPressedColor(0xff757575)
+                    .setWrapper(2)
+            );
+        }
         rfaContent
                 .setItems(items)
-                //.setIconShadowRadius(ABTextUtil.dip2px(this, 5))
+                .setIconShadowRadius(5)
                 .setIconShadowColor(0xff888888)
-        //.setIconShadowDy(ABTextUtil.dip2px(this, 5))
+                .setIconShadowDy(2)
         ;
         rfabHelper = new RapidFloatingActionHelper(
                 this,

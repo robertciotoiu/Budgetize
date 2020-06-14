@@ -17,6 +17,9 @@ public interface LinkedBankDao {
     @Query("SELECT * FROM linked_banks")
     public LiveData<List<LinkedBank>> getAllLinkedBanks();
 
+    @Query("SELECT COUNT(*) FROM linked_banks where link_status='LINKED'")
+    public long noLinkedBanks();
+
     @Query("SELECT * FROM linked_banks where id=:id")
     public LiveData<LinkedBank> getLinkedBank(long id);
 

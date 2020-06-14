@@ -63,6 +63,13 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
 //        mObservableCategories.postValue(repository.getAllCategories().getValue());
     }
 
+    public boolean checkIfLinkedBankExists(){
+        if(repository.noLinkedBanks()>0)
+            return true;
+        else
+            return false;
+    }
+
     public long updateCurrency(long wallet_id, String currency) {
         return repository.updateCurrency(wallet_id, currency);
     }

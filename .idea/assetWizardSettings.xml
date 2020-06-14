@@ -24,7 +24,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="opacityPercent" value="80" />
+                                                <entry key="opacityPercent" value="60" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -36,7 +36,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="opacityPercent" value="80" />
+                                                <entry key="opacityPercent" value="60" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -46,10 +46,8 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="E:\Projects\MSA\repo\monitor-analytic-icon.png" />
-                                      <entry key="outputName" value="analytic_icon" />
-                                      <entry key="theme" value="HOLO_DARK" />
+                                      <entry key="imageAsset" value="C:\Users\rober\Downloads\income_expense_test_icon_small.png" />
+                                      <entry key="outputName" value="income_expense_test_icon_small" />
                                       <entry key="themeColor" value="ffffff" />
                                     </map>
                                   </option>
@@ -80,7 +78,6 @@
                                               <map>
                                                 <entry key="color" value="000000" />
                                                 <entry key="scalingPercent" value="84" />
-                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -103,10 +100,15 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="backgroundColor" value="eaeeef" />
-                                      <entry key="backgroundImage" value="E:\AndroidStudio\plugins\android\lib\templates\gradle-projects\NewAndroidAutoModule\car-module.png" />
-                                      <entry key="foregroundImage" value="E:\Projects\MSA\repo\investorsapp_icon.png" />
-                                      <entry key="outputName" value="app_icon" />
+                                      <entry key="backgroundColor" value="ffffff" />
+                                      <entry key="backgroundImage" value="C:\Users\rober\Downloads\income_expense_test_icon_small.png" />
+                                      <entry key="backgroundLayerName" value="background_layer" />
+                                      <entry key="foregroundImage" value="C:\Users\rober\Downloads\income_expense_test_icon_small.png" />
+                                      <entry key="generatePlayStoreIcon" value="false" />
+                                      <entry key="generateRoundIcon" value="false" />
+                                      <entry key="legacyIconShape" value="NONE" />
+                                      <entry key="outputName" value="income_expense_test_icon_small" />
+                                      <entry key="previewDensity" value="XXXHIGH" />
                                     </map>
                                   </option>
                                 </PersistentState>
