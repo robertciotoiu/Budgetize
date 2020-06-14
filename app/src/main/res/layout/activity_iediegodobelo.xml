@@ -9,10 +9,68 @@
     android:background="@android:color/background_light"
     >
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/pick_date_textinput"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@+id/toggleGroup4"
+        android:drawingCacheQuality="high"
+        android:hint="Transaction Date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/create_ie_switch_income"
+        app:startIconDrawable="@drawable/calendar_icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/date_picked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleGroup4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:singleSelection="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="2dp"
+        >
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="daily"
+            app:strokeWidth="2dp"
+ />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="monthly"
+            app:strokeWidth="2dp"
+             />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="yearly"
+            app:strokeWidth="2dp"
+             />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
     <com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingList
         android:id="@+id/expanding_list_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
         android:overScrollMode="always"
