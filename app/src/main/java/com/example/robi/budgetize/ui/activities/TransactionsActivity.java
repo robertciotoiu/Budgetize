@@ -1,5 +1,6 @@
 package com.example.robi.budgetize.ui.activities;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,6 +33,7 @@ import com.example.robi.budgetize.ui.activities.createActivities.CreateCategoryA
 import com.example.robi.budgetize.ui.activities.createActivities.CreateTransactionActivity;
 import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingItem;
 import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingList;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.maltaisn.icondialog.pack.IconPack;
 import com.mynameismidori.currencypicker.CurrencyPicker;
@@ -41,15 +44,19 @@ import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
+import com.whiteelephant.monthpicker.MonthPickerDialog;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 //TODO: display at the bottom all the IEs without a category
-public class TransactionsActivity extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
+public class TransactionsActivity extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener, DatePickerDialog.OnDateSetListener {
+    String TAG = this.getClass().getName();
     private ExpandingList mExpandingList = null;
+    private TextInputEditText pickedDate;
     long walletID = 0;
     boolean firstStart = true;
     boolean firstStartOrphane = true;
@@ -74,6 +81,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.CreateTransactionActivityTheme_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_iediegodobelo);
         mExpandingList = findViewById(R.id.expanding_list_main);
@@ -100,6 +108,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     private void init() {
         showImportTransaction = mainActivityViewModel.checkIfLinkedBankExists();
         init_floatingPointButton();
+        initUIElements();
         //Observers
         categoryListObsever = new Observer<List<CategoryObject>>() {
             @Override
@@ -110,6 +119,19 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                     populateLists();
                     firstStart = false;
                 }
+                orphanIEsObserver = new Observer<List<IEObject>>() {
+                    @Override
+                    public void onChanged(List<IEObject> orphanIEs) {
+                        TransactionsActivity.orphanIEs.clear();
+                        TransactionsActivity.orphanIEs.addAll(orphanIEs);
+                        if (firstStartOrphane) {
+                            addOrphaneCategories();
+                            firstStartOrphane = false;
+                        }
+                        //addOrphaneCategories();
+                    }
+                };
+                mainActivityViewModel.getAllIEofAWalletWithoutCategoriesAssigned(walletID).observe(TransactionsActivity.this, orphanIEsObserver);
             }
         };//categoryObjects::addAll;
         mainActivityViewModel.getAllCategoriesOfAWallet(walletID).observe(this, categoryListObsever);
@@ -122,20 +144,16 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 //            }
 //        };
 //        mainActivityViewModel.getAllIE().observe(this,ieListObserver);
+    }
 
-        orphanIEsObserver = new Observer<List<IEObject>>() {
+    private void initUIElements() {
+        pickedDate = findViewById(R.id.date_picked);
+        pickedDate.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onChanged(List<IEObject> orphanIEs) {
-                TransactionsActivity.orphanIEs.clear();
-                TransactionsActivity.orphanIEs.addAll(orphanIEs);
-                if (firstStartOrphane) {
-                    addOrphaneCategories();
-                    firstStartOrphane = false;
-                }
-                //addOrphaneCategories();
+            public void onClick(View v) {
+                showDatePickerDialog();
             }
-        };
-        mainActivityViewModel.getAllIEofAWalletWithoutCategoriesAssigned(walletID).observe(TransactionsActivity.this, orphanIEsObserver);
+        });
     }
 
     @Override
@@ -143,6 +161,12 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         super.onPause();
         firstStart = true;
         firstStartOrphane = true;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //TODO: move this code back to onPause if weird bugs suddenly appears
         depopulateLists();
         mainActivityViewModel.getAllIEofAWalletWithoutCategoriesAssigned(walletID).removeObserver(orphanIEsObserver);
         mainActivityViewModel.getAllCategories().removeObserver(categoryListObsever);
@@ -156,11 +180,15 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         rfaLayout = this.findViewById(R.id.activity_main_rfal);
         rfaBtn = this.findViewById(R.id.activity_main_rfab);
 
-        Drawable transactionDrawable = getDrawable(R.drawable.income_expense_test_icon_small);
-        transactionDrawable.setColorFilter(0xffffffff,PorterDuff.Mode.SRC_ATOP);
+
+
+        Drawable transactionDrawable = getDrawable(R.drawable.income_expense_test_icon_small).getConstantState().newDrawable();
+        Drawable wrappedDrawable = DrawableCompat.wrap(transactionDrawable);
+        DrawableCompat.setTint(wrappedDrawable, 0xffffffff);
+//        wrappedDrawable.setColorFilter(0xffffffff, PorterDuff.Mode.SRC_ATOP);
 
         Drawable categoryDrawable = getDrawable(R.drawable.category_icon_test);
-        categoryDrawable.setColorFilter(0xffffffff,PorterDuff.Mode.SRC_ATOP);
+        categoryDrawable.setColorFilter(0xffffffff, PorterDuff.Mode.SRC_ATOP);
 
         items.add(new RFACLabelItem<Integer>()
                 .setLabel("Create new:")
@@ -173,7 +201,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         items.add(new RFACLabelItem<Integer>()
                 .setLabel("Transaction")
                 .setLabelColor(0xff343434)
-                .setDrawable(transactionDrawable)
+                .setDrawable(wrappedDrawable)
                 .setIconNormalColor(0xff343434)
                 .setIconPressedColor(0xff757575)
                 .setWrapper(1)
@@ -186,7 +214,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                 .setIconPressedColor(0xff757575)
                 .setWrapper(2)
         );
-        if(showImportTransaction) {
+        if (showImportTransaction) {
             items.add(new RFACLabelItem<Integer>()
                     .setLabel("Import transactions")
                     .setLabelColor(0xff343434)
@@ -194,7 +222,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                     //.setIconNormalColor(0xff056f00)
                     .setIconNormalColor(0xff343434)
                     .setIconPressedColor(0xff757575)
-                    .setWrapper(2)
+                    .setWrapper(3)
             );
         }
         rfaContent
@@ -228,12 +256,12 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             TransactionsActivity.this.startActivity(myIntent);
         } else if (position == 2) {
             //launch create IE activity
-            Intent myIntent = new Intent(TransactionsActivity.this, CreateTransactionActivity.class);
+            Intent myIntent = new Intent(TransactionsActivity.this, CreateCategoryActivity.class);
             myIntent.putExtra("wallet", walletAsString); //Optional parameters
             TransactionsActivity.this.startActivity(myIntent);
         } else if (position == 1) {
             //launch create Category activity
-            Intent myIntent = new Intent(TransactionsActivity.this, CreateCategoryActivity.class);
+            Intent myIntent = new Intent(TransactionsActivity.this, CreateTransactionActivity.class);
             myIntent.putExtra("wallet", walletAsString); //Optional parameters
             TransactionsActivity.this.startActivity(myIntent);
         }
@@ -256,8 +284,6 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             ExtendedCurrency currencyCode = ExtendedCurrency.getCurrencyByISO(currency);
             ((TextView) first_item.findViewById(R.id.currency_textview)).setText(currencyCode.getCode());
             ((ImageView) first_item.findViewById(R.id.currency_imageview)).setImageDrawable(getDrawable(currencyCode.getFlag()));
-
-
             ((TextView) first_item.findViewById(R.id.currency_textview)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -267,6 +293,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                         public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
                             // Implement your code here
                             doSelectCurrencyLogic(first_item, code, flagDrawableResID, picker);
+                            updateAllAmounts();
                         }
                     });
                     picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
@@ -282,6 +309,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                         public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
                             // Implement your code here
                             doSelectCurrencyLogic(first_item, code, flagDrawableResID, picker);
+                            updateAllAmounts();
                         }
                     });
                     picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
@@ -295,14 +323,17 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         }
     }
 
+    private void updateAllAmounts() {
+    }
+
     private void doSelectCurrencyLogic(ExpandingItem first_item, String code, int flagDrawableResID, CurrencyPicker picker) {
         long status = mainActivityViewModel.updateCurrency(walletID, code);
 
-        if(status>0) {
+        if (status > 0) {
             ((TextView) first_item.findViewById(R.id.currency_textview)).setText(code);
             ((ImageView) first_item.findViewById(R.id.currency_imageview)).setImageDrawable(getDrawable(flagDrawableResID));
             picker.dismiss();
-        }else{
+        } else {
             Toast toast = Toast.makeText(TransactionsActivity.this, "Cannot change currency! Contact support team!", Toast.LENGTH_LONG);
             TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
             v.setTextColor(Color.RED);
@@ -363,7 +394,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                 item.setIndicatorColor(Color.WHITE);
                 item.setIndicatorSize(35, 35, this);
                 //item.setIndicatorColorRes(getIconIndicatorColor(ie_value));//R.color.positiveBackgroundColor);
-                item.setIndicatorIcon(getIcon(categoryObject.getIconID(),ie_value));//R.drawable.house_icon);
+                item.setIndicatorIcon(getIcon(categoryObject.getIconID(), ie_value));//R.drawable.house_icon);
                 //1. ImageView category_icon
                 TextView valueTextView = (TextView) item.findViewById(R.id.text_view_value_white);
                 valueTextView.setText(String.valueOf(ie_value));
@@ -470,11 +501,11 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 
     }
 
-    private Drawable getIcon(int iconID,double ie) {
-        Drawable icon=null;
+    private Drawable getIcon(int iconID, double ie) {
+        Drawable icon = null;
         try {
-             icon = iconPack.getIcon(iconID).getDrawable().getConstantState().newDrawable();
-        }catch(Exception e){
+            icon = iconPack.getIcon(iconID).getDrawable().getConstantState().newDrawable();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         //have to return icon id
@@ -503,7 +534,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         if (ieObject.type == 1) {
             if (ieObject.amount >= 0) {
                 valueTextView.setText("-" + String.valueOf(ieObject.amount));
-                valueTextView.setTooltipText(String.valueOf("-"+ieObject.amount));
+                valueTextView.setTooltipText(String.valueOf("-" + ieObject.amount));
             } else {
                 valueTextView.setText(String.valueOf(ieObject.amount));
                 valueTextView.setTooltipText(String.valueOf(ieObject.amount));
@@ -582,7 +613,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         } else {
             expandingItem.setBackground(getResources().getDrawable(R.drawable.item_shape_neutral));
         }
-        expandingItem.setIndicatorIcon(getIcon(categoryObject.getIconID(),ie_value));
+        expandingItem.setIndicatorIcon(getIcon(categoryObject.getIconID(), ie_value));
     }
 
     private void setAllColors(double ie) {
@@ -618,5 +649,52 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         } else {
             return R.color.neutralBackgroundColor;
         }
+    }
+
+    private void showDatePickerDialog() {
+        MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(TransactionsActivity.this,
+                new MonthPickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(int selectedMonth, int selectedYear) { // on date set }
+                        String date = selectedYear + "-" + selectedMonth;
+                        pickedDate.setText(date);
+                    }
+                }, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH));
+
+        builder.setActivatedMonth(Calendar.JULY)
+                .setMinYear(1990)
+                .setActivatedYear(Calendar.getInstance().get(Calendar.YEAR))
+                .setMaxYear(2050)
+                .setMinMonth(Calendar.JANUARY)
+                .setTitle("Select month")
+                .setMonthRange(Calendar.JANUARY, Calendar.DECEMBER)
+                // .setMaxMonth(Calendar.OCTOBER)
+                // .setYearRange(1890, 1890)
+                // .setMonthAndYearRange(Calendar.FEBRUARY, Calendar.OCTOBER, 1890, 1890)
+                //.showMonthOnly()
+                // .showYearOnly()
+                .setOnMonthChangedListener(new MonthPickerDialog.OnMonthChangedListener() {
+                    @Override
+                    public void onMonthChanged(int selectedMonth) {
+                        Log.d(TAG, "Selected month : " + selectedMonth);
+                        // Toast.makeText(MainActivity.this, " Selected month : " + selectedMonth, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setOnYearChangedListener(new MonthPickerDialog.OnYearChangedListener() {
+                    @Override
+                    public void onYearChanged(int selectedYear) {
+                        Log.d(TAG, "Selected year : " + selectedYear);
+                        // Toast.makeText(MainActivity.this, " Selected year : " + selectedYear, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .build()
+                .show();
+    }
+
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        String date = year + "-" + month + "-" + dayOfMonth;//"yyyy"+-MM-dd";
+        pickedDate.setText(date);
     }
 }

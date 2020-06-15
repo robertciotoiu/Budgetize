@@ -33,6 +33,8 @@ import com.example.robi.budgetize.data.localdatabase.enums.TransactionOccurrence
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
+import com.mynameismidori.currencypicker.CurrencyPicker;
+import com.mynameismidori.currencypicker.CurrencyPickerListener;
 import com.skydoves.elasticviews.ElasticButton;
 
 import java.util.ArrayList;
@@ -231,6 +233,23 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
             }
         });
 
+        transactionAmountTextInput.setStartIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
+                picker.setListener(new CurrencyPickerListener() {
+                    @Override
+                    public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
+                        // Implement your code here
+//                        doSelectCurrencyLogic(first_item, code, flagDrawableResID, picker);
+//                        updateAllAmounts();
+                        amountInputText.setCompoundDrawablesWithIntrinsicBounds(flagDrawableResID, 0, 0, 0);
+                    }
+                });
+                picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
+            }
+        });
+
         //MainOAuthActivity.wallets.add(new Wallet();
     }
 
@@ -240,6 +259,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
         double ieAmount = 0.0;
         String ieCategoryName = categoryDropDown.getText().toString();
         long ieCategoryID = 0;
+        getCategories();
         try{
             ieAmount = Double.parseDouble(amountInputText.getText().toString());
             long currentWalletID = wallet.getId();
@@ -252,7 +272,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
                 return;
             }
 
-            if(!ieCategoryName.contentEquals("Select Category")){
+            if(ieCategoryName.contentEquals("Select Category") || (ieCategoryName!=null && !ieCategoryName.contentEquals(""))){
                 ieCategoryID = categoryHashMap.get(ieCategoryName);
             }
 
@@ -361,7 +381,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        String date = year+"-"+month+"-"+dayOfMonth;//"yyyy"+-MM-dd";
+        String date = year+"-"+month;//"yyyy"+-MM-dd";
         pickedDate.setText(date);
     }
 }

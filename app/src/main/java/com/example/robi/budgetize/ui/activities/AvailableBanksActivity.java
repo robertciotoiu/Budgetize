@@ -81,9 +81,8 @@ public class AvailableBanksActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-
         //listadapter = null;
-        listview.removeHeaderView(headerView);
+//        listview.removeHeaderView(headerView);
         listview.removeFooterView(footerView);
 
         servicesHandlerViewModel.mObservableAvailableBanks.removeObserver(bankListObserver);//detach the observer
