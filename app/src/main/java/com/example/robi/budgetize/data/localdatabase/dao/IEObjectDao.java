@@ -27,6 +27,9 @@ public interface IEObjectDao {
     @Query("SELECT * FROM incomes_expenses")
     public LiveData<List<IEObject>> getAllIE();//get all ie objects
 
+    @Query("SELECT DISTINCT(currency) FROM incomes_expenses WHERE wallet_id=:wallet_id")
+    public List<String> getAllIEsCurrenciesFromWallet(long wallet_id);
+
     @Query("SELECT * FROM incomes_expenses WHERE wallet_id=:wallet_id AND category_id=0")
     public LiveData<List<IEObject>> getAllIEofAWalletWithoutCategoriesAssigned(long wallet_id);
 

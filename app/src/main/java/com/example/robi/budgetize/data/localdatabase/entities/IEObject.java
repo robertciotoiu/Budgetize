@@ -11,11 +11,14 @@ import static androidx.room.ForeignKey.CASCADE;
 @Entity(tableName = "incomes_expenses"
 ,foreignKeys ={
         @ForeignKey(onDelete = CASCADE, entity = AccountTransaction.class,
-                parentColumns = "id",childColumns = "txn_id")}
+                parentColumns = "id",childColumns = "txn_id"),
+        @ForeignKey(onDelete = CASCADE, entity = Wallet.class,
+                parentColumns = "id",childColumns = "wallet_id")}
         , indices = {
-        @Index("txn_id")
+        @Index("txn_id"),
+        @Index("wallet_id")
 })
-public class IEObject {
+public class IEObject implements Cloneable{
 
     @PrimaryKey
     @ColumnInfo(name = "id")
@@ -135,5 +138,10 @@ public class IEObject {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

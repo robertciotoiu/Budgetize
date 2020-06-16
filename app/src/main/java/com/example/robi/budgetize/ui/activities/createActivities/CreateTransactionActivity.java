@@ -43,9 +43,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class CreateTransactionActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
+public class CreateTransactionActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private static ArrayList<CategoryObject> categoryObjects = new ArrayList<CategoryObject>();
-    private HashMap<String,Long> categoryHashMap = new HashMap<String, Long>();
+    private HashMap<String, Long> categoryHashMap = new HashMap<String, Long>();
     private Wallet wallet;
     private long wallet_id = 0;
     private int ieType = 0;
@@ -57,7 +57,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     private RadioButton ieSwitchIncome;
     private RadioButton ieSwitchExpense;
 
-    public void initRadioButtons(){
+    public void initRadioButtons() {
         ieSwitchIncome = findViewById(R.id.ie_switch_income);
         ieSwitchExpense = findViewById(R.id.ie_switch_expense);
         ieSwitch = findViewById(R.id.ie_switch);
@@ -141,7 +141,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_transaction);
         Bundle bundle = getIntent().getExtras();
-        if(bundle.get("wallet")!=null) {
+        if (bundle.get("wallet") != null) {
             Gson gson = new Gson();
             String walletAsString = (String) bundle.get("wallet");
             this.wallet = gson.fromJson(walletAsString, Wallet.class);
@@ -166,13 +166,13 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    protected void handleOnDestroy(){
+    protected void handleOnDestroy() {
         mainActivityViewModel.getAllCategoriesOfAWallet(wallet_id).removeObserver(getCategoryListObsever);
     }
 
     private void init_mvvm() {
         categoryObjects = new ArrayList<CategoryObject>();
-        mainActivityViewModel =  new ViewModelProvider(this
+        mainActivityViewModel = new ViewModelProvider(this
                 , new MainActivityViewModelFactory((ApplicationObj) this.getApplication()))
                 .get(MainActivityViewModel.class);
         getCategoryListObsever = new Observer<List<CategoryObject>>() {
@@ -186,14 +186,14 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
 //                categorySpinner = init_spinner(R.id.create_ie_category, categoriesArr);
             }
         };
-        mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId()).observe(this,getCategoryListObsever);
+        mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId()).observe(this, getCategoryListObsever);
         String[] occArr = getOccurrencesOptions(TransactionOccurrenceEnum.class);
-        occurrenceAdapter = new ArrayAdapter<>(CreateTransactionActivity.this,R.layout.dropdown_item,occArr);
+        occurrenceAdapter = new ArrayAdapter<>(CreateTransactionActivity.this, R.layout.dropdown_item, occArr);
         occurrenceDropdown.setAdapter(occurrenceAdapter);
-
     }
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         init_mvvm();
         init_listeners();
@@ -208,7 +208,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
 //    }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId()).removeObserver(getCategoryListObsever);
     }
@@ -260,44 +260,41 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
         String ieCategoryName = categoryDropDown.getText().toString();
         long ieCategoryID = 0;
         getCategories();
-        try{
+        try {
             ieAmount = Double.parseDouble(amountInputText.getText().toString());
             long currentWalletID = wallet.getId();
-            if(pickedDate.getText().toString().contentEquals("")){
-                Toast.makeText(this,"Press on Date Icon to selected Transaction Date!",Toast.LENGTH_LONG).show();
+            if (pickedDate.getText().toString().contentEquals("")) {
+                Toast.makeText(this, "Press on Date Icon to selected Transaction Date!", Toast.LENGTH_LONG).show();
                 return;
             }
-            if(occurrenceDropdown.getText().toString().contentEquals("")){
-                Toast.makeText(this,"Pick occurrence!",Toast.LENGTH_LONG).show();
+            if (occurrenceDropdown.getText().toString().contentEquals("")) {
+                Toast.makeText(this, "Pick occurrence!", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            if(ieCategoryName.contentEquals("Select Category") || (ieCategoryName!=null && !ieCategoryName.contentEquals(""))){
+            if (ieCategoryName.contentEquals("Select Category") || (ieCategoryName != null && !ieCategoryName.contentEquals(""))) {
                 ieCategoryID = categoryHashMap.get(ieCategoryName);
             }
 
-            IEObject ieObject = new IEObject(currentWalletID, ieName, ieAmount, ieCategoryID, ieType, pickedDate.getText().toString(), occurrenceDropdown.getText().toString(),null,"USD");//TODO:Choosable
+            IEObject ieObject = new IEObject(currentWalletID, ieName, ieAmount, ieCategoryID, ieType, pickedDate.getText().toString(), occurrenceDropdown.getText().toString(), null, "USD");//TODO:Choosable
 
             long status = mainActivityViewModel.addIEObject(ieObject);
 
-            if(mainActivityViewModel.getIEObject(status)!=null) {
+            if (mainActivityViewModel.getIEObject(status) != null) {
                 Toast.makeText(this, "IE added successfully", Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
+            } else {
                 Toast.makeText(this, "IE failed to be added", Toast.LENGTH_SHORT).show();
             }
 
             this.finish(); //closes this activity and return to MainOAuthActivity.java
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
             Toast.makeText(this, "Invalid data", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void showDatePickerDialog(){
+    private void showDatePickerDialog() {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
                 this,
@@ -312,30 +309,27 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     private Spinner init_spinner(int viewID, String[] values) {
         final Spinner spinner = (Spinner) findViewById(viewID);
         final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-                this,R.layout.spinner_item, values){
+                this, R.layout.spinner_item, values) {
             @Override
-            public boolean isEnabled(int position){
-                if(position == 0)
-                {
+            public boolean isEnabled(int position) {
+                if (position == 0) {
                     // Disable the first item from Spinner
                     // First item will be use for hint
                     return false;
-                }
-                else
-                {
+                } else {
                     return true;
                 }
             }
+
             @Override
             public View getDropDownView(int position, View convertView,
                                         ViewGroup parent) {
                 View view = super.getDropDownView(position, convertView, parent);
                 TextView tv = (TextView) view;
-                if(position == 0){
+                if (position == 0) {
                     // Set the hint text color gray
                     tv.setTextColor(Color.GRAY);
-                }
-                else {
+                } else {
                     tv.setTextColor(Color.BLACK);
                 }
                 return view;
@@ -349,13 +343,14 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
                 String selectedItemText = (String) parent.getItemAtPosition(position);
                 // If user change the default selection
                 // First item is disable and it is used for hint
-                if(position > 0){
+                if (position > 0) {
                     // Notify the selected item text
                     Toast.makeText
                             (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
                             .show();
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -368,11 +363,10 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
         //List<CategoryObject> categoryObjects = mainActivityViewModel.getAllCategoriesOfAWallet(wallet_id).getValue();
         String[] categories = new String[categoryObjects.size()];
 //        categories[0] = "Select Category";
-        int i=0;
-        for(CategoryObject c:categoryObjects)
-        {
+        int i = 0;
+        for (CategoryObject c : categoryObjects) {
             categories[i] = c.getName();
-            categoryHashMap.put(c.getName(),c.getCategory_id());
+            categoryHashMap.put(c.getName(), c.getCategory_id());
             i++;
         }
         return categories;
@@ -381,7 +375,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        String date = year+"-"+month;//"yyyy"+-MM-dd";
+        String date = year + "-" + (month + 1) + "-" + dayOfMonth;//"yyyy"+-MM-dd";
         pickedDate.setText(date);
     }
 }

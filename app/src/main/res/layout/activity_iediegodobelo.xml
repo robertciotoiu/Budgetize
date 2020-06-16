@@ -18,7 +18,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="2dp"
         android:layout_marginEnd="5dp"
-        android:layout_toStartOf="@+id/toggleGroup4"
+        android:layout_toStartOf="@id/frequency_filter"
         android:drawingCacheQuality="high"
         android:hint="MONTH"
         android:letterSpacing="1"
@@ -36,7 +36,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggleGroup4"
+        android:id="@+id/frequency_filter"
         android:layout_width="255dp"
         android:layout_height="50dp"
         app:singleSelection="true"
@@ -46,6 +46,7 @@
 
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:id="@+id/daily_check"
             android:layout_width="78dp"
             android:layout_height="56dp"
             android:text="daily"
@@ -55,6 +56,7 @@
 
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:id="@+id/monthly_check"
             android:layout_width="95dp"
             android:layout_height="56dp"
             android:text="monthly"
@@ -63,6 +65,7 @@
 
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:id="@+id/yearly_check"
             android:layout_width="78dp"
             android:layout_height="56dp"
             android:text="yearly"

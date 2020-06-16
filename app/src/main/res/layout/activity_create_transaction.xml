@@ -111,7 +111,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <ImageView
-        android:id="@+id/currency_imageview"
+        android:id="@+id/currency_imageview_create"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_gravity="center_vertical"
@@ -125,7 +125,7 @@
         />
 
     <TextView
-        android:id="@+id/currency_textview"
+        android:id="@+id/currency_textview_create"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:textSize="22sp"

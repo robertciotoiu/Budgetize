@@ -110,6 +110,11 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
+    public String getWalletsCurrency(long id){
+        return mDatabase.walletDao().getWalletsCurrency(id);
+    }
+
+    @Override
     public long updateCurrency(long wallet_id, String currency) {
         return mDatabase.walletDao().updateCurrency(wallet_id, currency);
     }
@@ -237,6 +242,11 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     @Override
     public void deleteAllIEofACategory(long category_id) {
         mDatabase.ieoDao().deleteAllIEofACategory(category_id);
+    }
+
+    @Override
+    public List<String> getAllIEsCurrenciesFromWallet(long wallet_id){
+        return mDatabase.ieoDao().getAllIEsCurrenciesFromWallet(wallet_id);
     }
 
     //LINKEDBANKDAO

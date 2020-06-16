@@ -30,6 +30,10 @@ public interface WalletDao {
     @Query("SELECT * from wallets")
     public LiveData<List<Wallet>> getAllWallets();
 
+    //Get Wallet's currency
+    @Query("SELECT currency from wallets where id=:id")
+    public String getWalletsCurrency(long id);
+
     //GET CALCULATED IE OF A WALLET
     @Query("SELECT (SELECT COALESCE(SUM(ie.amount),0) AS wallet_ie FROM wallets w, incomes_expenses ie where w.id = ie.wallet_id and w.id = :wallet_id and ie.type=0)" +
             "- (SELECT COALESCE(SUM(ie.amount),0) AS wallet_ie FROM wallets w, incomes_expenses ie where w.id = ie.wallet_id and w.id = :wallet_id AND ie.type=1) AS Difference")

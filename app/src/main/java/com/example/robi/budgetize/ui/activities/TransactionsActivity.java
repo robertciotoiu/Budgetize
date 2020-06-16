@@ -33,6 +33,8 @@ import com.example.robi.budgetize.ui.activities.createActivities.CreateCategoryA
 import com.example.robi.budgetize.ui.activities.createActivities.CreateTransactionActivity;
 import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingItem;
 import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingList;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.maltaisn.icondialog.pack.IconPack;
@@ -46,6 +48,7 @@ import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
 import com.whiteelephant.monthpicker.MonthPickerDialog;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -57,6 +60,10 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     String TAG = this.getClass().getName();
     private ExpandingList mExpandingList = null;
     private TextInputEditText pickedDate;
+    private MaterialButtonToggleGroup frequencyFilterToggleGroup;
+    private MaterialButton dailyCheck;
+    private MaterialButton monthlyCheck;
+    private MaterialButton yearlyCheck;
     long walletID = 0;
     boolean firstStart = true;
     boolean firstStartOrphane = true;
@@ -66,6 +73,9 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     private RapidFloatingActionHelper rfabHelper;
     private IconPack iconPack;
     boolean showImportTransaction = false;
+    private String timeFrameFilter;
+    private String frequencyFilter;
+    private String currencyFilter;
     private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
 
     private MainActivityViewModel mainActivityViewModel;
@@ -102,6 +112,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         mainActivityViewModel = new ViewModelProvider(this
                 , new MainActivityViewModelFactory((ApplicationObj) this.getApplication()))
                 .get(MainActivityViewModel.class);
+        mainActivityViewModel.prepareCurrencies(walletID);
         init();
     }
 
@@ -116,7 +127,11 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                 TransactionsActivity.categoryObjectsList.clear();
                 TransactionsActivity.categoryObjectsList.addAll(categoryObjects);
                 if (firstStart) {
-                    populateLists();
+                    try {
+                        populateLists();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     firstStart = false;
                 }
                 orphanIEsObserver = new Observer<List<IEObject>>() {
@@ -125,7 +140,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                         TransactionsActivity.orphanIEs.clear();
                         TransactionsActivity.orphanIEs.addAll(orphanIEs);
                         if (firstStartOrphane) {
-                            addOrphaneCategories();
+                            addOrphaneIEs();
                             firstStartOrphane = false;
                         }
                         //addOrphaneCategories();
@@ -148,10 +163,54 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 
     private void initUIElements() {
         pickedDate = findViewById(R.id.date_picked);
+        frequencyFilterToggleGroup = findViewById(R.id.frequency_filter);
+        dailyCheck = findViewById(R.id.daily_check);
+        monthlyCheck = findViewById(R.id.monthly_check);
+        yearlyCheck = findViewById(R.id.yearly_check);
+
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        int month = Calendar.getInstance().get(Calendar.MONTH);
+        int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        String date = year + "-" + month + "-" + day;
+        pickedDate.setText(date);
         pickedDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDatePickerDialog();
+            }
+        });
+        // init filters
+        timeFrameFilter = date;
+        frequencyFilter = "monthly";
+        monthlyCheck.setChecked(true);
+
+        dailyCheck.addOnCheckedChangeListener(new MaterialButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(MaterialButton button, boolean isChecked) {
+                if (isChecked) {
+                    frequencyFilter = "daily";
+                    refreshScreen();
+                }
+            }
+        });
+
+        monthlyCheck.addOnCheckedChangeListener(new MaterialButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(MaterialButton button, boolean isChecked) {
+                if (isChecked) {
+                    frequencyFilter = "monthly";
+                    refreshScreen();
+                }
+            }
+        });
+
+        yearlyCheck.addOnCheckedChangeListener(new MaterialButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(MaterialButton button, boolean isChecked) {
+                if (isChecked) {
+                    frequencyFilter = "yearly";
+                    refreshScreen();
+                }
             }
         });
     }
@@ -179,7 +238,6 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 
         rfaLayout = this.findViewById(R.id.activity_main_rfal);
         rfaBtn = this.findViewById(R.id.activity_main_rfab);
-
 
 
         Drawable transactionDrawable = getDrawable(R.drawable.income_expense_test_icon_small).getConstantState().newDrawable();
@@ -282,6 +340,8 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             String currency = wallet.getCurrency();
             CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");
             ExtendedCurrency currencyCode = ExtendedCurrency.getCurrencyByISO(currency);
+            currencyFilter = currencyCode.getCode();
+
             ((TextView) first_item.findViewById(R.id.currency_textview)).setText(currencyCode.getCode());
             ((ImageView) first_item.findViewById(R.id.currency_imageview)).setImageDrawable(getDrawable(currencyCode.getFlag()));
             ((TextView) first_item.findViewById(R.id.currency_textview)).setOnClickListener(new View.OnClickListener() {
@@ -292,8 +352,12 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                         @Override
                         public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
                             // Implement your code here
+                            currencyFilter = code;
+                            wallet.setCurrency(code);
                             doSelectCurrencyLogic(first_item, code, flagDrawableResID, picker);
                             updateAllAmounts();
+                            mainActivityViewModel.prepareCurrencies(walletID);
+                            refreshScreen();
                         }
                     });
                     picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
@@ -308,8 +372,12 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                         @Override
                         public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
                             // Implement your code here
+                            currencyFilter = code;
+                            wallet.setCurrency(code);
                             doSelectCurrencyLogic(first_item, code, flagDrawableResID, picker);
                             updateAllAmounts();
+                            mainActivityViewModel.prepareCurrencies(walletID);
+                            refreshScreen();
                         }
                     });
                     picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
@@ -319,8 +387,31 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 
         //Add Categories and IEs
         for (CategoryObject categoryObject : categoryObjectsList) {
-            addItem(categoryObject);
+            try {
+                addItem(categoryObject);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    private void refreshScreen() {
+        depopulateLists();
+        try {
+            populateLists();
+            addOrphaneIEs();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        // Refresh Categories and IEs
+//        for (CategoryObject categoryObject : categoryObjectsList) {
+//            refreshItem(categoryObject);
+//        }
+//
+//        // Refresh Orphanes IEs
+//        for (IEObject orphaneIEObject : orphanIEs) {
+//            refreshOrphanItem(orphaneIEObject);
+//        }
     }
 
     private void updateAllAmounts() {
@@ -341,9 +432,27 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         }
     }
 
-    private void addOrphaneCategories() {
+    public static List<IEObject> cloneList(List<IEObject> orphanIEs) {
+        List<IEObject> clone = new ArrayList<IEObject>(orphanIEs.size());
+        for (IEObject ieObject : orphanIEs) {
+            try {
+                clone.add((IEObject) ieObject.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+        return clone;
+    }
+
+    private void addOrphaneIEs() {
         Log.d("WTF:", mExpandingList.getItemsCount() + "-ITEM COUNT");
-        for (IEObject orphaneIEObject : orphanIEs) {
+        List<IEObject> copyOrphaneIEs = cloneList(orphanIEs);
+        try {
+            copyOrphaneIEs = mainActivityViewModel.applyFilter(0, timeFrameFilter, frequencyFilter, currencyFilter, copyOrphaneIEs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (IEObject orphaneIEObject : copyOrphaneIEs) {
             addOrphanItems(orphaneIEObject);
         }
     }
@@ -383,9 +492,11 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         mExpandingList.removeAllViews();
     }
 
-    private void addItem(final CategoryObject categoryObject) {
-        double ie_value = mainActivityViewModel.getCategoryIESUM(categoryObject.getCategory_id());
-        List<IEObject> ieObjectList = mainActivityViewModel.getCategorysIE(categoryObject.getCategory_id());
+    private void addItem(final CategoryObject categoryObject) throws ParseException {
+        //List<IEObject> ieObjectList = mainActivityViewModel.getCategorysIE(categoryObject.getCategory_id());
+        List<IEObject> ieObjectList = mainActivityViewModel.applyFilter(categoryObject.getCategory_id(), timeFrameFilter, frequencyFilter, currencyFilter, null);
+        double ie_value = calculateCategoryIE();//mainActivityViewModel.getCategoryIESUM(categoryObject.getCategory_id());
+
 
         TransactionsActivity.this.runOnUiThread(() -> {
             final ExpandingItem item = getCorrectItem(ie_value);
@@ -408,10 +519,12 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                 descriptionTextView.setText(categoryObject.getDescription());
                 descriptionTextView.setTooltipText(String.valueOf(categoryObject.getDescription()));
 
-                item.createSubItems(ieObjectList.size());
-                for (int i = 0; i < item.getSubItemsCount(); i++) {
-                    final View view = item.getSubItemView(i);
-                    configureSubItem(item, view, ieObjectList.get(i), categoryObject);
+                if (ieObjectList != null && ieObjectList.size() != 0) {
+                    item.createSubItems(ieObjectList.size());
+                    for (int i = 0; i < item.getSubItemsCount(); i++) {
+                        final View view = item.getSubItemView(i);
+                        configureSubItem(item, view, ieObjectList.get(i), categoryObject);
+                    }
                 }
 
                 if (categoryObject.getBank_account_id() != null) {
@@ -443,6 +556,11 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             }
             Log.d("UI thread", "I am the UI thread");
         });
+    }
+
+    private double calculateCategoryIE() {
+        //TODO: implement this
+        return 0.0;
     }
 
     public int dpToPixels(int dp) {
@@ -652,12 +770,24 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     }
 
     private void showDatePickerDialog() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                this,
+                Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH),
+                Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+        );
+        datePickerDialog.show();
+    }
+
+    private void oldshowDatePickerDialog() {
         MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(TransactionsActivity.this,
                 new MonthPickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(int selectedMonth, int selectedYear) { // on date set }
                         String date = selectedYear + "-" + selectedMonth;
                         pickedDate.setText(date);
+
                     }
                 }, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH));
 
@@ -694,7 +824,9 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        String date = year + "-" + month + "-" + dayOfMonth;//"yyyy"+-MM-dd";
+        String date = year + "-" + (month + 1) + "-" + dayOfMonth;//"yyyy"+-MM-dd";
         pickedDate.setText(date);
+        timeFrameFilter = date;
+        refreshScreen();
     }
 }
