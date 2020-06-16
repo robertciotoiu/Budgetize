@@ -41,7 +41,7 @@ public interface CategoryDao {
     public double getCategoryIESUM(long category_id);
 
     //
-    @Query("SELECT DISTINCT ie.id, ie.wallet_id, ie.amount, ie.name,  ie.category_id, ie.date, ie.occurrence , ie.type, ie.txn_id FROM wallets w, incomes_expenses ie, categories cat WHERE ie.category_id = :category_id")
+    @Query("SELECT DISTINCT ie.id, ie.wallet_id, ie.amount, ie.name,  ie.category_id, ie.date, ie.occurrence , ie.type, ie.txn_id, ie.currency FROM wallets w, incomes_expenses ie, categories cat WHERE ie.category_id = :category_id")
     //@Query("SELECT * from incomes_expenses")
     public List<IEObject> getCategorysIE(long category_id);
 

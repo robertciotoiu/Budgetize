@@ -48,6 +48,8 @@ import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
 import com.whiteelephant.monthpicker.MonthPickerDialog;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -171,7 +173,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         int year = Calendar.getInstance().get(Calendar.YEAR);
         int month = Calendar.getInstance().get(Calendar.MONTH);
         int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-        String date = year + "-" + month + "-" + day;
+        String date = year + "-" + (month + 1) + "-" + day;
         pickedDate.setText(date);
         pickedDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -495,7 +497,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     private void addItem(final CategoryObject categoryObject) throws ParseException {
         //List<IEObject> ieObjectList = mainActivityViewModel.getCategorysIE(categoryObject.getCategory_id());
         List<IEObject> ieObjectList = mainActivityViewModel.applyFilter(categoryObject.getCategory_id(), timeFrameFilter, frequencyFilter, currencyFilter, null);
-        double ie_value = calculateCategoryIE();//mainActivityViewModel.getCategoryIESUM(categoryObject.getCategory_id());
+        double ie_value = calculateCategoryIE(ieObjectList);//mainActivityViewModel.getCategoryIESUM(categoryObject.getCategory_id());
 
 
         TransactionsActivity.this.runOnUiThread(() -> {
@@ -558,9 +560,24 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         });
     }
 
-    private double calculateCategoryIE() {
+    private double calculateCategoryIE(List<IEObject> ieObjectList) {
         //TODO: implement this
-        return 0.0;
+        double categorySum = 0.0;
+        for (IEObject ieObject : ieObjectList) {
+            if (ieObject.type == 0)
+                categorySum += ieObject.amount;
+            else
+                categorySum -= ieObject.amount;
+        }
+        return round(categorySum,2);
+    }
+
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
     public int dpToPixels(int dp) {

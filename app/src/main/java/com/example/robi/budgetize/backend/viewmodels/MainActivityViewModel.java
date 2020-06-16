@@ -199,7 +199,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                                 // not in the timeFrame - remove
                                 ieObjectList.remove(ieObject);
                             } else {
-                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth()+1);
+                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth() + 1);
                                 int daysInMonth = yearMonthObject.lengthOfMonth();
                                 ieObject.amount = ieObject.amount / daysInMonth;
                             }
@@ -227,12 +227,12 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                                 ieObjectList.remove(ieObject);
                             } else if (dateFilterMonthly.compareTo(dateTxnMonthly) == 0) {
                                 //doar zilele cu txn
-                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth()+1);
+                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth() + 1);
                                 int daysInMonth = yearMonthObject.lengthOfMonth();
                                 int txnDays = (daysInMonth - dateTxnDaily.getDate()) + 1;
                                 ieObject.amount = ieObject.amount * txnDays;
                             } else if (dateFilterMonthly.compareTo(dateTxnMonthly) > 0) {
-                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth()+1);
+                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth() + 1);
                                 int daysInMonth = yearMonthObject.lengthOfMonth();
                                 ieObject.amount = ieObject.amount * daysInMonth;
                             }
@@ -254,7 +254,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                             if (dateFilterMonthly.compareTo(dateTxnMonthly) != 0) {
                                 ieObjectList.remove(ieObject);
                             } else {
-                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth()+1);
+                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth() + 1);
                                 int daysInMonth = yearMonthObject.lengthOfMonth();
                                 ieObject.amount = ieObject.amount / daysInMonth;
                             }
@@ -266,19 +266,19 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                                 ieObjectList.remove(ieObject);
                             } else if (dateFilterYearly.compareTo(dateTxnYearly) == 0) {
                                 // starting month
-                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateTxnMonthly.getMonth()+1);
+                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateTxnMonthly.getMonth() + 1);
                                 int daysInMonth = yearMonthObject.lengthOfMonth();
                                 int txnDays = (daysInMonth - dateTxnDaily.getDate()) + 1;
                                 ieObject.amount = ieObject.amount * txnDays;
 
                                 // rest of the months
-                                for (int month = dateTxnMonthly.getMonth()+1; month <= 11; month++) {
-                                    yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), month+1);
+                                for (int month = dateTxnMonthly.getMonth() + 1; month <= 11; month++) {
+                                    yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), month + 1);
                                     daysInMonth = yearMonthObject.lengthOfMonth();
                                     ieObject.amount = ieObject.amount * daysInMonth;
                                 }
                             } else if (dateFilterYearly.compareTo(dateTxnYearly) > 0) {
-                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth()+1);
+                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth() + 1);
                                 int daysInYear = yearMonthObject.lengthOfYear();
                                 ieObject.amount = ieObject.amount * daysInYear;
                             }
@@ -348,24 +348,28 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
 //                    }
 //            }
 //        }
+        for (IEObject ieObject : ieObjectList) {
+            ieObject.amount = round(ieObject.amount, 2);
+        }
         return ieObjectList;
     }
 
     private double convertToWalletCurrency(double amount, String fromCurrency, String toCurrency) {
         // TODO: round(x,2) should be eliminate and we should replace all double with BigDecimal
         if (!fromCurrency.contentEquals(toCurrency)) {
-            if(currency.getBase().contentEquals(toCurrency)){
-                double rate = currency.getRates().get(fromCurrency) != null ? round(currency.getRates().get(fromCurrency),2) : 0;
-                if(rate==0){
+            if (currency.getBase().contentEquals(toCurrency)) {
+                double rate = currency.getRates().get(fromCurrency) != null ? round(currency.getRates().get(fromCurrency), 2) : 0;
+                if (rate == 0) {
                     return 0;
                 }
-                return round(amount,2) / (rate);
-            }else {
-                return round(amount,2) * (currency.getRates().get(toCurrency) != null ? round(currency.getRates().get(toCurrency),2) : 0);
+                return round(amount, 2) / (rate);
+            } else {
+                return round(amount, 2) * (currency.getRates().get(toCurrency) != null ? round(currency.getRates().get(toCurrency), 2) : 0);
             }
         } else return amount;
     }
-    public static double round(double value, int places) {
+
+    private static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
         BigDecimal bd = BigDecimal.valueOf(value);
@@ -383,7 +387,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                 sb.append(s).append(",");
             }
             sb.deleteCharAt(sb.length() - 1);
-            new Thread() {
+            Thread t = new Thread() {
                 @Override
                 public void run() {
                     try {
@@ -394,7 +398,13 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                         e.printStackTrace();
                     }
                 }
-            }.start();
+            };
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
