@@ -152,7 +152,6 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             }
         };//categoryObjects::addAll;
         mainActivityViewModel.getAllCategoriesOfAWallet(walletID).observe(this, categoryListObsever);
-
 //        ieListObserver = new Observer<List<IEObject>>() {
 //            @Override
 //            public void onChanged(List<IEObject> ieObjects) {
@@ -472,9 +471,13 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             }
             if (item != null) {
                 //setAllColors(ie_value);
-                //item.setIndicatorColor(Color.WHITE);
-                //item.setIndicatorColorRes(getIconIndicatorColor(ie_value));//R.color.positiveBackgroundColor);
-                //item.setIndicatorIcon(getIcon(orphaneIEObject.amount));//R.drawable.house_icon);
+                item.setIndicatorColor(Color.WHITE);
+                if (orphaneIEObject.type == 0) {
+                    //item.setIndicatorColorRes(getIconIndicatorColor(-1));//R.color.positiveBackgroundColor);
+                    item.setIndicatorIcon(getIcon(260, 1));//R.drawable.house_icon);
+                } else {
+                    item.setIndicatorIcon(getIcon(260, -1));//R.drawable.house_icon);
+                }
                 //1. ImageView category_icon
                 ((TextView) item.findViewById(R.id.text_view_value_white)).setText(String.valueOf(orphaneIEObject.amount));
                 ((TextView) item.findViewById(R.id.text_view_category_name_white)).setText(orphaneIEObject.getName());
@@ -569,7 +572,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             else
                 categorySum -= ieObject.amount;
         }
-        return round(categorySum,2);
+        return round(categorySum, 2);
     }
 
     private static double round(double value, int places) {
@@ -712,13 +715,13 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                         try {
                             //TODO:issue here, when we delete one IE, we must removeSubItem() and recalculate category
                             mainActivityViewModel.deleteIE(ieID);
-                            Toast.makeText(TransactionsActivity.this, "I/E Deleted", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TransactionsActivity.this, "Transaction Deleted", Toast.LENGTH_SHORT).show();
                             expandingItem.removeSubItem(view);
                             recalculateCategorySum(expandingItem, categoryObject);
                         } catch (Exception e) {
                             e.printStackTrace();
                             System.out.println(e.getMessage());
-                            Toast toast = Toast.makeText(TransactionsActivity.this, "Unable to delete the I/E", Toast.LENGTH_SHORT);
+                            Toast toast = Toast.makeText(TransactionsActivity.this, "Unable to delete Transaction", Toast.LENGTH_SHORT);
                             TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
                             v.setTextColor(Color.RED);
                             toast.show();
@@ -734,12 +737,19 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             }
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure you want do DELETE permanently this I/E?").setPositiveButton("Yes", dialogClickListener)
+        builder.setMessage("Are you sure you want do DELETE permanently this Transaction?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
     }
 
     private void recalculateCategorySum(final ExpandingItem expandingItem, final CategoryObject categoryObject) {
-        double ie_value = mainActivityViewModel.getCategoryIESUM(categoryObject.getCategory_id());
+//        double ie_value = mainActivityViewModel.getCategoryIESUM(categoryObject.getCategory_id());
+        List<IEObject> ieObjectList = null;
+        try {
+            ieObjectList = mainActivityViewModel.applyFilter(categoryObject.getCategory_id(), timeFrameFilter, frequencyFilter, currencyFilter, null);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        double ie_value = calculateCategoryIE(ieObjectList);//mainActivityViewModel.getCategoryIESUM(categoryObject.getCategory_id());
         ((TextView) expandingItem.findViewById(R.id.text_view_value_white)).setText(String.valueOf(ie_value));
         if (ie_value > 0) {
             expandingItem.setBackground(getResources().getDrawable(R.drawable.item_shape_positive));

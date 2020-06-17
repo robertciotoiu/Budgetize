@@ -366,9 +366,9 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     private String[] getCategories() {
         long wallet_id = wallet.getId();
         //List<CategoryObject> categoryObjects = mainActivityViewModel.getAllCategoriesOfAWallet(wallet_id).getValue();
-        String[] categories = new String[categoryObjects.size()];
-//        categories[0] = "Select Category";
-        int i = 0;
+        String[] categories = new String[categoryObjects.size()+1];
+        categories[0] = "No Category";
+        int i = 1;
         for (CategoryObject c : categoryObjects) {
             categories[i] = c.getName();
             categoryHashMap.put(c.getName(), c.getCategory_id());

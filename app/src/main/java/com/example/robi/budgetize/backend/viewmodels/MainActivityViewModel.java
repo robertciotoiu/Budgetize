@@ -39,7 +39,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     public static boolean loginStatus = false;
 
     public int lastWalletPosition = 0;
-    public boolean firstAnimation = true;
+    public static boolean firstStart = true;
 
 
     public MainActivityViewModel(@NonNull Application application, DataRepository repository) {
@@ -163,6 +163,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
 
     public List<IEObject> applyFilter(long category_id, String timeFrameFilter, String frequencyFilter, String currencyFilter, List<IEObject> orphanIEs) throws ParseException {
         List<IEObject> ieObjectList = new ArrayList<>();
+        List<IEObject> finalIEObjectList = new ArrayList<>();
         if (category_id != 0) {
             ieObjectList = getCategorysIE(category_id);
         } else {
@@ -184,6 +185,9 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
         c.setTime(sdfMonthly.parse(timeFrameFilter));
 
         if (ieObjectList != null) {
+//            Iterator<IEObject> iterIEObject = ieObjectList.iterator();
+//            while (iterIEObject.hasNext()) {
+//                IEObject ieObject = iterIEObject.next();
             for (IEObject ieObject : ieObjectList) {
                 dateTxnDaily = sdfDaily.parse(ieObject.date);
                 dateTxnMonthly = sdfMonthly.parse(ieObject.date);
@@ -193,30 +197,40 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                         if (ieObject.occurrence.contentEquals("Every Day")) {
                             if (dateFilterDaily.compareTo(dateTxnDaily) < 0) {
                                 // not in the timeFrame - remove
-                                ieObjectList.remove(ieObject);
+                                // do nothing because we only add on the new array
+//                                ieObjectList.remove(ieObject);
+                            }else{
+                                finalIEObjectList.add(ieObject);
+//                                finalIEObjectList.add(ieObject);
                             }
                         } else if (ieObject.occurrence.contentEquals("Every Month")) {
                             if (dateFilterMonthly.compareTo(dateTxnMonthly) < 0) {
                                 // not in the timeFrame - remove
-                                ieObjectList.remove(ieObject);
+//                                ieObjectList.remove(ieObject);
                             } else {
                                 YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth() + 1);
                                 int daysInMonth = yearMonthObject.lengthOfMonth();
                                 ieObject.amount = ieObject.amount / daysInMonth;
+
+                                finalIEObjectList.add(ieObject);
                             }
                         } else if (ieObject.occurrence.contentEquals("Every Year")) {
                             if (dateFilterYearly.compareTo(dateTxnDaily) < 0) {
                                 // not in the timeFrame - remove
-                                ieObjectList.remove(ieObject);
+//                                ieObjectList.remove(ieObject);
                             } else {
                                 YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth());
                                 int daysInYear = yearMonthObject.lengthOfYear(); //29
                                 ieObject.amount = ieObject.amount / daysInYear;
+
+                                finalIEObjectList.add(ieObject);
                             }
                         } else if (ieObject.occurrence.contentEquals("Never")) {
                             if (dateFilterDaily.compareTo(dateTxnDaily) != 0) {
                                 // not in the timeFrame - remove
-                                ieObjectList.remove(ieObject);
+//                                ieObjectList.remove(ieObject);
+                            }else{
+                                finalIEObjectList.add(ieObject);
                             }
                         }
                     } else if (frequencyFilter.contentEquals("monthly")) {
@@ -225,46 +239,53 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                             // cate zile din luna txn a fost facuta
                             if (dateFilterMonthly.compareTo(dateTxnMonthly) < 0) {
                                 // not in the timeFrame - remove
-                                ieObjectList.remove(ieObject);
+//                                ieObjectList.remove(ieObject);
                             } else if (dateFilterMonthly.compareTo(dateTxnMonthly) == 0) {
                                 //doar zilele cu txn
                                 YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth() + 1);
                                 int daysInMonth = yearMonthObject.lengthOfMonth();
                                 int txnDays = (daysInMonth - dateTxnDaily.getDate()) + 1;
                                 ieObject.amount = ieObject.amount * txnDays;
+
+                                finalIEObjectList.add(ieObject);
                             } else if (dateFilterMonthly.compareTo(dateTxnMonthly) > 0) {
                                 YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth() + 1);
                                 int daysInMonth = yearMonthObject.lengthOfMonth();
                                 ieObject.amount = ieObject.amount * daysInMonth;
+
+                                finalIEObjectList.add(ieObject);
                             }
                         } else if (ieObject.occurrence.contentEquals("Every Month")) {
                             if (dateFilterMonthly.compareTo(dateTxnMonthly) < 0) {
                                 // not in the timeFrame - remove
-                                ieObjectList.remove(ieObject);
+//                                ieObjectList.remove(ieObject);
+                            } else{
+                                finalIEObjectList.add(ieObject);
                             }
                         } else if (ieObject.occurrence.contentEquals("Every Year")) {
                             if (dateFilterYearly.compareTo(dateTxnMonthly) < 0) {
-                                ieObjectList.remove(ieObject);
+//                                ieObjectList.remove(ieObject);
                             } else {
                                 ieObject.amount = ieObject.amount / 12;
+
+                                finalIEObjectList.add(ieObject);
                             }
-//                            else{
-//
-//                            }
                         } else if (ieObject.occurrence.contentEquals("Never")) {
                             if (dateFilterMonthly.compareTo(dateTxnMonthly) != 0) {
-                                ieObjectList.remove(ieObject);
+//                                ieObjectList.remove(ieObject);
                             } else {
-                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth() + 1);
-                                int daysInMonth = yearMonthObject.lengthOfMonth();
-                                ieObject.amount = ieObject.amount / daysInMonth;
+//                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth() + 1);
+//                                int daysInMonth = yearMonthObject.lengthOfMonth();
+//                                ieObject.amount = ieObject.amount / daysInMonth;
+
+                                finalIEObjectList.add(ieObject);
                             }
                         }
                     } else if (frequencyFilter.contentEquals("yearly")) {// YEARLY
                         if (ieObject.occurrence.contentEquals("Every Day")) {//TXN
                             if (dateFilterYearly.compareTo(dateTxnYearly) < 0) {
                                 // not in the timeFrame - remove
-                                ieObjectList.remove(ieObject);
+//                                ieObjectList.remove(ieObject);
                             } else if (dateFilterYearly.compareTo(dateTxnYearly) == 0) {
                                 // starting month
                                 YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateTxnMonthly.getMonth() + 1);
@@ -278,38 +299,52 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                                     daysInMonth = yearMonthObject.lengthOfMonth();
                                     ieObject.amount = ieObject.amount * daysInMonth;
                                 }
+
+                                finalIEObjectList.add(ieObject);
                             } else if (dateFilterYearly.compareTo(dateTxnYearly) > 0) {
                                 YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth() + 1);
                                 int daysInYear = yearMonthObject.lengthOfYear();
                                 ieObject.amount = ieObject.amount * daysInYear;
+
+                                finalIEObjectList.add(ieObject);
                             }
                         } else if (ieObject.occurrence.contentEquals("Every Month")) {
                             //TODO: aici am ramas
                             if (dateFilterYearly.compareTo(dateTxnYearly) < 0) {
-                                ieObjectList.remove(ieObject);
+//                                ieObjectList.remove(ieObject);
                             } else if (dateFilterYearly.compareTo(dateTxnYearly) == 0) {
                                 ieObject.amount = ieObject.amount * (12 - dateTxnMonthly.getMonth());
+
+                                finalIEObjectList.add(ieObject);
                             } else if (dateFilterYearly.compareTo(dateTxnYearly) > 0) {
                                 ieObject.amount = ieObject.amount * 12;
+
+                                finalIEObjectList.add(ieObject);
                             }
                         } else if (ieObject.occurrence.contentEquals("Every Year")) {
                             if (dateFilterYearly.compareTo(dateTxnYearly) < 0) {
                                 // not in the timeFrame - remove
-                                ieObjectList.remove(ieObject);
+//                                ieObjectList.remove(ieObject);
+                            } else{
+                                finalIEObjectList.add(ieObject);
                             }
                         } else if (ieObject.occurrence.contentEquals("Never")) {
                             dateFilterYearly = sdfYearly.parse(timeFrameFilter);
                             if (dateFilterYearly.compareTo(dateTxnYearly) != 0) {
-                                ieObjectList.remove(ieObject);
+//                                ieObjectList.remove(ieObject);
                             } else {
-                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth());
-                                int daysInYear = yearMonthObject.lengthOfYear();
-                                ieObject.amount = ieObject.amount / daysInYear;
+//                                YearMonth yearMonthObject = YearMonth.of(c.get(Calendar.YEAR), dateFilterMonthly.getMonth());
+//                                int daysInYear = yearMonthObject.lengthOfYear();
+//                                ieObject.amount = ieObject.amount / daysInYear;
+
+                                finalIEObjectList.add(ieObject);
                             }
                         }
                     }
                 }
-                ieObject.amount = convertToWalletCurrency(ieObject.amount, ieObject.currency, currencyFilter);
+                if(finalIEObjectList.size()!=0)
+                    finalIEObjectList.get(finalIEObjectList.size()-1).amount = convertToWalletCurrency(ieObject.amount, ieObject.currency, currencyFilter);
+                //ieObject.amount = convertToWalletCurrency(ieObject.amount, ieObject.currency, currencyFilter);
             }
         }
 
@@ -350,10 +385,10 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
 //                    }
 //            }
 //        }
-        for (IEObject ieObject : ieObjectList) {
+        for (IEObject ieObject : finalIEObjectList) {
             ieObject.amount = round(ieObject.amount, 2);
         }
-        return ieObjectList;
+        return finalIEObjectList;
     }
 
     private double convertToWalletCurrency(double amount, String fromCurrency, String toCurrency) {
