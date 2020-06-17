@@ -205,6 +205,11 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
+    public List<IEObject> getAllIEsFromWallet(long wallet_id){
+        return mDatabase.ieoDao().getAllIEsFromWallet(wallet_id);
+    }
+
+    @Override
     public LiveData<List<IEObject>> getAllIEofAWalletWithoutCategoriesAssigned(long walletID) {
         return mDatabase.ieoDao().getAllIEofAWalletWithoutCategoriesAssigned(walletID);
     }

@@ -35,7 +35,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
 
     private String walletBaseCurrency = "";
     private HashSet<String> txnsCurrencies = new HashSet<>();
-    private Currency currency;
+    private static Currency currency;
     public static boolean loginStatus = false;
 
     public int lastWalletPosition = 0;
@@ -157,7 +157,32 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     }
 
     public double getIE(long wallet_id) {
-        return repository.getIE(wallet_id);
+        double ie = 0.0;
+        List<IEObject> ieObjectList = repository.getAllIEsFromWallet(wallet_id);
+        String walletCurrency = repository.getWalletsCurrency(wallet_id);
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        String timeFrameFilter = year + "-" + (month + 1) + "-" + day;
+        String frequencyFilter = "monthly";
+
+        List<IEObject> craftedIEobjects = null;
+        try {
+            //prepareCurrencies(wallet_id);
+            craftedIEobjects = new ArrayList<>(applyFilter(0, timeFrameFilter, frequencyFilter, walletCurrency, ieObjectList));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        for (IEObject ieObject : craftedIEobjects) {
+            if (ieObject.type == 0)
+                ie += ieObject.amount;
+            else
+                ie -= ieObject.amount;
+        }
+        return round(ie, 2);
+        //deprecated
+//        return repository.getIE(wallet_id);
     }
 
 
@@ -199,7 +224,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                                 // not in the timeFrame - remove
                                 // do nothing because we only add on the new array
 //                                ieObjectList.remove(ieObject);
-                            }else{
+                            } else {
                                 finalIEObjectList.add(ieObject);
 //                                finalIEObjectList.add(ieObject);
                             }
@@ -229,7 +254,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                             if (dateFilterDaily.compareTo(dateTxnDaily) != 0) {
                                 // not in the timeFrame - remove
 //                                ieObjectList.remove(ieObject);
-                            }else{
+                            } else {
                                 finalIEObjectList.add(ieObject);
                             }
                         }
@@ -259,7 +284,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                             if (dateFilterMonthly.compareTo(dateTxnMonthly) < 0) {
                                 // not in the timeFrame - remove
 //                                ieObjectList.remove(ieObject);
-                            } else{
+                            } else {
                                 finalIEObjectList.add(ieObject);
                             }
                         } else if (ieObject.occurrence.contentEquals("Every Year")) {
@@ -325,7 +350,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                             if (dateFilterYearly.compareTo(dateTxnYearly) < 0) {
                                 // not in the timeFrame - remove
 //                                ieObjectList.remove(ieObject);
-                            } else{
+                            } else {
                                 finalIEObjectList.add(ieObject);
                             }
                         } else if (ieObject.occurrence.contentEquals("Never")) {
@@ -342,8 +367,8 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                         }
                     }
                 }
-                if(finalIEObjectList.size()!=0)
-                    finalIEObjectList.get(finalIEObjectList.size()-1).amount = convertToWalletCurrency(ieObject.amount, ieObject.currency, currencyFilter);
+                if (finalIEObjectList.size() != 0)
+                    finalIEObjectList.get(finalIEObjectList.size() - 1).amount = convertToWalletCurrency(ieObject.amount, ieObject.currency, currencyFilter);
                 //ieObject.amount = convertToWalletCurrency(ieObject.amount, ieObject.currency, currencyFilter);
             }
         }
@@ -392,18 +417,31 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     }
 
     private double convertToWalletCurrency(double amount, String fromCurrency, String toCurrency) {
-        // TODO: round(x,2) should be eliminate and we should replace all double with BigDecimal
-        if (!fromCurrency.contentEquals(toCurrency)) {
-            if (currency.getBase().contentEquals(toCurrency)) {
-                double rate = currency.getRates().get(fromCurrency) != null ? round(currency.getRates().get(fromCurrency), 2) : 0;
-                if (rate == 0) {
-                    return 0;
-                }
-                return round(amount, 2) / (rate);
-            } else {
-                return round(amount, 2) * (currency.getRates().get(toCurrency) != null ? round(currency.getRates().get(toCurrency), 2) : 0);
-            }
-        } else return amount;
+        if (fromCurrency.contentEquals("EUR") && toCurrency.contentEquals("EUR")) {
+            return round(amount, 2);
+        } else if (fromCurrency.contentEquals("EUR")) {
+            return round(amount, 2) * (currency.getRates().get(toCurrency) != null ? round(currency.getRates().get(toCurrency), 2) : 0);
+        } else if (toCurrency.contentEquals("EUR")) {
+            return round(amount, 2) / (currency.getRates().get(fromCurrency) != null ? round(currency.getRates().get(fromCurrency), 2) : 0);
+        } else {
+            double firstConversion = round(amount, 2) / (currency.getRates().get(fromCurrency) != null ? round(currency.getRates().get(fromCurrency), 2) : 0);
+            return round(firstConversion, 2) * (currency.getRates().get(toCurrency) != null ? round(currency.getRates().get(toCurrency), 2) : 0);
+        }
+
+
+        // deprecated
+//        // TODO: round(x,2) should be eliminate and we should replace all double with BigDecimal
+//        if (!fromCurrency.contentEquals(toCurrency)) {
+//            if (currency.getBase().contentEquals(toCurrency)) {
+//                double rate = currency.getRates().get(fromCurrency) != null ? round(currency.getRates().get(fromCurrency), 2) : 0;
+//                if (rate == 0) {
+//                    return 0;
+//                }
+//                return round(amount, 2) / (rate);
+//            } else {
+//                return round(amount, 2) * (currency.getRates().get(toCurrency) != null ? round(currency.getRates().get(toCurrency), 2) : 0);
+//            }
+//        } else return amount;
     }
 
     private static double round(double value, int places) {
@@ -415,33 +453,24 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     }
 
 
-    public void prepareCurrencies(long walletID) {
-        walletBaseCurrency = repository.getWalletsCurrency(walletID);
-        txnsCurrencies = new HashSet(repository.getAllIEsCurrenciesFromWallet(walletID));
-        if (txnsCurrencies.size() != 0) {
-            StringBuilder sb = new StringBuilder("");
-            for (String s : txnsCurrencies) {
-                sb.append(s).append(",");
-            }
-            sb.deleteCharAt(sb.length() - 1);
-            Thread t = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        String response = HttpUtils.get("https://api.exchangeratesapi.io/latest?base=" + walletBaseCurrency + "&symbols=" + sb.toString());
-                        Gson gson = new Gson();
-                        currency = gson.fromJson(response, Currency.class);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+    public static void prepareCurrencies() {
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    String response = HttpUtils.get("https://api.exchangeratesapi.io/latest?base=" + "EUR");// + "&symbols=" + sb.toString());
+                    Gson gson = new Gson();
+                    currency = gson.fromJson(response, Currency.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            };
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+        };
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

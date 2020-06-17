@@ -277,9 +277,12 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
                 return;
             }
 
-            if (ieCategoryName.contentEquals("Select Category") || (ieCategoryName != null && !ieCategoryName.contentEquals(""))) {
+            if(ieCategoryName.contentEquals("No Category")){
+                ieCategoryID = 0;
+            }else if ((ieCategoryName != null && !ieCategoryName.contentEquals(""))) {
                 ieCategoryID = categoryHashMap.get(ieCategoryName);
             }
+
 
             IEObject ieObject = new IEObject(currentWalletID, ieName, ieAmount, ieCategoryID, ieType, pickedDate.getText().toString(), occurrenceDropdown.getText().toString(), null, selectedCurrency);//TODO:Choosable
 

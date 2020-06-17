@@ -122,7 +122,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         mainActivityViewModel = new ViewModelProvider(this
                 , new MainActivityViewModelFactory((ApplicationObj) this.getApplication()))
                 .get(MainActivityViewModel.class);
-        mainActivityViewModel.prepareCurrencies(walletID);
+        //mainActivityViewModel.prepareCurrencies(walletID);
         init();
     }
 
@@ -355,7 +355,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             currencyTextView.setText(currencyCode.getCode());
             currencyImageView.setImageDrawable(getDrawable(currencyCode.getFlag()));
 
-            currencyTextView.setOnClickListener(new View.OnClickListener() {
+            currencyImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
@@ -367,7 +367,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                             wallet.setCurrency(code);
                             doSelectCurrencyLogic(code, flagDrawableResID, picker);
                             updateAllAmounts();
-                            mainActivityViewModel.prepareCurrencies(walletID);
+                            //mainActivityViewModel.prepareCurrencies(walletID);
                             refreshScreen();
                         }
                     });
@@ -387,7 +387,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                             wallet.setCurrency(code);
                             doSelectCurrencyLogic(code, flagDrawableResID, picker);
                             updateAllAmounts();
-                            mainActivityViewModel.prepareCurrencies(walletID);
+                            //mainActivityViewModel.prepareCurrencies(walletID);
                             refreshScreen();
                         }
                     });

@@ -24,6 +24,9 @@ public interface IEObjectDao {
     @Query("SELECT * FROM incomes_expenses where category_id=:category_id")//not in use currently
     public LiveData<List<IEObject>> getIESpecificList(long category_id);//get all ie objects from a given category
 
+    @Query("SELECT * FROM incomes_expenses where wallet_id=:wallet_id")
+    public List<IEObject> getAllIEsFromWallet(long wallet_id);
+
     @Query("SELECT * FROM incomes_expenses")
     public LiveData<List<IEObject>> getAllIE();//get all ie objects
 
