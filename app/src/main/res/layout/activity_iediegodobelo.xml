@@ -4,19 +4,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activities.TransactionsActivity"
-    android:fitsSystemWindows="true"
     android:background="@android:color/background_light"
-    >
+    android:fitsSystemWindows="true"
+    tools:context=".ui.activities.TransactionsActivity">
+
+    <TextView
+        android:id="@+id/wallet_name_ie_screen"
+        android:layout_width="240dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="20dp"
+        android:text="Wallet Name"
+        android:textColor="#000000"
+        android:textSize="40dp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/currency_imageview"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="2dp"
+        android:layout_gravity="center_vertical"
+        android:layout_alignEnd="@id/currency_textview"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="40dp"
+        android:layout_weight="1"
+        android:src="@drawable/flag_usd" />
+
+    <TextView
+        android:id="@+id/currency_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginEnd="10dp"
+        android:layout_gravity="center_vertical"
+        android:layout_alignParentEnd="true"
+        android:layout_weight="1"
+        android:layout_alignParentTop="true"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="USD"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="20sp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/pick_date_textinput"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-
+        android:layout_marginTop="50dp"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="2dp"
+        android:layout_marginStart="10dp"
         android:layout_marginEnd="5dp"
         android:layout_toStartOf="@id/frequency_filter"
         android:drawingCacheQuality="high"
@@ -26,37 +67,36 @@
         app:startIconDrawable="@drawable/calendar_icon">
 
         <com.google.android.material.textfield.TextInputEditText
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:id="@+id/date_picked"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:gravity="center_vertical"
-            android:textSize="12sp"
-            android:focusable="false" />
+            android:textSize="12sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/frequency_filter"
         android:layout_width="255dp"
         android:layout_height="50dp"
-        app:singleSelection="true"
+        android:layout_marginTop="50dp"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="0dp"
-        >
+        android:layout_marginEnd="2dp"
+        app:singleSelection="true">
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:id="@+id/daily_check"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="78dp"
             android:layout_height="56dp"
             android:text="daily"
             android:textSize="12sp"
-            app:strokeWidth="2dp"
- />
+            app:strokeWidth="2dp" />
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:id="@+id/monthly_check"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="95dp"
             android:layout_height="56dp"
             android:text="monthly"
@@ -64,14 +104,13 @@
             app:strokeWidth="2dp" />
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:id="@+id/yearly_check"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="78dp"
             android:layout_height="56dp"
             android:text="yearly"
             android:textSize="12sp"
-            app:strokeWidth="2dp"
-             />
+            app:strokeWidth="2dp" />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -79,22 +118,21 @@
         android:id="@+id/expanding_list_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="50dp"
-        android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="110dp"
+        android:layout_marginRight="10dp"
         android:overScrollMode="always"
 
         />
 
-    <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
-        xmlns:rfal="http://schemas.android.com/apk/res-auto"
+    <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout xmlns:rfal="http://schemas.android.com/apk/res-auto"
         android:id="@+id/activity_main_rfal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        rfal:rfal_frame_color="#ffffff"
-        rfal:rfal_frame_alpha="0.7">
-        <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton
-            xmlns:rfab="http://schemas.android.com/apk/res-auto"
+        rfal:rfal_frame_alpha="0.7"
+        rfal:rfal_frame_color="#ffffff">
+
+        <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton xmlns:rfab="http://schemas.android.com/apk/res-auto"
             android:id="@+id/activity_main_rfab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -102,15 +140,14 @@
             android:layout_alignParentBottom="true"
             android:layout_marginRight="15dp"
             android:layout_marginBottom="15dp"
+            android:background="@drawable/round_button"
             android:padding="8dp"
-            rfab:rfab_size="normal"
             rfab:rfab_color_normal="#0a0a0a"
             rfab:rfab_color_pressed="#263238"
-            rfab:rfab_shadow_radius="7dp"
             rfab:rfab_shadow_color="#282828"
             rfab:rfab_shadow_dx="0dp"
             rfab:rfab_shadow_dy="1dp"
-            android:background="@drawable/round_button"
-            />
+            rfab:rfab_shadow_radius="7dp"
+            rfab:rfab_size="normal" />
     </com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout>
 </RelativeLayout>

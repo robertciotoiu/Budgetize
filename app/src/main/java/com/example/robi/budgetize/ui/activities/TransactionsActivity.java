@@ -61,6 +61,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class TransactionsActivity extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener, DatePickerDialog.OnDateSetListener {
     String TAG = this.getClass().getName();
     private ExpandingList mExpandingList = null;
+    private TextView walletNameTextView;
+    private TextView currencyTextView;
+    private ImageView currencyImageView;
     private TextInputEditText pickedDate;
     private MaterialButtonToggleGroup frequencyFilterToggleGroup;
     private MaterialButton dailyCheck;
@@ -78,6 +81,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     private String timeFrameFilter;
     private String frequencyFilter;
     private String currencyFilter;
+
     private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
 
     private MainActivityViewModel mainActivityViewModel;
@@ -97,6 +101,10 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_iediegodobelo);
         mExpandingList = findViewById(R.id.expanding_list_main);
+        walletNameTextView = findViewById(R.id.wallet_name_ie_screen);
+        currencyTextView = findViewById(R.id.currency_textview);
+        currencyImageView = findViewById(R.id.currency_imageview);
+
         Bundle bundle = getIntent().getExtras();
         if (bundle.get("wallet") != null) {
             Gson gson = new Gson();
@@ -333,19 +341,21 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 
     private void populateLists() {
         //Display Wallet Name:
-        ExpandingItem first_item = mExpandingList.createNewItem(R.layout.first_ie_item);
-        if (first_item != null) {
+        //ExpandingItem first_item = mExpandingList.createNewItem(R.layout.first_ie_item);
+        //if (first_item != null) {
             //1. Wallet name
-            ((TextView) first_item.findViewById(R.id.wallet_name_ie_screen)).setText(wallet.getName());
+
+            walletNameTextView.setText(wallet.getName());
 
             String currency = wallet.getCurrency();
             CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");
             ExtendedCurrency currencyCode = ExtendedCurrency.getCurrencyByISO(currency);
             currencyFilter = currencyCode.getCode();
 
-            ((TextView) first_item.findViewById(R.id.currency_textview)).setText(currencyCode.getCode());
-            ((ImageView) first_item.findViewById(R.id.currency_imageview)).setImageDrawable(getDrawable(currencyCode.getFlag()));
-            ((TextView) first_item.findViewById(R.id.currency_textview)).setOnClickListener(new View.OnClickListener() {
+            currencyTextView.setText(currencyCode.getCode());
+            currencyImageView.setImageDrawable(getDrawable(currencyCode.getFlag()));
+
+            currencyTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
@@ -355,7 +365,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                             // Implement your code here
                             currencyFilter = code;
                             wallet.setCurrency(code);
-                            doSelectCurrencyLogic(first_item, code, flagDrawableResID, picker);
+                            doSelectCurrencyLogic(code, flagDrawableResID, picker);
                             updateAllAmounts();
                             mainActivityViewModel.prepareCurrencies(walletID);
                             refreshScreen();
@@ -365,7 +375,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                 }
             });
 
-            ((ImageView) first_item.findViewById(R.id.currency_imageview)).setOnClickListener(new View.OnClickListener() {
+        currencyTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
@@ -375,7 +385,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                             // Implement your code here
                             currencyFilter = code;
                             wallet.setCurrency(code);
-                            doSelectCurrencyLogic(first_item, code, flagDrawableResID, picker);
+                            doSelectCurrencyLogic(code, flagDrawableResID, picker);
                             updateAllAmounts();
                             mainActivityViewModel.prepareCurrencies(walletID);
                             refreshScreen();
@@ -384,7 +394,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                     picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
                 }
             });
-        }
+        //}
 
         //Add Categories and IEs
         for (CategoryObject categoryObject : categoryObjectsList) {
@@ -418,12 +428,12 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     private void updateAllAmounts() {
     }
 
-    private void doSelectCurrencyLogic(ExpandingItem first_item, String code, int flagDrawableResID, CurrencyPicker picker) {
+    private void doSelectCurrencyLogic(String code, int flagDrawableResID, CurrencyPicker picker) {
         long status = mainActivityViewModel.updateCurrency(walletID, code);
 
         if (status > 0) {
-            ((TextView) first_item.findViewById(R.id.currency_textview)).setText(code);
-            ((ImageView) first_item.findViewById(R.id.currency_imageview)).setImageDrawable(getDrawable(flagDrawableResID));
+            currencyTextView.setText(code);
+            currencyImageView.setImageDrawable(getDrawable(flagDrawableResID));
             picker.dismiss();
         } else {
             Toast toast = Toast.makeText(TransactionsActivity.this, "Cannot change currency! Contact support team!", Toast.LENGTH_LONG);
