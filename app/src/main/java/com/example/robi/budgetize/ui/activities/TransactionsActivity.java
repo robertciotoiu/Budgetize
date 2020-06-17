@@ -119,6 +119,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     @Override
     public void onResume() {
         super.onResume();
+        depopulateLists();
         mainActivityViewModel = new ViewModelProvider(this
                 , new MainActivityViewModelFactory((ApplicationObj) this.getApplication()))
                 .get(MainActivityViewModel.class);

@@ -61,7 +61,7 @@
         android:layout_marginEnd="5dp"
         android:layout_toStartOf="@id/frequency_filter"
         android:drawingCacheQuality="high"
-        android:hint="MONTH"
+        android:hint="DATE"
         android:letterSpacing="1"
         app:layout_constraintStart_toStartOf="parent"
         app:startIconDrawable="@drawable/calendar_icon">
