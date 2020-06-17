@@ -125,7 +125,7 @@
             android:layout_margin="@dimen/fab_margin"
             />
 
-        <ImageButton
+        <!--ImageButton
             android:id="@+id/analyticsButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
@@ -133,11 +133,24 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="0dp"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/analytic_imageview_border"
             android:backgroundTint="@android:color/transparent"
             android:scaleType="fitCenter"
             android:visibility="gone"
-            app:srcCompat="@drawable/monitor_analytic_icon" />
+            app:srcCompat="@drawable/analytics_icon" /-->
+
+        <!--ImageButton
+            android:id="@+id/sign_out_button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="0dp"
+            android:layout_centerHorizontal="true"
+            android:layout_toEndOf="@id/settings_button"
+            android:backgroundTint="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:visibility="visible"
+            app:srcCompat="@drawable/sign_out" -->
 
         <ImageButton
             android:id="@+id/cloud_image_button"
@@ -157,10 +170,11 @@
             android:layout_marginTop="5dp"
             android:layout_toLeftOf="@id/cloud_image_button"
             android:layout_marginLeft="5dp"
+            android:layout_centerHorizontal="true"
             android:scaleType="fitCenter"
             android:backgroundTint="@android:color/transparent"
             android:visibility="gone"
-            app:srcCompat="@drawable/bankaccounts" />
+            app:srcCompat="@drawable/bank_accounts_icon2" />
 
         <ProgressBar
             android:id="@+id/progressAccountLoad"

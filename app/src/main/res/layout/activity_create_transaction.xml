@@ -87,17 +87,17 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         app:boxBackgroundColor="@android:color/transparent"
         android:background="@android:color/transparent"
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:layout_marginStart="2.5dp"
         android:layout_marginEnd="2.5dp"
         android:hint="Amount"
-        app:startIconDrawable="@drawable/amount_icon"
         android:drawingCacheQuality="high"
         android:id="@+id/create_ie_amount"
         android:layout_marginTop="30dp"
         android:layoutDirection="locale"
+        android:elevation="4dp"
 
 
         app:layout_constraintStart_toStartOf="parent"
@@ -115,16 +115,16 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="3dp"
         android:layout_weight="1"
-        android:layout_marginTop="40dp"
-        app:layout_constraintStart_toEndOf="@id/create_ie_amount"
+        android:elevation="8dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="39dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/create_ie_name"
-
-        android:src="@drawable/flag_usd"
+        android:src="@drawable/flag_ron"
         />
 
-    <TextView
+    <!--TextView
         android:id="@+id/currency_textview_create"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
@@ -138,7 +138,7 @@
         android:layout_marginTop="38dp"
         app:layout_constraintStart_toEndOf="@id/currency_imageview"
         app:layout_constraintTop_toBottomOf="@+id/create_ie_name"
-        android:text="USD" />
+        android:text="USD" /-->
 
     <!--EditText
         android:id="@+id/category_dropdown_textfield"

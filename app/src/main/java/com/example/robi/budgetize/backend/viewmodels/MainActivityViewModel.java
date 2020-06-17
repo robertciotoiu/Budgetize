@@ -36,6 +36,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
     private String walletBaseCurrency = "";
     private HashSet<String> txnsCurrencies = new HashSet<>();
     private Currency currency;
+    public static boolean loginStatus = false;
 
     public int lastWalletPosition = 0;
     public boolean firstAnimation = true;

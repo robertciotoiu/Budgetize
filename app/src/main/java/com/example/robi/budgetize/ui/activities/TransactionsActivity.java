@@ -274,7 +274,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                 .setIconPressedColor(0xff757575)
                 .setWrapper(2)
         );
-        if (showImportTransaction) {
+        if (showImportTransaction && MainActivityViewModel.loginStatus) {
             items.add(new RFACLabelItem<Integer>()
                     .setLabel("Import transactions")
                     .setLabelColor(0xff343434)

@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -49,8 +50,10 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
     private Wallet wallet;
     private long wallet_id = 0;
     private int ieType = 0;
+    private String selectedCurrency="RON";
 
     ElasticButton addButton;
+    ImageView currencyPickerImageView;
 
     //Switch
     private RadioGroup ieSwitch;
@@ -156,6 +159,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
         categorySelectorTextInput = findViewById(R.id.category_dropdown_textfield);
         occurrenceSelectorTextInput = findViewById(R.id.occurrence_dropdown_textfield);
         transactionDateTextInput = findViewById(R.id.pick_date_textinput);
+        currencyPickerImageView = findViewById(R.id.currency_imageview_create);
 
         nameInputText = findViewById(R.id.name_input_text);
         amountInputText = findViewById(R.id.amount_input_text);
@@ -233,7 +237,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
             }
         });
 
-        transactionAmountTextInput.setStartIconOnClickListener(new View.OnClickListener() {
+        currencyPickerImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
@@ -243,13 +247,14 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
                         // Implement your code here
 //                        doSelectCurrencyLogic(first_item, code, flagDrawableResID, picker);
 //                        updateAllAmounts();
-                        amountInputText.setCompoundDrawablesWithIntrinsicBounds(flagDrawableResID, 0, 0, 0);
+                        currencyPickerImageView.setImageDrawable(getDrawable(flagDrawableResID));
+                        selectedCurrency = code;
+                        picker.dismiss();
                     }
                 });
                 picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
             }
         });
-
         //MainOAuthActivity.wallets.add(new Wallet();
     }
 
@@ -276,7 +281,7 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
                 ieCategoryID = categoryHashMap.get(ieCategoryName);
             }
 
-            IEObject ieObject = new IEObject(currentWalletID, ieName, ieAmount, ieCategoryID, ieType, pickedDate.getText().toString(), occurrenceDropdown.getText().toString(), null, "USD");//TODO:Choosable
+            IEObject ieObject = new IEObject(currentWalletID, ieName, ieAmount, ieCategoryID, ieType, pickedDate.getText().toString(), occurrenceDropdown.getText().toString(), null, selectedCurrency);//TODO:Choosable
 
             long status = mainActivityViewModel.addIEObject(ieObject);
 

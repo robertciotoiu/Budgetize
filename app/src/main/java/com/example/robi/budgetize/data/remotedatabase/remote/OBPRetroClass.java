@@ -154,7 +154,7 @@ public class OBPRetroClass {
                                             transaction.getDetails().getCompleted(),
                                             transaction.getDetails().getNew_balance().getAmount(),
                                             transaction.getDetails().getNew_balance().getCurrency(),
-                                            transaction.getDetails().getValue().getAmount(),
+                                            Math.abs(transaction.getDetails().getValue().getAmount()),
                                             transaction.getDetails().getValue().getCurrency()
                                     )
                             );
