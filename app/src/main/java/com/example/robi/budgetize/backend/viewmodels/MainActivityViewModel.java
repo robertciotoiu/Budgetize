@@ -297,6 +297,7 @@ public class MainActivityViewModel extends AndroidViewModel implements DataRepos
                                 ieObjectList.remove(ieObject);
                             }
                         } else if (ieObject.occurrence.contentEquals("Never")) {
+                            dateFilterYearly = sdfYearly.parse(timeFrameFilter);
                             if (dateFilterYearly.compareTo(dateTxnYearly) != 0) {
                                 ieObjectList.remove(ieObject);
                             } else {
