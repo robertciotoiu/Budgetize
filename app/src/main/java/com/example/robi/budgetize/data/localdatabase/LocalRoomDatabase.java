@@ -29,9 +29,11 @@ import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.data.localdatabase.entities.WalletLinkedBankAccounts;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Database(entities = {Wallet.class, IEObject.class, CategoryObject.class, LinkedBank.class, BankAccount.class, AccountTransaction.class, WalletLinkedBankAccounts.class},version = 1)//specify the tables(wallets,incomes,expenses,etc) and versions
+@Database(entities = {Wallet.class, IEObject.class, CategoryObject.class, LinkedBank.class, BankAccount.class, AccountTransaction.class, WalletLinkedBankAccounts.class}, version = 1)
+//specify the tables(wallets,incomes,expenses,etc) and versions
 public abstract class LocalRoomDatabase extends RoomDatabase {
     @VisibleForTesting
     public static final String DATABASE_NAME = "budgetize-db";
@@ -83,9 +85,12 @@ public abstract class LocalRoomDatabase extends RoomDatabase {
                             LocalRoomDatabase database = LocalRoomDatabase.getInstance(appContext, executors);
                             List<Wallet> wallets = DataGenerator.generateWallets();
                             List<CategoryObject> categories = DataGenerator.generateCategoriesForWallets(wallets);
-                            List<IEObject> ieobjects = DataGenerator.generateIEForCategories(categories);
+                            List<IEObject> ieobjects = new ArrayList<>();
+                            for (Wallet w : wallets) {
+                                 ieobjects.addAll(DataGenerator.generateIEForCategories(w.getName(), categories,w.getId()));
+                            }
                             // Seed the generated data into the database
-                            insertData(database, wallets, categories,ieobjects);
+                            insertData(database, wallets, categories, ieobjects);
                             // Notify that the database has been created
                             database.setDatabaseCreated();
                         });
@@ -104,7 +109,7 @@ public abstract class LocalRoomDatabase extends RoomDatabase {
         }
     }
 
-    private void setDatabaseCreated(){
+    private void setDatabaseCreated() {
         mIsDatabaseCreated.postValue(true);
     }
 
