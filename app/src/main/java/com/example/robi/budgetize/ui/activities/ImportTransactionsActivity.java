@@ -163,7 +163,6 @@ public class ImportTransactionsActivity extends AppCompatActivity {
                 }
             });
             //1. ImageView category_icon
-            ((TextView) item.findViewById(R.id.text_view_value_transaction)).setText("");
             ((TextView) item.findViewById(R.id.text_view_category_name_transaction)).setText(linkedBank.getFull_name());
             ((TextView) item.findViewById(R.id.text_view_description_transaction)).setText(linkedBank.getShort_name());
 //            item.findViewById(R.id.unsync_bank).setOnClickListener(new View.OnClickListener() {

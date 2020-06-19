@@ -286,7 +286,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             items.add(new RFACLabelItem<Integer>()
                     .setLabel("Import transactions")
                     .setLabelColor(0xff343434)
-                    .setResId(R.drawable.import_transactions)
+                    .setResId(R.drawable.bank_accounts_icon2)
                     //.setIconNormalColor(0xff056f00)
                     .setIconNormalColor(0xff343434)
                     .setIconPressedColor(0xff757575)

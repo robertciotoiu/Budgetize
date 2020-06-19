@@ -289,9 +289,9 @@ public class CreateTransactionActivity extends AppCompatActivity implements Date
             long status = mainActivityViewModel.addIEObject(ieObject);
 
             if (mainActivityViewModel.getIEObject(status) != null) {
-                Toast.makeText(this, "IE added successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Transaction created successfully", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "IE failed to be added", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Transaction failed to be created", Toast.LENGTH_SHORT).show();
             }
 
             this.finish(); //closes this activity and return to MainOAuthActivity.java
