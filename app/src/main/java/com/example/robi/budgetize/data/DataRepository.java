@@ -186,9 +186,9 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
     @Override
     public void deleteCategory(long category_id) {
-        if (category_id != 0) {//category_id is 0 when IE doesn't have a category. So we don't want all independent IEs to be deleted at deletion of only one
-            deleteAllIEofACategory(category_id);
-        }
+//        if (category_id != 0) {//category_id is 0 when IE doesn't have a category. So we don't want all independent IEs to be deleted at deletion of only one
+//            deleteAllIEofACategory(category_id);
+//        }
         mDatabase.categoryDao().deleteCategory(category_id);
     }
 
