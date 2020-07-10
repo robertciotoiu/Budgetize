@@ -13,14 +13,14 @@ import static androidx.room.ForeignKey.CASCADE;
         @ForeignKey(onDelete = CASCADE, entity = AccountTransaction.class,
                 parentColumns = "id",childColumns = "txn_id"),
         @ForeignKey(onDelete = CASCADE, entity = Wallet.class,
-                parentColumns = "id",childColumns = "wallet_id"),
-        @ForeignKey(onDelete = CASCADE, entity = CategoryObject.class,
-                parentColumns = "category_id",childColumns = "category_id")
+                parentColumns = "id",childColumns = "wallet_id")//,
+//        @ForeignKey(onDelete = CASCADE, entity = CategoryObject.class,
+//                parentColumns = "category_id",childColumns = "category_id")
 }
         , indices = {
         @Index("txn_id"),
         @Index("wallet_id"),
-        @Index("category_id")
+//        @Index("category_id")
 })
 public class IEObject implements Cloneable{
 

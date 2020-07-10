@@ -1,5 +1,6 @@
 package com.example.robi.budgetize.ui.activities.createActivities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -135,6 +136,7 @@ public class CreateWalletActivity extends AppCompatActivity {
 
             try {
                 if (mainActivityViewModel.getWalletById(status) != null) {
+//                    CategoryObject categoryObject = new CategoryObject();
                     Toast.makeText(this, "Wallet added successfully", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "Wallet failed to be added", Toast.LENGTH_SHORT).show();
@@ -168,6 +170,7 @@ public class CreateWalletActivity extends AppCompatActivity {
             this.wallet = wallet;
         }
 
+        @SuppressLint("WrongThread")
         @Override
         protected Long doInBackground(Void... voids) {
             onPostExecute(mainActivityViewModel.addWallet(wallet));
