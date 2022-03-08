@@ -344,7 +344,9 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
     @Override
     public long[] insertAllAccountTransactions(List<AccountTransaction> accountTransactions) {
-        return mDatabase.accountTransactionDao().insertAllAccountTransactions(accountTransactions);
+        return mDatabase
+                .accountTransactionDao()
+                .insertAllAccountTransactions(accountTransactions);
     }
 
     @Override

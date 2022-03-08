@@ -30,7 +30,8 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
 
     //LiveData
     MutableLiveData<Boolean> showBankAccountNeedActions = new MutableLiveData<Boolean>();
-    public static final MutableLiveData<List<Bank>> mObservableAvailableBanks = new MutableLiveData<>();
+    public static final MutableLiveData<List<Bank>> mObservableAvailableBanks = new
+            MutableLiveData<>();
 
     //Utilitary class
     private final BankImagesDownloader bankImagesDownloader = new BankImagesDownloader();

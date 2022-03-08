@@ -1,26 +1,26 @@
 package com.example.robi.budgetize.data.localdatabase.entities;
 
+import static androidx.room.ForeignKey.CASCADE;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import static androidx.room.ForeignKey.CASCADE;
-
 @Entity(tableName = "incomes_expenses"
 ,foreignKeys ={
         @ForeignKey(onDelete = CASCADE, entity = AccountTransaction.class,
                 parentColumns = "id",childColumns = "txn_id"),
         @ForeignKey(onDelete = CASCADE, entity = Wallet.class,
-                parentColumns = "id",childColumns = "wallet_id"),
-        @ForeignKey(onDelete = CASCADE, entity = CategoryObject.class,
-                parentColumns = "category_id",childColumns = "category_id")
+                parentColumns = "id",childColumns = "wallet_id")//,
+//        @ForeignKey(onDelete = CASCADE, entity = CategoryObject.class,
+//                parentColumns = "category_id",childColumns = "category_id")
 }
         , indices = {
         @Index("txn_id"),
         @Index("wallet_id"),
-        @Index("category_id")
+//        @Index("category_id")
 })
 public class IEObject implements Cloneable{
 

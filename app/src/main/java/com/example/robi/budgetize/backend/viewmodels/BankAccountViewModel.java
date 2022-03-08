@@ -92,7 +92,10 @@ public class BankAccountViewModel extends AndroidViewModel{// implements DataRep
             // Get all the new transactions for each bank account
             // and we insert them into the database
                 for (BankAccount bankAccount : accountList) {
-                    getTransactions(bankAccount.getInternal_bank_id(), bankAccount.getBank_id(), bankAccount.getId());
+                    getTransactions(
+                            bankAccount.getInternal_bank_id(),
+                            bankAccount.getBank_id(),
+                            bankAccount.getId());
                 }
         });
     }

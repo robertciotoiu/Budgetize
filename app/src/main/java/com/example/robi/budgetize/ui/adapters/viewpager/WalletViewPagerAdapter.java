@@ -62,7 +62,8 @@ public class WalletViewPagerAdapter extends PagerAdapter {
         View view = inflatePages(container, position);
         configureView(view, position);
 
-        container.addView(view, position);
+//        if(view != null)
+            container.addView(view, position);
 
         return view;
     }

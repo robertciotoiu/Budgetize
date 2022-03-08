@@ -126,7 +126,8 @@ public class OBPRetroClass {
                     // We need to parse the array and get the data we need from each transaction
                     JSONArray transactionsJsonJSONArray = transactionsJson.getJSONArray("transactions");
                     for (int i = 0; i < transactionsJsonJSONArray.length(); i++) {
-                        // We convert the JSON transaction to the Transaction Object and add it to transactionArrayList
+                        // We convert the JSON transaction to the Transaction Object and add it
+                        // to transactionArrayList
                         transactionsArrayList.add
                                 (gson.fromJson(transactionsJsonJSONArray.getJSONObject(i).toString(),
                                         Transaction.class));
@@ -139,7 +140,8 @@ public class OBPRetroClass {
                             for (Holder holder : transaction.getThis_account().getHolders()) {
                                 thisHolders.append(",").append(holder.getName());
                             }
-                            thisHolders = new StringBuilder(thisHolders.substring(0, thisHolders.length() - 2));
+                            thisHolders = new StringBuilder(
+                                    thisHolders.substring(0, thisHolders.length() - 2));
                             // We create the AccounTransaction object and add it to the ArrayList
                             accountTransactions.add(
                                     new AccountTransaction(
@@ -159,7 +161,8 @@ public class OBPRetroClass {
                                     )
                             );
                         }
-                        // after we converted all the objects, we insert the list of AccountTransaction objects
+                        // after we converted all the objects, we insert the list of
+                        // AccountTransaction objects
                         // into our local Room Database
                         status = repository.insertAllAccountTransactions(accountTransactions);
                         // we compose a report status for debug purposes

@@ -492,7 +492,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                 //1. ImageView category_icon
                 ((TextView) item.findViewById(R.id.text_view_value_white)).setText(String.valueOf(orphaneIEObject.amount));
                 ((TextView) item.findViewById(R.id.text_view_category_name_white)).setText(orphaneIEObject.getName());
-                ((TextView) item.findViewById(R.id.text_view_description_white)).setText("Empty");
+                ((TextView) item.findViewById(R.id.text_view_description_white)).setText("Transaction");
                 item.findViewById(R.id.remove_item).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

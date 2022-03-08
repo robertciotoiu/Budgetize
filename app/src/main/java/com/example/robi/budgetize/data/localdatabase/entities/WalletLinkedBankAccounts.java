@@ -1,5 +1,7 @@
 package com.example.robi.budgetize.data.localdatabase.entities;
 
+import static androidx.room.ForeignKey.CASCADE;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -7,19 +9,17 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import static androidx.room.ForeignKey.CASCADE;
-
 @Entity(tableName = "wallet_linked_bankaccounts",foreignKeys = {
-        @ForeignKey(onDelete = CASCADE, entity = Wallet.class, parentColumns = "id", childColumns = "wallet_id"),
-        @ForeignKey(onDelete = CASCADE, entity = BankAccount.class, parentColumns = "id", childColumns = "bank_account_id"),
-        @ForeignKey(onDelete = CASCADE, entity = LinkedBank.class, parentColumns = "id", childColumns = "linked_bank_id")
-}
+        @ForeignKey(onDelete = CASCADE, entity = Wallet.class,
+                parentColumns = "id", childColumns = "wallet_id"),
+        @ForeignKey(onDelete = CASCADE, entity = BankAccount.class,
+                parentColumns = "id", childColumns = "bank_account_id"),
+        @ForeignKey(onDelete = CASCADE, entity = LinkedBank.class
+                , parentColumns = "id", childColumns = "linked_bank_id")}
         , indices = {
         @Index("wallet_id"),
         @Index("linked_bank_id"),
-        @Index("bank_account_id")
-}
-)
+        @Index("bank_account_id")})
 public class WalletLinkedBankAccounts {
     @PrimaryKey
     @NonNull

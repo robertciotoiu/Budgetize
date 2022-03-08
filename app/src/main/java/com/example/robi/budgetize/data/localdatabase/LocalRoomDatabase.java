@@ -82,12 +82,16 @@ public abstract class LocalRoomDatabase extends RoomDatabase {
                         super.onCreate(db);
                         executors.diskIO().execute(() -> {
                             // Generate the test data
-                            LocalRoomDatabase database = LocalRoomDatabase.getInstance(appContext, executors);
+                            LocalRoomDatabase database = LocalRoomDatabase
+                                    .getInstance(appContext, executors);
                             List<Wallet> wallets = DataGenerator.generateWallets();
-                            List<CategoryObject> categories = DataGenerator.generateCategoriesForWallets(wallets);
+                            List<CategoryObject> categories = DataGenerator
+                                    .generateCategoriesForWallets(wallets);
                             List<IEObject> ieobjects = new ArrayList<>();
                             for (Wallet w : wallets) {
-                                 ieobjects.addAll(DataGenerator.generateIEForCategories(w.getName(), categories,w.getId()));
+                                 ieobjects.addAll(
+                                         DataGenerator.generateIEForCategories(w.getName()
+                                         , categories,w.getId()));
                             }
                             // Seed the generated data into the database
                             insertData(database, wallets, categories, ieobjects);

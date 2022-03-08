@@ -62,14 +62,8 @@
                 <data android:scheme="@string/customAppProtocol" />
             </intent-filter>
         </service>
-        <!--
-meta-data
-            android:name=""
-            android:value="AIzaSyDPZay8l4wnxz211AOP0HQYGxVlKNBHDRA"/
-        -->
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
-
 </manifest>
