@@ -69,7 +69,7 @@ public class DoOAuthService extends Service {
         if (!OBPRestClient.setAccessTokenFromSharedPrefs(BankAccountViewModel.lastClickedBankID))
             getNewAccessToken();
         else{
-            Log.d("BLABLA","SUNT DEJA AUTH");
+            Log.d("doOAuth","Already logged in");
         }
     }
 
