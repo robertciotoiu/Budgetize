@@ -28,10 +28,10 @@ import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerVi
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 import com.example.robi.budgetize.data.remotedatabase.remote.OBPlib.OBPRestClient;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.CardItem;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.LinkBanksCardFragmentPagerAdapter;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.LinkBanksCardPagerAdapter;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.rubensousa.viewpagercards.LinkBanksShadowTransformer;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.viewpagercards.CardItem;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.viewpagercards.LinkBanksCardFragmentPagerAdapter;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.viewpagercards.LinkBanksCardPagerAdapter;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.viewpagercards.LinkBanksShadowTransformer;
 import com.google.gson.Gson;
 import com.skydoves.elasticviews.ElasticButton;
 

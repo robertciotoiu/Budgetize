@@ -24,13 +24,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.R;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingItem;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.diegodobelo.androidexpandingviewlibrary.ExpandingList;
 import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.BankAccountViewModelFactory;
 import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.expandingview.ExpandingItem;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.expandingview.ExpandingList;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;

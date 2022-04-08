@@ -16,8 +16,8 @@ import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerViewModelFactory;
 import com.example.robi.budgetize.backend.viewmodels.helpers.ImageDownloader;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.birajpatel.gridlistviewadapters.AvailableBank;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.birajpatel.gridlistviewadapters.AvailableBanksAdapter;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.gridlistviewadapter.AvailableBank;
+import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.gridlistviewadapter.AvailableBanksAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
