@@ -275,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("MY_APP_TAG", "Biometric features are currently unavailable.");
                 throw new Exception("No biometrics available");
             case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
+                Toast.makeText(this.getApplicationContext(), "Please setup a biometric credential", Toast.LENGTH_LONG).show();
                 Log.e("MY_APP_TAG", "The user hasn't associated " +
                         "any biometric credentials with their account.");
                 throw new Exception("No biometrics available");
