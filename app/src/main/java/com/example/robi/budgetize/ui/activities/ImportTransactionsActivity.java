@@ -29,8 +29,8 @@ import com.example.robi.budgetize.backend.viewmodels.factories.BankAccountViewMo
 import com.example.robi.budgetize.data.localdatabase.entities.BankAccount;
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.expandingview.ExpandingItem;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.expandingview.ExpandingList;
+import com.example.robi.budgetize.ui.expandingview.ExpandingItem;
+import com.example.robi.budgetize.ui.expandingview.ExpandingList;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -38,13 +38,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ImportTransactionsActivity extends AppCompatActivity {
-    private ExpandingList mExpandingList = null;
     private static BankAccountViewModel bankAccountViewModel;
-    private static List<LinkedBank> linkedBanks = new ArrayList<>();
-    private static HashMap<String, List<BankAccount>> bankAccounts = new HashMap<>();
+    private static final List<LinkedBank> linkedBanks = new ArrayList<>();
+    private static final HashMap<String, List<BankAccount>> bankAccounts = new HashMap<>();
     private static Wallet wallet;
     private static long walletID;
-
+    ObjectAnimator objectAnimator;
+    private ExpandingList mExpandingList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,11 +60,9 @@ public class ImportTransactionsActivity extends AppCompatActivity {
         if (bundle.get("wallet") != null) {
             Gson gson = new Gson();
             String walletAsString = (String) bundle.get("wallet");
-            this.wallet = gson.fromJson(walletAsString, Wallet.class);
+            wallet = gson.fromJson(walletAsString, Wallet.class);
             walletID = wallet.getId();
         }
-
-
         populateLists();
     }
 
@@ -372,8 +370,6 @@ public class ImportTransactionsActivity extends AppCompatActivity {
         builder.setMessage("Are you sure you want do DELETE permanently this I/E?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
     }
-
-    ObjectAnimator objectAnimator;
 
     private Drawable getIcon(double ie) {
         //have to return icon id

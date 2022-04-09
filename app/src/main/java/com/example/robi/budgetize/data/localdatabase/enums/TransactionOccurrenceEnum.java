@@ -13,14 +13,14 @@ public enum TransactionOccurrenceEnum {
 //    Every6Months("Every 6 Months"),
     EveryYear("Every Year");
 
-    private String occurrence;
+    private final String occurrence;
 
     public String getOccurrence()
     {
         return this.occurrence;
     }
 
-    private TransactionOccurrenceEnum(String occurrence)
+    TransactionOccurrenceEnum(String occurrence)
     {
         this.occurrence = occurrence;
     }

@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/MyFiles/Projects/BudgetizeFromEmail/Budgetize/app/src/main/res/layout/activity_create_wallet.xml" value="0.167578125" />
+        <entry key="..\:/MyFiles/Projects/BudgetizeFromEmail/Budgetize/app/src/main/res/layout/activity_iediegodobelo.xml" value="0.167578125" />
+        <entry key="..\:/MyFiles/Projects/BudgetizeFromEmail/Budgetize/app/src/main/res/layout/activity_import_transactions.xml" value="0.1" />
+        <entry key="..\:/MyFiles/Projects/BudgetizeFromEmail/Budgetize/app/src/main/res/layout/simple_header_footer_layout.xml" value="0.137890625" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

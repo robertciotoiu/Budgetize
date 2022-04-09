@@ -12,26 +12,26 @@ import java.util.List;
 @Dao
 public interface LinkedBankDao {
     @Insert
-    public long addLinkedBank(LinkedBank linkedBank);
+     long addLinkedBank(LinkedBank linkedBank);
 
     @Query("SELECT * FROM linked_banks")
-    public LiveData<List<LinkedBank>> getAllLinkedBanks();
+     LiveData<List<LinkedBank>> getAllLinkedBanks();
 
     @Query("SELECT COUNT(*) FROM linked_banks where link_status='LINKED'")
-    public long noLinkedBanks();
+     long noLinkedBanks();
 
     @Query("SELECT * FROM linked_banks where id=:id")
-    public LiveData<LinkedBank> getLinkedBank(long id);
+     LiveData<LinkedBank> getLinkedBank(long id);
 
     @Query("SELECT link_status FROM linked_banks where id=:id")
-    public String getLinkedBankStatus(long id);
+     String getLinkedBankStatus(long id);
 
     @Query("SELECT obp_bank_id FROM linked_banks where id=:id")
-    public String getLinkedBankOBPID(long id);
+     String getLinkedBankOBPID(long id);
 
     @Query("UPDATE linked_banks SET link_status=:link_status WHERE id=:id")
-    public long updateLinkStatus(long id, String link_status);
+     long updateLinkStatus(long id, String link_status);
 
     @Query("DELETE FROM linked_banks where id=:id")
-    public int deleteLinkedBank(long id);
+     int deleteLinkedBank(long id);
 }

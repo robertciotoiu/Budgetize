@@ -42,6 +42,7 @@ public class LinkedBank {
         this.link_status = link_status;
 
         //test
+        //TODO: remove this
         this.demo_obp_bank_id = "inv.01.us.inv";
     }
 

@@ -31,8 +31,8 @@ import com.example.robi.budgetize.data.localdatabase.entities.IEObject;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.createActivities.CreateCategoryActivity;
 import com.example.robi.budgetize.ui.activities.createActivities.CreateTransactionActivity;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.expandingview.ExpandingItem;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.expandingview.ExpandingList;
+import com.example.robi.budgetize.ui.expandingview.ExpandingItem;
+import com.example.robi.budgetize.ui.expandingview.ExpandingList;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -59,7 +59,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 //TODO: display at the bottom all the IEs without a category
 public class TransactionsActivity extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener, DatePickerDialog.OnDateSetListener {
+    private static final List<CategoryObject> categoryObjectsList = new ArrayList<CategoryObject>();
+    private static final List<IEObject> orphanIEs = new ArrayList<IEObject>();
+    private static final List<IEObject> ieObjects = new ArrayList<IEObject>();
     String TAG = this.getClass().getName();
+    long walletID = 0;
+    boolean firstStart = true;
+    boolean firstStartOrphane = true;
+    boolean showImportTransaction = false;
     private ExpandingList mExpandingList = null;
     private TextView walletNameTextView;
     private TextView currencyTextView;
@@ -69,37 +76,45 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     private MaterialButton dailyCheck;
     private MaterialButton monthlyCheck;
     private MaterialButton yearlyCheck;
-    long walletID = 0;
-    boolean firstStart = true;
-    boolean firstStartOrphane = true;
     private Wallet wallet;
     private RapidFloatingActionLayout rfaLayout;
     private RapidFloatingActionButton rfaBtn;
     private RapidFloatingActionHelper rfabHelper;
     private IconPack iconPack;
-    boolean showImportTransaction = false;
     private String timeFrameFilter;
     private String frequencyFilter;
     private String currencyFilter;
-
-    private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
-
+    private final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
     private MainActivityViewModel mainActivityViewModel;
-
-    private static List<CategoryObject> categoryObjectsList = new ArrayList<CategoryObject>();
     private Observer<List<CategoryObject>> categoryListObsever;
-
-    private static List<IEObject> orphanIEs = new ArrayList<IEObject>();
     private Observer<List<IEObject>> orphanIEsObserver;
-
-    private static List<IEObject> ieObjects = new ArrayList<IEObject>();
 //    private Observer<List<IEObject>> ieListObserver;
+
+    public static List<IEObject> cloneList(List<IEObject> orphanIEs) {
+        List<IEObject> clone = new ArrayList<IEObject>(orphanIEs.size());
+        for (IEObject ieObject : orphanIEs) {
+            try {
+                clone.add((IEObject) ieObject.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+        return clone;
+    }
+
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.CreateTransactionActivityTheme_NoActionBar);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_iediegodobelo);
+        setContentView(R.layout.activity_ie);
         mExpandingList = findViewById(R.id.expanding_list_main);
         walletNameTextView = findViewById(R.id.wallet_name_ie_screen);
         currencyTextView = findViewById(R.id.currency_textview);
@@ -307,6 +322,10 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         ).build();
     }
 
+//    private LiveData<List<CategoryObject>> buildCategoryList() {
+//        return mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId());
+//    }
+
     @Override
     public void onRFACItemLabelClick(int position, RFACLabelItem item) {
         //Toast.makeText(this, "clicked label: " + position, Toast.LENGTH_SHORT).show();
@@ -336,65 +355,61 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         rfabHelper.toggleContent();
     }
 
-//    private LiveData<List<CategoryObject>> buildCategoryList() {
-//        return mainActivityViewModel.getAllCategoriesOfAWallet(wallet.getId());
-//    }
-
     private void populateLists() {
         //Display Wallet Name:
         //ExpandingItem first_item = mExpandingList.createNewItem(R.layout.first_ie_item);
         //if (first_item != null) {
-            //1. Wallet name
+        //1. Wallet name
 
-            walletNameTextView.setText(wallet.getName());
+        walletNameTextView.setText(wallet.getName());
 
-            String currency = wallet.getCurrency();
-            CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");
-            ExtendedCurrency currencyCode = ExtendedCurrency.getCurrencyByISO(currency);
-            currencyFilter = currencyCode.getCode();
+        String currency = wallet.getCurrency();
+        CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");
+        ExtendedCurrency currencyCode = ExtendedCurrency.getCurrencyByISO(currency);
+        currencyFilter = currencyCode.getCode();
 
-            currencyTextView.setText(currencyCode.getCode());
-            currencyImageView.setImageDrawable(getDrawable(currencyCode.getFlag()));
+        currencyTextView.setText(currencyCode.getCode());
+        currencyImageView.setImageDrawable(getDrawable(currencyCode.getFlag()));
 
-            currencyImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
-                    picker.setListener(new CurrencyPickerListener() {
-                        @Override
-                        public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
-                            // Implement your code here
-                            currencyFilter = code;
-                            wallet.setCurrency(code);
-                            doSelectCurrencyLogic(code, flagDrawableResID, picker);
-                            updateAllAmounts();
-                            //mainActivityViewModel.prepareCurrencies(walletID);
-                            refreshScreen();
-                        }
-                    });
-                    picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
-                }
-            });
+        currencyImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
+                picker.setListener(new CurrencyPickerListener() {
+                    @Override
+                    public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
+                        // Implement your code here
+                        currencyFilter = code;
+                        wallet.setCurrency(code);
+                        doSelectCurrencyLogic(code, flagDrawableResID, picker);
+                        updateAllAmounts();
+                        //mainActivityViewModel.prepareCurrencies(walletID);
+                        refreshScreen();
+                    }
+                });
+                picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
+            }
+        });
 
         currencyTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
-                    picker.setListener(new CurrencyPickerListener() {
-                        @Override
-                        public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
-                            // Implement your code here
-                            currencyFilter = code;
-                            wallet.setCurrency(code);
-                            doSelectCurrencyLogic(code, flagDrawableResID, picker);
-                            updateAllAmounts();
-                            //mainActivityViewModel.prepareCurrencies(walletID);
-                            refreshScreen();
-                        }
-                    });
-                    picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
-                }
-            });
+            @Override
+            public void onClick(View v) {
+                CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
+                picker.setListener(new CurrencyPickerListener() {
+                    @Override
+                    public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
+                        // Implement your code here
+                        currencyFilter = code;
+                        wallet.setCurrency(code);
+                        doSelectCurrencyLogic(code, flagDrawableResID, picker);
+                        updateAllAmounts();
+                        //mainActivityViewModel.prepareCurrencies(walletID);
+                        refreshScreen();
+                    }
+                });
+                picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
+            }
+        });
         //}
 
         //Add Categories and IEs
@@ -442,18 +457,6 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             v.setTextColor(Color.RED);
             toast.show();
         }
-    }
-
-    public static List<IEObject> cloneList(List<IEObject> orphanIEs) {
-        List<IEObject> clone = new ArrayList<IEObject>(orphanIEs.size());
-        for (IEObject ieObject : orphanIEs) {
-            try {
-                clone.add((IEObject) ieObject.clone());
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-        }
-        return clone;
     }
 
     private void addOrphaneIEs() {
@@ -586,14 +589,6 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         return round(categorySum, 2);
     }
 
-    private static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = BigDecimal.valueOf(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
-    }
-
     public int dpToPixels(int dp) {
         return (int) (dp * (getResources().getDisplayMetrics().density));
     }
@@ -682,8 +677,8 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         TextView valueTextView = ((TextView) view.findViewById(R.id.text_view_ie_value_white));
         if (ieObject.type == 1) {
             if (ieObject.amount >= 0) {
-                valueTextView.setText("-" + String.valueOf(ieObject.amount));
-                valueTextView.setTooltipText(String.valueOf("-" + ieObject.amount));
+                valueTextView.setText("-" + ieObject.amount);
+                valueTextView.setTooltipText("-" + ieObject.amount);
             } else {
                 valueTextView.setText(String.valueOf(ieObject.amount));
                 valueTextView.setTooltipText(String.valueOf(ieObject.amount));

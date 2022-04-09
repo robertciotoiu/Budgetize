@@ -8,7 +8,7 @@ import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
 
 public class ServicesHandlerViewModelFactory implements ViewModelProvider.Factory {
-    private ApplicationObj mAp;
+    private final ApplicationObj mAp;
 
     public ServicesHandlerViewModelFactory(ApplicationObj application) {
         this.mAp = application;

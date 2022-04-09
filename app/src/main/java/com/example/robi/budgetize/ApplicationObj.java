@@ -1,5 +1,6 @@
 package com.example.robi.budgetize;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 
@@ -15,6 +16,7 @@ import com.maltaisn.iconpack.defaultpack.IconPackDefault;
 import java.util.ArrayList;
 
 public class ApplicationObj extends Application {
+    @SuppressLint("StaticFieldLeak")
     private static Context context;
     public ArrayList<Bank> banks = new ArrayList<Bank>();
     private AppExecutors mAppExecutors;
@@ -42,7 +44,6 @@ public class ApplicationObj extends Application {
         return DataRepository.getInstance(getDatabase());
     }
 
-    @Nullable
     public IconPack getIconPack() {
         return iconPack != null ? iconPack : loadIconPack();
     }

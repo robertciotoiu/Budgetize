@@ -1,6 +1,5 @@
 package com.example.robi.budgetize.backend.viewmodels.helpers;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -11,7 +10,6 @@ import androidx.annotation.NonNull;
 
 import com.example.robi.budgetize.ApplicationObj;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,79 +23,23 @@ import java.util.Set;
 
 public class ImageDownloader {
 
-    private OnImageLoaderListener mImageLoaderListener;
-    private Set<String> mUrlsInProgress = new HashSet<>();
+    private final OnImageLoaderListener mImageLoaderListener;
+    private final Set<String> mUrlsInProgress = new HashSet<>();
     private final String TAG = this.getClass().getSimpleName();
-    Context applicationContext = null;
     File fileLocation;
 
     public ImageDownloader(@NonNull OnImageLoaderListener listener) {
         this.mImageLoaderListener = listener;
-        this.applicationContext = applicationContext;
 
-        if(isExternalStorageWritable()) {
+        if (isExternalStorageWritable()) {
             fileLocation = new File(Environment.getExternalStorageDirectory()
                     + "/Android/data/"
                     + ApplicationObj.getAppContext().getPackageName()
                     + "/BankIcons");
-        }else{
+        } else {
             fileLocation = new File(ApplicationObj.getAppContext().getFilesDir()
                     + "/BankIcons");
         }
-    }
-
-    public interface OnImageLoaderListener {
-        void onError(ImageError error);
-        void onProgressChange(int percent);
-        void onComplete(Bitmap result);
-    }
-
-    public void download(@NonNull final String imageUrl, final boolean displayProgress){
-
-        Bitmap bitmap = null;
-        //HttpURLConnection connection = null;
-        InputStream is = null;
-        ByteArrayOutputStream out = null;
-        try {
-            URL url=new URL(imageUrl);
-            HttpURLConnection.setFollowRedirects(false);
-            HttpURLConnection httpURLConnection=(HttpURLConnection) url.openConnection();
-            httpURLConnection.setDoInput(true);
-            httpURLConnection.connect();
-            boolean isRedirect;
-            do {
-                if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM || httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
-                    isRedirect = true;
-                    String newURL = httpURLConnection.getHeaderField("Location");
-                    httpURLConnection = (HttpURLConnection) new URL(newURL).openConnection();
-                } else {
-                    isRedirect = false;
-                }
-            } while (isRedirect);
-
-            InputStream inptStream=httpURLConnection.getInputStream();
-            bitmap = BitmapFactory.decodeStream(inptStream);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        } finally {
-            if (bitmap == null){
-                Log.e(TAG, "factory returned a null result");
-                mImageLoaderListener.onError(new ImageError("downloaded file could not be decoded as bitmap"+imageUrl)
-                        .setErrorCode(ImageError.ERROR_DECODE_FAILED));
-            } else {
-                Log.d(TAG, "download complete, " + bitmap.getByteCount() +
-                        " bytes transferred");
-                mImageLoaderListener.onComplete(bitmap);
-            }
-            mUrlsInProgress.remove(imageUrl);
-            System.gc();
-        }
-
-    }
-
-    public interface OnBitmapSaveListener {
-        void onBitmapSaved();
-        void onBitmapSaveError(ImageError error);
     }
 
     public static void writeToDisk(@NonNull final File imageFile, @NonNull final Bitmap image,
@@ -188,11 +130,6 @@ public class ImageDownloader {
         return BitmapFactory.decodeFile(imageFile.getAbsolutePath());
     }
 
-    public interface OnImageReadListener {
-        void onImageRead(Bitmap bitmap);
-        void onReadFailed();
-    }
-
     public static void readFromDiskAsync(@NonNull File imageFile, @NonNull final OnImageReadListener listener) {
         new AsyncTask<String, Void, Bitmap>() {
             @Override
@@ -210,9 +147,52 @@ public class ImageDownloader {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageFile.getAbsolutePath());
     }
 
-    /** Create a File for saving an image or video
-     * @param id*/
-    private  File getOutputMediaFile(String id){
+    public void download(@NonNull final String imageUrl, final boolean displayProgress) {
+
+        Bitmap bitmap = null;
+        try {
+            URL url = new URL(imageUrl);
+            HttpURLConnection.setFollowRedirects(false);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setDoInput(true);
+            httpURLConnection.connect();
+            boolean isRedirect;
+            do {
+                if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM || httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
+                    isRedirect = true;
+                    String newURL = httpURLConnection.getHeaderField("Location");
+                    httpURLConnection = (HttpURLConnection) new URL(newURL).openConnection();
+                } else {
+                    isRedirect = false;
+                }
+            } while (isRedirect);
+
+            InputStream inputStream = httpURLConnection.getInputStream();
+            bitmap = BitmapFactory.decodeStream(inputStream);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        } finally {
+            if (bitmap == null) {
+                Log.e(TAG, "factory returned a null result");
+                mImageLoaderListener.onError(new ImageError("downloaded file could not be decoded as bitmap" + imageUrl)
+                        .setErrorCode(ImageError.ERROR_DECODE_FAILED));
+            } else {
+                Log.d(TAG, "download complete, " + bitmap.getByteCount() +
+                        " bytes transferred");
+                mImageLoaderListener.onComplete(bitmap);
+            }
+            mUrlsInProgress.remove(imageUrl);
+            System.gc();
+        }
+
+    }
+
+    /**
+     * Create a File for saving an image or video
+     *
+     * @param id
+     */
+    private File getOutputMediaFile(String id) {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
         //if(Environment.getExternalStorageDirectory()!=null) {
@@ -225,28 +205,48 @@ public class ImageDownloader {
         // between applications and persist after your app has been uninstalled.
 
         // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
                 return null;
             }
         }
         // Create a media file name
         String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
         File mediaFile;
-        String mImageName=id +".png";
+        String mImageName = id + ".png";
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
         return mediaFile;
     }
 
+    public interface OnImageLoaderListener {
+        void onError(ImageError error);
+
+        void onProgressChange(int percent);
+
+        void onComplete(Bitmap result);
+    }
+
+    public interface OnBitmapSaveListener {
+        void onBitmapSaved();
+
+        void onBitmapSaveError(ImageError error);
+    }
+
+    public interface OnImageReadListener {
+        void onImageRead(Bitmap bitmap);
+
+        void onReadFailed();
+    }
+
     public static final class ImageError extends Throwable {
 
-        private int errorCode;
         public static final int ERROR_GENERAL_EXCEPTION = -1;
         public static final int ERROR_INVALID_FILE = 0;
         public static final int ERROR_DECODE_FAILED = 1;
         public static final int ERROR_FILE_EXISTS = 2;
         public static final int ERROR_PERMISSION_DENIED = 3;
         public static final int ERROR_IS_DIRECTORY = 4;
+        private int errorCode;
 
 
         public ImageError(@NonNull String message) {
@@ -258,13 +258,13 @@ public class ImageDownloader {
             this.setStackTrace(error.getStackTrace());
         }
 
+        public int getErrorCode() {
+            return errorCode;
+        }
+
         public ImageError setErrorCode(int code) {
             this.errorCode = code;
             return this;
-        }
-
-        public int getErrorCode() {
-            return errorCode;
         }
     }
 }

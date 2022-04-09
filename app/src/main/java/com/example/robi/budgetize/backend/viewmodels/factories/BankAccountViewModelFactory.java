@@ -8,7 +8,7 @@ import com.example.robi.budgetize.ApplicationObj;
 import com.example.robi.budgetize.backend.viewmodels.BankAccountViewModel;
 
 public class BankAccountViewModelFactory implements ViewModelProvider.Factory {
-    private ApplicationObj mAp;
+    private final ApplicationObj mAp;
 
     public BankAccountViewModelFactory(ApplicationObj application) {
         this.mAp = application;

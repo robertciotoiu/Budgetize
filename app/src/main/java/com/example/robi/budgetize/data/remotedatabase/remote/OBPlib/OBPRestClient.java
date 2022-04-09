@@ -11,7 +11,6 @@ import com.example.robi.budgetize.R;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -20,8 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.HashMap;
+import java.util.Objects;
 
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
@@ -37,26 +36,21 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class OBPRestClient {
-
-
     private static final String REQUEST_TOKEN_URL = calcFullPath("/oauth/initiate");
     private static final String ACCESS_TOKEN_URL = calcFullPath("/oauth/token");
     private static final String AUTHORIZE_WEBSITE_URL = calcFullPath("/oauth/authorize");
-
     private static final String PREF_FILE = "OBP_API_PREFS";
     private static final String BANK_ID = "BANK_ID";
     private static final String CONSUMER_TOKEN = "CONSUMER_TOKEN";
     private static final String CONSUMER_SECRET = "CONSUMER_SECRET";
     private static final String PREF_NOT_SET = "";
 
-    private static final String LOG_TAG = OBPRestClient.class.getClass().getName();
+    private static final String LOG_TAG = OBPRestClient.class.getName();
 
-    private static OAuthConsumer consumer = new CommonsHttpOAuthConsumer(OBPBankProvider.OBP_AUTH_KEY, OBPBankProvider.OBP_SECRET_KEY);
+    private static final OAuthConsumer consumer = new CommonsHttpOAuthConsumer(OBPBankProvider.OBP_AUTH_KEY, OBPBankProvider.OBP_SECRET_KEY);
+    private static final OAuthProvider provider = new CommonsHttpOAuthProvider(REQUEST_TOKEN_URL, ACCESS_TOKEN_URL, AUTHORIZE_WEBSITE_URL);
 
     public static HashMap<Long, OAuthConsumer> consumers = new HashMap<>();
-
-    private static OAuthProvider provider = new CommonsHttpOAuthProvider(REQUEST_TOKEN_URL, ACCESS_TOKEN_URL, AUTHORIZE_WEBSITE_URL);
-
     public static HashMap<Long, OAuthProvider> providers = new HashMap<>();
 
     //Util methods
@@ -89,9 +83,7 @@ public class OBPRestClient {
         return OBPBankProvider.BASE_URL_OBP_SANDBOX + relativePath;
     }
 
-    public static String getAuthoriseAppUrl(long bankID)
-            throws OAuthMessageSignerException, OAuthNotAuthorizedException,
-            OAuthExpectationFailedException, OAuthCommunicationException {
+    public static String getAuthoriseAppUrl(long bankID) throws OAuthMessageSignerException, OAuthNotAuthorizedException, OAuthExpectationFailedException, OAuthCommunicationException {
 
         String customProtocol = ApplicationObj.getAppContext().getResources().getString(
                 R.string.customAppProtocol);
@@ -110,26 +102,15 @@ public class OBPRestClient {
     public static boolean setAccessTokenFromSharedPrefs(long bankID) {
         SharedPreferences settings = ApplicationObj.getAppContext()
                 .getSharedPreferences(PREF_FILE, 0);
-        Long bankIdent = settings.getLong(BANK_ID + bankID, bankID);
         String token = settings.getString(CONSUMER_TOKEN + bankID, PREF_NOT_SET);
         String secret = settings.getString(CONSUMER_SECRET + bankID, PREF_NOT_SET);
 
-        boolean exists = !bankIdent.equals(PREF_NOT_SET) && !token.equals(PREF_NOT_SET)
-                && !secret.equals(PREF_NOT_SET);
+        boolean exists = !Objects.equals(token, PREF_NOT_SET) && !Objects.equals(secret, PREF_NOT_SET);
         // set it if it exists
         if (exists)
             getConsumer(bankID).setTokenWithSecret(token, secret);
         return exists;
     }
-//
-//    public static boolean clearAccessToken(long bankID) {
-//        Editor editor = ApplicationObj.getAppContext().getSharedPreferences(PREF_FILE, 0).edit();
-//        editor.putLong(BANK_ID, bankID);
-//        editor.putString(CONSUMER_TOKEN, PREF_NOT_SET);
-//        editor.putString(CONSUMER_SECRET, PREF_NOT_SET);
-//        consumer.setTokenWithSecret("", "");
-//        return editor.commit();
-//    }
 
     public static boolean getAndSetAccessToken(long bankID, String verifyCode) {
         try {
@@ -145,13 +126,7 @@ public class OBPRestClient {
                 return editor.commit();
             } else
                 return false;
-        } catch (OAuthMessageSignerException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-        } catch (OAuthNotAuthorizedException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-        } catch (OAuthExpectationFailedException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-        } catch (OAuthCommunicationException e) {
+        } catch (OAuthMessageSignerException | OAuthNotAuthorizedException | OAuthExpectationFailedException | OAuthCommunicationException e) {
             Log.w(LOG_TAG, Log.getStackTraceString(e));
         }
         return false;
@@ -162,13 +137,11 @@ public class OBPRestClient {
         editor.remove(BANK_ID + bankID);
         editor.putString(CONSUMER_TOKEN + bankID, PREF_NOT_SET);
         editor.putString(CONSUMER_SECRET + bankID, PREF_NOT_SET);
-        //getConsumer(bankID).setTokenWithSecret("", ""); HERE WE SHOULD REMOVE CONSUMER FROM HASHMAP
         consumers.remove(bankID);
         providers.remove(bankID);
         return editor.commit();
     }
 
-    //UNUSED
     public static boolean getAndSetAccessToken(Service service, String verifyCode) {
         try {
             provider.retrieveAccessToken(consumer, verifyCode);
@@ -182,13 +155,7 @@ public class OBPRestClient {
                 return editor.commit();
             } else
                 return false;
-        } catch (OAuthMessageSignerException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-        } catch (OAuthNotAuthorizedException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-        } catch (OAuthExpectationFailedException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-        } catch (OAuthCommunicationException e) {
+        } catch (OAuthMessageSignerException | OAuthNotAuthorizedException | OAuthExpectationFailedException | OAuthCommunicationException e) {
             Log.w(LOG_TAG, Log.getStackTraceString(e));
         }
         return false;
@@ -228,28 +195,7 @@ public class OBPRestClient {
                 default:
                     throw new ObpApiCallFailedException();
             }
-        } catch (MalformedURLException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-            throw new ObpApiCallFailedException();
-        } catch (OAuthMessageSignerException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-            throw new ObpApiCallFailedException();
-        } catch (OAuthExpectationFailedException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-            throw new ObpApiCallFailedException();
-        } catch (OAuthCommunicationException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-            throw new ObpApiCallFailedException();
-        } catch (ClientProtocolException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-            throw new ObpApiCallFailedException();
-        } catch (IOException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-            throw new ObpApiCallFailedException();
-        } catch (JSONException e) {
-            Log.w(LOG_TAG, Log.getStackTraceString(e));
-            throw new ObpApiCallFailedException();
-        } catch (ObpApiCallFailedException e) {
+        } catch (OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException | IOException | JSONException | ObpApiCallFailedException e) {
             Log.w(LOG_TAG, Log.getStackTraceString(e));
             throw new ObpApiCallFailedException();
         }
@@ -264,29 +210,9 @@ public class OBPRestClient {
         return new BanksProvider().doInBackground();
     }
 
-//    //HSBC API
-//    public static JSONObject getAtms(long bankID) throws ExpiredAccessTokenException,
-//            ObpApiCallFailedException {
-//        //return getOAuthedJson(BASE_URL + "/obp/v1.2/banks");
-//        return getOAuthedJson(OBPBankProvider.BASE_URL_OBP_SANDBOX + "/obp/v3.1.0/banks/hsbc.01.hk.hsbc/atms", bankID);
-//    }
-
-    public static JSONObject getAccountsAtAllBanks(long bankID) throws ExpiredAccessTokenException,
-            ObpApiCallFailedException {
-        //return getOAuthedJson(BASE_URL + "/obp/v1.2/banks");
-        //return getOAuthedJson(BASE_URL_OBP_SANDBOX + "/obp/v3.1.0/banks/hsbc.01.hk.hsbc/accounts");
-        //return getOAuthedJson(OBPBankProvider.BASE_URL_OBP_SANDBOX + "/obp/v1.2.1/accounts/private",bankID);
+    public static JSONObject getAccountsAtAllBanks(long bankID) throws ExpiredAccessTokenException, ObpApiCallFailedException {
         return getOAuthedJson(OBPBankProvider.BASE_URL_OBP_SANDBOX + "/obp/v4.0.0/my/accounts", bankID);
     }
-
-//    //HSBC API
-//    public static JSONObject getAccounts(long bankID, String obpBankID) throws ExpiredAccessTokenException,
-//            ObpApiCallFailedException {
-//        //return getOAuthedJson(BASE_URL + "/obp/v1.2/banks");
-//        //return getOAuthedJson(BASE_URL_OBP_SANDBOX + "/obp/v3.1.0/banks/hsbc.01.hk.hsbc/accounts");
-//        return getOAuthedJson(OBPBankProvider.BASE_URL_OBP_SANDBOX + "/obp/v1.2/banks/"+obpBankID+"/accounts",bankID);
-//    }
-
 
     public static JSONObject getTransactions(long bankID, String obpBankID, String accountID)
             throws ExpiredAccessTokenException, ObpApiCallFailedException {
@@ -294,7 +220,7 @@ public class OBPRestClient {
                 + "/obp/v4.0.0/my/banks/" + obpBankID + "/accounts/" + accountID + "/transactions", bankID);
     }
 
-    //synch method to get bank names;
+    //sync method to get bank names;
     private static class BanksProvider {
         protected JSONObject doInBackground() {
             try {
@@ -305,7 +231,7 @@ public class OBPRestClient {
                         .build();
                 Call call = client.newCall(request);
                 Response response = call.execute();
-                return onPostExecute(response.body().string());
+                return onPostExecute(Objects.requireNonNull(response.body()).string());
             } catch (Exception e) {
                 onPostExecute(e.toString());
                 Log.e("TokenIDtoServer", "Error sending ID token to backend.", e);

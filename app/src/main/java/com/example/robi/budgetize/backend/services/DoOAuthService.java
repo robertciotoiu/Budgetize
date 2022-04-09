@@ -92,15 +92,8 @@ public class DoOAuthService extends Service {
             try {
                 String urlString = OBPRestClient
                         .getAuthoriseAppUrl(BankAccountViewModel.lastClickedBankID);
-                Uri authoriseURI = Uri.parse(urlString);
-                return authoriseURI;
-            } catch (OAuthMessageSignerException e) {
-                Log.w(LOG_TAG, Log.getStackTraceString(e));
-            } catch (OAuthNotAuthorizedException e) {
-                Log.w(LOG_TAG, Log.getStackTraceString(e));
-            } catch (OAuthExpectationFailedException e) {
-                Log.w(LOG_TAG, Log.getStackTraceString(e));
-            } catch (OAuthCommunicationException e) {
+                return Uri.parse(urlString);
+            } catch (OAuthMessageSignerException | OAuthNotAuthorizedException | OAuthExpectationFailedException | OAuthCommunicationException e) {
                 Log.w(LOG_TAG, Log.getStackTraceString(e));
             }
             return null;

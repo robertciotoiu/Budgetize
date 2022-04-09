@@ -25,26 +25,15 @@ import com.example.robi.budgetize.data.remotedatabase.remote.OBPRetroClass;
 import java.util.List;
 
 public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, LinkedBankDao, BankAccountDao, AccountTransactionDao, WalletLinkedBankAccountsDao {
-
+    //TODO: this DataRepository should be split into multiple Repository objects
     private static DataRepository sInstance;
-
     private final LocalRoomDatabase mDatabase;
-    private MediatorLiveData<List<Wallet>> ObservableWallet;
-    private MediatorLiveData<List<CategoryObject>> ObservableCategory;
-    private MediatorLiveData<List<IEObject>> ObservableIE;
-    private MediatorLiveData<List<LinkedBank>> ObservableLinkedBanks;
+    private final MediatorLiveData<List<Wallet>> ObservableWallet;
+    private final MediatorLiveData<List<CategoryObject>> ObservableCategory;
+    private final MediatorLiveData<List<IEObject>> ObservableIE;
+    private final MediatorLiveData<List<LinkedBank>> ObservableLinkedBanks;
     //TODO: MediatorLiveData for IE and Category
-
-    //TODO: delete this! DB debug purposes
-    public LocalRoomDatabase getDB() {
-        return mDatabase;
-    }
-
-    //RetroClasses uses to communicate with APIs
-    private OBPRetroClass obpRetroClass = new OBPRetroClass();
-
     private OnDataChangedRepositoryListener listener;
-//    private OnBankDataChanged bankDataListener;
 
     private DataRepository(final LocalRoomDatabase database) {
         mDatabase = database;
@@ -58,7 +47,6 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
                     if (mDatabase.getDatabaseCreated().getValue() != null) {
                         if (listener != null)
                             listener.onWalletDataChanged(wallets);
-//                        ObservableWallet.postValue(wallets);
                     }
                 });
 
@@ -67,7 +55,6 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
                     if (mDatabase.getDatabaseCreated().getValue() != null) {
                         if (listener != null)
                             listener.onCategoryDataChanged(categories);
-                        //ObservableCategory.postValue(categories);
                     }
                 });
 
@@ -97,6 +84,11 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         return sInstance;
     }
 
+    //TODO: delete this! DB debug purposes
+    public LocalRoomDatabase getDB() {
+        return mDatabase;
+    }
+
     //WALLETDAO
 
     @Override
@@ -110,7 +102,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
-    public String getWalletsCurrency(long id){
+    public String getWalletsCurrency(long id) {
         return mDatabase.walletDao().getWalletsCurrency(id);
     }
 
@@ -186,9 +178,6 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
     @Override
     public void deleteCategory(long category_id) {
-//        if (category_id != 0) {//category_id is 0 when IE doesn't have a category. So we don't want all independent IEs to be deleted at deletion of only one
-//            deleteAllIEofACategory(category_id);
-//        }
         mDatabase.categoryDao().deleteCategory(category_id);
     }
 
@@ -205,7 +194,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
-    public List<IEObject> getAllIEsFromWallet(long wallet_id){
+    public List<IEObject> getAllIEsFromWallet(long wallet_id) {
         return mDatabase.ieoDao().getAllIEsFromWallet(wallet_id);
     }
 
@@ -250,7 +239,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
-    public List<String> getAllIEsCurrenciesFromWallet(long wallet_id){
+    public List<String> getAllIEsCurrenciesFromWallet(long wallet_id) {
         return mDatabase.ieoDao().getAllIEsCurrenciesFromWallet(wallet_id);
     }
 
@@ -469,13 +458,8 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
         return mDatabase.linkedBankDao().noLinkedBanks();
     }
 
-    //Listeners
-    public interface OnDataChangedRepositoryListener {
-        void onWalletDataChanged(List<Wallet> walletList);
-
-        void onCategoryDataChanged(List<CategoryObject> categoryObjects);
-
-        void onIEDataChanged(List<IEObject> ieObjects);
+    public void addListener(OnDataChangedRepositoryListener listener) {
+        this.listener = listener;
     }
 //
 //    public interface OnBankDataChanged{
@@ -484,8 +468,13 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
 
 //    public void addListener(OnBankDataChanged bankDataListener){ this.bankDataListener = bankDataListener;}
 
-    public void addListener(OnDataChangedRepositoryListener listener) {
-        this.listener = listener;
+    //Listeners
+    public interface OnDataChangedRepositoryListener {
+        void onWalletDataChanged(List<Wallet> walletList);
+
+        void onCategoryDataChanged(List<CategoryObject> categoryObjects);
+
+        void onIEDataChanged(List<IEObject> ieObjects);
     }
 
     /**

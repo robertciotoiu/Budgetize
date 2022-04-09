@@ -1,4 +1,4 @@
-package com.example.robi.budgetize.ui.adapters.viewpager;
+package com.example.robi.budgetize.ui.viewpager;
 
 
 import android.content.Context;
@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.Observer;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.robi.budgetize.R;
@@ -26,13 +25,18 @@ import java.util.List;
 
 public class WalletViewPagerAdapter extends PagerAdapter {
 
-    private List<Wallet> wallets;
+    private final List<Wallet> wallets;
+    private final Context context;
+    private final MainActivityViewModel mainActivityViewModel;
     private LayoutInflater layoutInflater;
-    private Context context;
-    private MainActivityViewModel mainActivityViewModel;
-    private Observer<Double> ieListObsever;
     private List<View> views;
-    int lastWalletPosition;
+
+    public WalletViewPagerAdapter(List<Wallet> wallets, Context context, MainActivityViewModel mainActivityViewModel) {
+        this.wallets = wallets;
+        this.context = context;
+        this.mainActivityViewModel = mainActivityViewModel;
+
+    }
 
     @Override
     public int getItemPosition(Object object) {
@@ -58,21 +62,11 @@ public class WalletViewPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         layoutInflater = LayoutInflater.from(context);
-
         View view = inflatePages(container, position);
-        configureView(view, position);
+        container.addView(view, position);
 
-//        if(view != null)
-            container.addView(view, position);
-
+        assert view != null;
         return view;
-    }
-
-    public WalletViewPagerAdapter(List<Wallet> wallets, Context context, MainActivityViewModel mainActivityViewModel) {
-        this.wallets = wallets;
-        this.context = context;
-        this.mainActivityViewModel = mainActivityViewModel;
-
     }
 
     public Wallet getCurrentWallet(int position) {
@@ -83,8 +77,7 @@ public class WalletViewPagerAdapter extends PagerAdapter {
         return views.get(position);
     }
 
-    private View inflatePages(ViewGroup container, int position) {//verifica sa nu fie null walletul
-        //int ie = wallets.get(position).getIE();
+    private View inflatePages(ViewGroup container, int position) {
         try {
             //TODO: apply mvvm
             double ie = mainActivityViewModel.getIE(wallets.get(position).getId());
@@ -103,16 +96,7 @@ public class WalletViewPagerAdapter extends PagerAdapter {
 
             if (ie > 0) {
                 view = layoutInflater.inflate(R.layout.page_positive, container, false);
-                //views.add(view);
-//                if(views.get(position)!=null)
-//                {
-//                    views.add(position,view);
-//                }
-//                else
-//                {
-//                    views.remove(position);
-//                    views.add(position,view);
-//                }
+
                 walletName = (TextView) view.findViewById(R.id.wallet_name);
                 walletName.setText(wallet.getName());
                 pb = (ProgressBar) view.findViewById(R.id.progressBar);
@@ -153,40 +137,20 @@ public class WalletViewPagerAdapter extends PagerAdapter {
     }
 
     private void init_pb_listener(View view, final int position) {
-        final int p = position;
         ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        progressBar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Gson gson = new Gson();
-                String walletAsString = gson.toJson(wallets.get(p));
-                mainActivityViewModel.lastWalletPosition = position;
-                Intent myIntent = new Intent(context, TransactionsActivity.class);
-                myIntent.putExtra("wallet", walletAsString); //Optional parameters
-                mainActivityViewModel.lastWalletPosition = position;
-                context.startActivity(myIntent);
-            }
+        progressBar.setOnClickListener(v -> {
+            Gson gson = new Gson();
+            String walletAsString = gson.toJson(wallets.get(position));
+            mainActivityViewModel.lastWalletPosition = position;
+            Intent myIntent = new Intent(context, TransactionsActivity.class);
+            myIntent.putExtra("wallet", walletAsString); //Optional parameters
+            mainActivityViewModel.lastWalletPosition = position;
+            context.startActivity(myIntent);
         });
-    }
-
-    private void configureView(View view, int position) {
-//        int ie = wallets.get(position).getIE();
-//        Button b = view.findViewById(R.id.ie_button);
-//        b.getBackground().setAlpha(0);
-//
-//        if(ie>0) {
-//            b.setText("+"+ ie +"$");
-//        }
-//        else
-//        {
-//            b.setText(ie +"$");
-//        }
     }
 
     @Override
     public void registerDataSetObserver(@NonNull DataSetObserver observer) {
         super.registerDataSetObserver(observer);
     }
-
-
 }

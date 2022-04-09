@@ -28,10 +28,10 @@ import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerVi
 import com.example.robi.budgetize.data.localdatabase.entities.LinkedBank;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
 import com.example.robi.budgetize.data.remotedatabase.remote.OBPlib.OBPRestClient;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.viewpagercards.CardItem;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.viewpagercards.LinkBanksCardFragmentPagerAdapter;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.viewpagercards.LinkBanksCardPagerAdapter;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.viewpagercards.LinkBanksShadowTransformer;
+import com.example.robi.budgetize.ui.viewpager.CardItem;
+import com.example.robi.budgetize.ui.viewpager.LinkBanksCardFragmentPagerAdapter;
+import com.example.robi.budgetize.ui.viewpager.LinkBanksCardPagerAdapter;
+import com.example.robi.budgetize.ui.viewpager.LinkBanksShadowTransformer;
 import com.google.gson.Gson;
 import com.skydoves.elasticviews.ElasticButton;
 
@@ -215,18 +215,10 @@ public class LinkedBankAccountsActivity extends AppCompatActivity implements Vie
         infoTitle = findViewById(R.id.info_title);
         //Link new bank account button
         imageViewButton = this.findViewById(R.id.button_image_view);
-        imageViewButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                startActivity(AvailableBanksActivity.class);
-            }
-        });
+        imageViewButton.setOnClickListener(v -> startActivity(AvailableBanksActivity.class));
 
         linkNewBankAccountButton = this.findViewById(R.id.link_new_bank_account_button);
-        linkNewBankAccountButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                startActivity(AvailableBanksActivity.class);
-            }
-        });
+        linkNewBankAccountButton.setOnClickListener(v -> startActivity(AvailableBanksActivity.class));
     }
 
     public LinkedBankAccountsActivity getActivityContext() {

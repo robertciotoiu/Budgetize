@@ -16,8 +16,8 @@ import com.example.robi.budgetize.backend.viewmodels.ServicesHandlerViewModel;
 import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerViewModelFactory;
 import com.example.robi.budgetize.backend.viewmodels.helpers.ImageDownloader;
 import com.example.robi.budgetize.data.remotedatabase.entities.bank.Bank;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.gridlistviewadapter.AvailableBank;
-import com.example.robi.budgetize.ui.modifiedthirdpartylibraries.gridlistviewadapter.AvailableBanksAdapter;
+import com.example.robi.budgetize.ui.gridlistview.AvailableBank;
+import com.example.robi.budgetize.ui.gridlistview.AvailableBanksAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,18 +25,15 @@ import java.util.List;
 
 public class AvailableBanksActivity extends AppCompatActivity {
 
+    public static ArrayList<Bank> banks = new ArrayList<Bank>();
+    private final int MAX_CARDS = 2;
     private ListView listview;
     private ArrayList<AvailableBank> dataList;
     private AvailableBanksAdapter listadapter;
     private View headerView;
     private View footerView;
-
-    public static ArrayList<Bank> banks = new ArrayList<Bank>();
-
     private ServicesHandlerViewModel servicesHandlerViewModel;
     private Observer<List<Bank>> bankListObserver;
-
-    private final int MAX_CARDS = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +41,11 @@ public class AvailableBanksActivity extends AppCompatActivity {
         servicesHandlerViewModel = new ViewModelProvider(this,
                 new ServicesHandlerViewModelFactory((ApplicationObj) this.getApplication()))
                 .get(ServicesHandlerViewModel.class);
-        banks.addAll(servicesHandlerViewModel.getAllBanksFromUI());//TODO: watch this as it may cause problems. in the past it was without new ArrayList<...
+        //TODO: watch this as it may cause problems. in the past it was without new ArrayList<...
+        banks.addAll(servicesHandlerViewModel.getAllBanksFromUI());
         listview = new ListView(this);
         listview.setDivider(null);
         setContentView(listview);
-        //banks.addAll(((ApplicationObj) getApplicationContext()).banks);
     }
 
     @Override
@@ -57,12 +54,6 @@ public class AvailableBanksActivity extends AppCompatActivity {
         bankListObserver = banks -> {
             AvailableBanksActivity.banks.clear();
             AvailableBanksActivity.banks.addAll(banks);
-//            addBanks();
-//            listadapter = new AvailableBanksAdapter(getApplicationContext(), this,
-//                    MAX_CARDS, (ArrayList<Bank>) banks);
-//            listadapter.addItemsInGrid(dataList);
-//            addHeaderFooters();
-//            listview.setAdapter(listadapter);
         };
         servicesHandlerViewModel.mObservableAvailableBanks.observe(this, bankListObserver);
 
@@ -81,44 +72,33 @@ public class AvailableBanksActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        //listadapter = null;
-//        listview.removeHeaderView(headerView);
-        listview.removeFooterView(footerView);
-
-        servicesHandlerViewModel.mObservableAvailableBanks.removeObserver(bankListObserver);//detach the observer
+        //detach the observer
+        servicesHandlerViewModel.mObservableAvailableBanks.removeObserver(bankListObserver);
     }
 
     private void addHeaderFooters() {
         final int cardSpacing = listadapter.getCardSpacing();
 
         // Header View
-        headerView = getHeaderFooterView("Available Banks", cardSpacing);
+        headerView = getHeaderFooterView(cardSpacing);
         headerView.setPadding(0, 0, 0, 0);
         listview.addHeaderView(headerView);
         listview.setFitsSystemWindows(true);
-
-        // Footer View
-//        footerView = getHeaderFooterView("FOOTER", cardSpacing);
-//        footerView.setPadding(cardSpacing, 0, cardSpacing, cardSpacing);
-//        listview.addFooterView(footerView);
     }
 
-    private View getHeaderFooterView(String text, int cardSpacing) {
+    private View getHeaderFooterView(int cardSpacing) {
         // New footer/header view.
         View view = listadapter.getLayoutInflater().inflate(
-                R.layout.simple_header_footer_layout, null);
+                R.layout.simple_header_footer_layout, listview, false);
 
         // Header-Footer card sizing.
         View headerFooterView = view.findViewById(R.id.card_main_parent);
-        int headerFooterWidth = listadapter.getDeviceWidth()
-                - (2 * cardSpacing); // Left-right so *2
-        int headerFooterHeight = listadapter.getCardWidth(MAX_CARDS);
-        headerFooterView.getLayoutParams().width = headerFooterWidth;
+        headerFooterView.getLayoutParams().width = listadapter.getDeviceWidth()
+                - (2 * cardSpacing);
         headerFooterView.getLayoutParams().height = 300;
 
-
         // Setting text value
-        ((TextView) view.findViewById(R.id.name)).setText(text);
+        ((TextView) view.findViewById(R.id.name)).setText("Available Banks");
         return view;
     }
 
@@ -137,7 +117,7 @@ public class AvailableBanksActivity extends AppCompatActivity {
                     + "/BankIcons");
         }
         String bankFullName;
-        dataList = new ArrayList<AvailableBank>();
+        dataList = new ArrayList<>();
         // Add data
         for (int i = 0; i < banks.size(); i++) {
             bankFullName = banks.get(i).getFull_name();
@@ -147,85 +127,6 @@ public class AvailableBanksActivity extends AppCompatActivity {
     }
 
     private boolean isExternalStorageWritable() {
-        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED;
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 }
-
-// Data class to be used for ListGridAdapter demo.
-
-// Card View Holder class, these should hold all child-view references of a
-// given card so that this references can be Re-used to update views (Without
-// having to call findViewById each time on list scroll.)
-
-// Now that our data class & ViewHolder class are ready lets bind each data
-// item to each card, for that purpose we extend
-// ListGridAdapter<E,CVH>/CursorGridAdapter<CVH> & implement few easy methods.
-//
-// When using ListGridAdapter you need to pass your POJO in place of 'E' so that
-// you can get that object back as a parameters in various methods so in this
-// Example we are dealing with ArrayList<Item> so we need to
-// pass 'Item' in place of 'E'
-//
-// CVH means CardViewHolder for our card.
-//
-// By passing E & CVH you bind your adapter class generically to specific
-// objects so that type-cast are not needed & compile type object safety can be
-// achieved, Just like using ArrayList<Integer> where only integer values only
-// can be passed.
-
-// There are 5 easy methods to be implemented in grid-adapters
-//
-// 1. getNewCard() here library will ask how your Card will look & child views
-// you want to hold in CardViewHolder ?, return new Object of
-// com.birin.gridlistviewadapters.Card<CVH> class where CVH stands for
-// CardViewHolder for this Card. Card<CVH> takes two objects in constructor
-// i. CardView : return new view inflating through layout or creating new View
-// through Java.
-// ii. CardViewHolder : ViewHolder class that should hold child views of given
-// cardView, so that view-holder can be used to recycle on list scroll.
-// All the card & element sizing should be done in this method.
-//
-// 2. setCardView() here library will tell you to fill data into your views by
-// using Data & CardViewHolder.
-//
-// 3. onCardClicked() here library give you callback of card-click event with
-// card's data.
-//
-// 4. registerChildrenViewClickEvents() here library will tell you to register
-// children present in your CardViewHolder using ChildViewsClickHandler
-// instance, registering your children will enable you to get click events in
-// onChildViewClicked method, Using this is optional alternatively user can
-// handle children ViewClicks in their own ways.
-//
-// 5. onChildViewClicked() here library will tell you to that any of registered
-// child is clicked the advantage of registering is that library will provide
-// data related to clicked view's row & you do not have to find your data,
-// child view can be registered using ChildViewsClickHandler instance which was
-// passed in registerChildrenViewClickEvents() method.
-//
-//
-
-//
-//
-//
-// Feeling comfortable with basic library usage ?? Wait !! There are more demos
-// in this Sample Project like,
-// 1.Usage of CursorGridAdapter for handling DB data.
-// 2.Usage of PositionCalculator class to maintain correct position
-// after rotation.
-// 3.Handling card click events.
-// 4.Handling click events of child views in a card in very easy way.
-// 5.Usage of Tap to Load More functionality
-// 6.Using Auto load more feature of library
-// 7.Limiting Auto Load More on max items reached
-// 8.Binding data through ContentProvider/CursorLoader mechanism
-// 9.Supporting fixed number of data items
-// 10.Best approach to handle data & AysncTasks through rotation of screen.
-//
-// So goto AndroidManifest & start tracking different feature's demos (All the
-// demos are presented considering the OOPs concept so that it becomes very
-// clear what line of code needs to be added for using various features of
-// library.)
-//
-//
-//

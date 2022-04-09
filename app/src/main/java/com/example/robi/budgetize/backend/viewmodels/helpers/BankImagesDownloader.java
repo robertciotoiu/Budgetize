@@ -13,9 +13,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class BankImagesDownloader {
-        private ThreadPoolExecutor executor =
+        private final ThreadPoolExecutor executor =
             (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
-    private File fileLocation;
+    private final File fileLocation;
 
     public BankImagesDownloader() {
         if (ImageDownloader.isExternalStorageWritable()) {
@@ -28,11 +28,6 @@ public class BankImagesDownloader {
                     + "/BankIcons");
         }
     }
-
-    // Experimental results
-    long startTime = 0;
-    long completedTasks = 0;
-    long noTasks = 0;
 
     public void doSync(List<Bank> banks) {
         // Get the location where to save the logos
@@ -104,7 +99,7 @@ public class BankImagesDownloader {
         }
     }
 
-    private class DownloadTask implements Runnable {
+    private static class DownloadTask implements Runnable {
         ImageDownloader downloader;
         String logoUrl;
         boolean displayProgress;

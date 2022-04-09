@@ -9,74 +9,50 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "incomes_expenses"
-,foreignKeys ={
+        , foreignKeys = {
         @ForeignKey(onDelete = CASCADE, entity = AccountTransaction.class,
-                parentColumns = "id",childColumns = "txn_id"),
+                parentColumns = "id", childColumns = "txn_id"),
         @ForeignKey(onDelete = CASCADE, entity = Wallet.class,
-                parentColumns = "id",childColumns = "wallet_id")//,
-//        @ForeignKey(onDelete = CASCADE, entity = CategoryObject.class,
-//                parentColumns = "category_id",childColumns = "category_id")
+                parentColumns = "id", childColumns = "wallet_id")
 }
         , indices = {
         @Index("txn_id"),
         @Index("wallet_id"),
-//        @Index("category_id")
 })
-public class IEObject implements Cloneable{
-
-    @PrimaryKey
-    @ColumnInfo(name = "id")
-    private long id;
-
-    @ColumnInfo(name = "wallet_id")
-    private long wallet_id;
+public class IEObject implements Cloneable {
 
     @ColumnInfo(name = "amount")
     public double amount;
-
     @ColumnInfo(name = "name")
     public String name;
-
     @ColumnInfo(name = "category_id")
     public long category_id;
-
     @ColumnInfo(name = "date")
     public String date;
-
     @ColumnInfo(name = "occurrence")
     public String occurrence;
-
-    //public int icon[];
-    @ColumnInfo(name="type")
+    @ColumnInfo(name = "type")
     public int type;//0 means income, 1 means expense
-
-    @ColumnInfo(name="currency")
+    @ColumnInfo(name = "currency")
     public String currency;
-
     @ColumnInfo(name = "txn_id")
     public String txn_id;//Reference to txns from OBP like 5fb61a56-85cf-45e2-84b5-f272b08b4ac4
+    @PrimaryKey
+    @ColumnInfo(name = "id")
+    private long id;
+    @ColumnInfo(name = "wallet_id")
+    private long wallet_id;
 
-//    @ColumnInfo(name = "bank_account")
-
-
-    public IEObject(long wallet_id,String name, double amount, long category_id, int type, String date, String occurrence, String txn_id, String currency) {
+    public IEObject(long wallet_id, String name, double amount, long category_id, int type, String date, String occurrence, String txn_id, String currency) {
         this.id = System.nanoTime();
         this.wallet_id = wallet_id;
         this.name = name;
         this.amount = amount;
-        this.category_id = category_id;          //add incomeObj to the choosen category
-
-//        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
-//        Date now = new Date();
-//        String strDate = sdfDate.format(date);
+        this.category_id = category_id;
         this.date = date;
-
         this.occurrence = occurrence;
-
         this.type = type;
-
         this.currency = currency;
-
         this.txn_id = txn_id;
     }
 

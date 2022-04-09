@@ -37,20 +37,20 @@ public class OBPRetroClass {
                     ArrayList<Bank> bankArrayList = new ArrayList<>();
                     JSONObject banksJson = OBPRestClient.getBanksJson();
                     Gson gson = new Gson();
-                    while(banksJson==null) {
+                    while (banksJson == null) {
                         //wait for bank list
                     }
-                        JSONArray banksJsonJSONArray = banksJson.getJSONArray("banks");
-                        for (int i = 0; i < banksJsonJSONArray.length(); i++) {
-                            bankArrayList.add(gson.fromJson(banksJsonJSONArray.getJSONObject(i).toString(), Bank.class));
-                            Log.d("BANK:", bankArrayList.get(i).toString());
-                        }
-                        if (bankArrayList.size() != 0) {
-                            mObservableBanks.postValue(bankArrayList);
-                            Log.d("OBPRetroClass.getAllBanks(): ", "BanksAdded");
-                        } else {
-                            Log.d("OBPRetroClass.getAllBanks(): ", "BanksNOTAdded");//handle this
-                        }
+                    JSONArray banksJsonJSONArray = banksJson.getJSONArray("banks");
+                    for (int i = 0; i < banksJsonJSONArray.length(); i++) {
+                        bankArrayList.add(gson.fromJson(banksJsonJSONArray.getJSONObject(i).toString(), Bank.class));
+                        Log.d("BANK:", bankArrayList.get(i).toString());
+                    }
+                    if (bankArrayList.size() != 0) {
+                        mObservableBanks.postValue(bankArrayList);
+                        Log.d("OBPRetroClass.getAllBanks(): ", "BanksAdded");
+                    } else {
+                        Log.d("OBPRetroClass.getAllBanks(): ", "BanksNOTAdded");//handle this
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -83,8 +83,8 @@ public class OBPRetroClass {
                         }
                         long[] status = repository.insertAllBankAccounts(bankAccounts);
                         String composeStatus = "";
-                        for (int i = 0; i < status.length; i++) {
-                            composeStatus = composeStatus.concat(status[i] + ", ");
+                        for (long l : status) {
+                            composeStatus = composeStatus.concat(l + ", ");
                         }
                         Log.d("OBPRetroClass: ", "INSERTED BANKACCOUNTS TO DB: " + composeStatus);
 
@@ -97,9 +97,7 @@ public class OBPRetroClass {
                 } catch (ExpiredAccessTokenException e) {
                     // Clear access token
                     OBPRestClient.clearAccessToken(bankID);
-                } catch (ObpApiCallFailedException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
+                } catch (ObpApiCallFailedException | JSONException e) {
                     e.printStackTrace();
                 }
                 return null;
@@ -121,7 +119,7 @@ public class OBPRetroClass {
                     long[] status;
                     StringBuilder thisHolders;
                     //Retrieve transactions from the Open Bank Project API
-                    // We receive a JSONOBject which packs all the transactions
+                    // We receive a JSONOObject which packs all the transactions
                     JSONObject transactionsJson = OBPRestClient.getTransactions(bankID, obpBankID, accountID);
                     // We need to parse the array and get the data we need from each transaction
                     JSONArray transactionsJsonJSONArray = transactionsJson.getJSONArray("transactions");

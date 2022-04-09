@@ -20,47 +20,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServicesHandlerViewModel extends AndroidViewModel {
-    private final DataRepository repository;
-
-    //App objs
-    private final ApplicationObj applicationObj;
-
-    //OBP
-    private static boolean onFirstCreation = false;
-
-    //LiveData
-    MutableLiveData<Boolean> showBankAccountNeedActions = new MutableLiveData<Boolean>();
-    public static final MutableLiveData<List<Bank>> mObservableAvailableBanks = new
+    public final MutableLiveData<List<Bank>> mObservableAvailableBanks = new
             MutableLiveData<>();
-
-    //Utilitary class
-    private final BankImagesDownloader bankImagesDownloader = new BankImagesDownloader();
-
     public static List<Bank> banksList = new ArrayList<>();
-
-    //Service messages handler
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        // Handling messages from Services
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String serviceResponse = intent.getStringExtra("message");
-            if (serviceResponse != null) {
-                if (serviceResponse.contentEquals("Authorized")) {
-                    Log.d(this.getClass().toString(), "Authorized successful!");
-                    getAllAvailableBanks();
-                } else if (serviceResponse.contentEquals("syncImagesCompleted")) {
-                    onFirstCreation = true;
-                    Log.d(this.getClass().toString(), "syncImages Completed!");
-                }
-            } else {
-                Log.d("Programming error in " + this.getClass().getName() + " ", "EMPTY RESPONSE FROM " + intent.getClass().getName());
-            }
-        }
-    };
+    private static boolean onFirstCreation = false;
+    private final DataRepository repository;
+    private final BankImagesDownloader bankImagesDownloader = new BankImagesDownloader();
 
     public ServicesHandlerViewModel(@NonNull ApplicationObj application, DataRepository repository) {
         super(application);
-        this.applicationObj = application;
+        //Service messages handler
+        // Handling messages from Services
+        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+            // Handling messages from Services
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String serviceResponse = intent.getStringExtra("message");
+                if (serviceResponse != null) {
+                    if (serviceResponse.contentEquals("Authorized")) {
+                        Log.d(this.getClass().toString(), "Authorized successful!");
+                        getAllAvailableBanks();
+                    } else if (serviceResponse.contentEquals("syncImagesCompleted")) {
+                        onFirstCreation = true;
+                        Log.d(this.getClass().toString(), "syncImages Completed!");
+                    }
+                } else {
+                    Log.d("Programming error in " + this.getClass().getName() + " ", "EMPTY RESPONSE FROM " + intent.getClass().getName());
+                }
+            }
+        };
         LocalBroadcastManager.getInstance(ApplicationObj.getAppContext())
                 .registerReceiver(mMessageReceiver,
                         new IntentFilter("my-integer"));
@@ -82,21 +70,6 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
         });
     }
 
-    //methods available to UI
-    //Refactored: this is triggering the bank account linking
-
-//    public void startServices() {
-//        //1.Check if Auth available
-////        startOAuthService();
-//    }
-//
-//    //1st Service
-//    private void startOAuthService() {
-//        Intent serviceIntent = new Intent(applicationObj.getApplicationContext(), DoOAuthService.class);
-//        serviceIntent.putExtra("checkStatus", true);
-//        applicationObj.startService(serviceIntent);
-//    }
-
     //1st "service"
     public void getAllAvailableBanks() {
         repository.getAllAvailableBanks(mObservableAvailableBanks);
@@ -104,12 +77,7 @@ public class ServicesHandlerViewModel extends AndroidViewModel {
 
     //2nd "service"
     public void syncAllImages() {
-        Thread syncImagesThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                bankImagesDownloader.doSync(banksList);
-            }
-        });
+        Thread syncImagesThread = new Thread(() -> bankImagesDownloader.doSync(banksList));
         syncImagesThread.start();
     }
 

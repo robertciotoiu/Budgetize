@@ -3,14 +3,13 @@ package com.example.robi.budgetize.ui.activities.createActivities;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.robi.budgetize.ApplicationObj;
@@ -29,22 +28,22 @@ import com.maltaisn.icondialog.pack.IconPack;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreateCategoryActivity extends AppCompatActivity implements IconDialog.Callback {
     private static final String ICON_DIALOG_TAG = "icon-dialog";
+    private static final String TAG = CreateCategoryActivity.class.getName();
     long walletID = 0;
     Wallet wallet;
     MainActivityViewModel mainActivityViewModel;
-    private int selectedIconID = 0;
-    private Observer<List<Wallet>> walletListObsever;
     IconPack iconPack;
-
     TextInputLayout iconPicker;
     TextInputLayout categoryNameTextInput;
     TextInputLayout categoryDescriptionTextInput;
     TextInputEditText categoryName;
     TextInputEditText categoryDescription;
+    private int selectedIconID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +53,7 @@ public class CreateCategoryActivity extends AppCompatActivity implements IconDia
                 , new MainActivityViewModelFactory((ApplicationObj) this.getApplication()))
                 .get(MainActivityViewModel.class);
         Bundle bundle = getIntent().getExtras();
-        if (bundle.get("wallet") != null) {
+        if (bundle != null && bundle.get("wallet") != null) {
             Gson gson = new Gson();
             String walletAsString = (String) bundle.get("wallet");
             this.wallet = gson.fromJson(walletAsString, Wallet.class);
@@ -76,16 +75,13 @@ public class CreateCategoryActivity extends AppCompatActivity implements IconDia
     }
 
     private void init_auto_icon_suggest() {
-        categoryName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    Log.d("focus", "focus loosed");
-                    autoSuggestIcon();
-                    // Do whatever you want here
-                } else {
-                    Log.d("focus", "focused");
-                }
+        categoryName.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                Log.d("focus", "focus loosed");
+                autoSuggestIcon();
+                // Do whatever you want here
+            } else {
+                Log.d("focus", "focused");
             }
         });
     }
@@ -94,14 +90,20 @@ public class CreateCategoryActivity extends AppCompatActivity implements IconDia
         Drawable backupDrawable = null;
         int backupIconID = 0;
 
-        List<Icon> icons = iconPack != null ? iconPack.getAllIcons() : null;
+        List<Icon> icons = iconPack != null ? iconPack.getAllIcons() : new ArrayList<>();
         for (Icon icon : icons) {
             List<String> iconTags = icon.getTags();
             for (String tag : iconTags) {
-                if (categoryName.getText().toString().toUpperCase().contains(tag.toUpperCase())) {
+                Editable categoryNameText = categoryName.getText();
+                if (categoryNameText == null)
+                    continue;
+                if (categoryNameText.toString().toUpperCase().contains(tag.toUpperCase())) {
                     if (tag.contentEquals(iconTags.get(0))) {
                         Drawable iconColored = icon.getDrawable();
-                        iconColored.setColorFilter(getColor(R.color.positiveBackgroundColor), PorterDuff.Mode.SRC_ATOP);
+                        if (iconColored != null)
+                            iconColored.setColorFilter(getColor(R.color.positiveBackgroundColor), PorterDuff.Mode.SRC_ATOP);
+                        else
+                            Log.w(TAG, "Icon missing. Cannot set color filter");
                         iconPicker.setStartIconDrawable(iconColored);
                         selectedIconID = icon.getId();
                         return;
@@ -120,8 +122,10 @@ public class CreateCategoryActivity extends AppCompatActivity implements IconDia
     }
 
     private void init_icon_picker() {
+        Icon initialIcon = iconPack.getIcon(121);
         iconPicker = findViewById(R.id.icon_picker);
-        iconPicker.setStartIconDrawable(iconPack.getIcon(121).getDrawable());
+        if (initialIcon != null)
+            iconPicker.setStartIconDrawable(initialIcon.getDrawable());
         // If dialog is already added to fragment manager, get it. If not, create a new instance.
         IconDialog dialog = (IconDialog) getSupportFragmentManager().findFragmentByTag(ICON_DIALOG_TAG);
         IconDialog iconDialog = dialog != null ? dialog
@@ -136,29 +140,27 @@ public class CreateCategoryActivity extends AppCompatActivity implements IconDia
 
     public void init_listeners() {
         Button add_button = (Button) this.findViewById(R.id.add_button_category);
-
         add_button.setOnClickListener(v -> createCategory());
-
-        //MainOAuthActivity.wallets.add(new Wallet();
     }
 
     private void createCategory() {
-        String categoryNameString = categoryName.getText().toString();
-        String categoryDescriptionString = categoryDescription.getText().toString();
+        String categoryNameString = categoryName.getText() == null ? "" : categoryName.getText().toString();
+        String categoryDescriptionString = categoryDescription.getText() == null ? "" : categoryDescription.getText().toString();
 
         try {
             long currentWalletID = wallet.getId();
-            CategoryObject categoryObject = new CategoryObject(categoryNameString, categoryDescriptionString,selectedIconID, currentWalletID, null);
+            CategoryObject categoryObject = new CategoryObject(categoryNameString, categoryDescriptionString, selectedIconID, currentWalletID, null);
 
-            long status = mainActivityViewModel.addCategory(categoryObject);//MainActivity.myDatabase.categoryDao().addCategory(categoryObject);
+            mainActivityViewModel.addCategory(categoryObject);
 
-            if (mainActivityViewModel.getCategoryByID(categoryObject.getCategory_id()) != null) {//MainActivity.myDatabase.walletDao().getWalletById(status)!=null) {
+            if (mainActivityViewModel.getCategoryByID(categoryObject.getCategory_id()) != null) {
                 Toast.makeText(this, "Category added successfully", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "Category failed to be added", Toast.LENGTH_SHORT).show();
             }
 
-            this.finish(); //closes this activity and return to MainOAuthActivity.java
+            //closes this activity and return to MainOAuthActivity.java
+            this.finish();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());

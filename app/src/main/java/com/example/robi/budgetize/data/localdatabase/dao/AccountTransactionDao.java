@@ -14,23 +14,23 @@ import java.util.List;
 public interface AccountTransactionDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public long[] insertAllAccountTransactions(List<AccountTransaction> accountTransactions);
+    long[] insertAllAccountTransactions(List<AccountTransaction> accountTransactions);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public long addAccountTransaction(AccountTransaction accountTransactions);
+    long addAccountTransaction(AccountTransaction accountTransactions);
 
     @Query("SELECT * FROM account_transactions")
-    public LiveData<List<AccountTransaction>> getAllTransactions();
+    LiveData<List<AccountTransaction>> getAllTransactions();
 
     @Query("SELECT * FROM account_transactions WHERE bank_account_id=:bank_account_id")
-    public LiveData<List<AccountTransaction>> getAllTransactionsFromABankAccount(String bank_account_id);
+    LiveData<List<AccountTransaction>> getAllTransactionsFromABankAccount(String bank_account_id);
 
     @Query("SELECT * FROM account_transactions WHERE bank_account_id=:bank_account_id")
-    public List<AccountTransaction> getAllTransactionsFromABankAccountNOTLIVEDATA(String bank_account_id);
+    List<AccountTransaction> getAllTransactionsFromABankAccountNOTLIVEDATA(String bank_account_id);
 
     @Query("DELETE FROM account_transactions WHERE id=:id")
-    public int deleteTransaction(String id);
+    int deleteTransaction(String id);
 
     @Query("DELETE FROM account_transactions WHERE bank_account_id=:bank_account_id")
-    public int deleteAllTransactionsFromABankAccount(String bank_account_id);
+    int deleteAllTransactionsFromABankAccount(String bank_account_id);
 }

@@ -44,7 +44,7 @@ import com.example.robi.budgetize.backend.viewmodels.factories.ServicesHandlerVi
 import com.example.robi.budgetize.data.localdatabase.LocalRoomDatabase;
 import com.example.robi.budgetize.data.localdatabase.entities.Wallet;
 import com.example.robi.budgetize.ui.activities.createActivities.CreateWalletActivity;
-import com.example.robi.budgetize.ui.adapters.viewpager.WalletViewPagerAdapter;
+import com.example.robi.budgetize.ui.viewpager.WalletViewPagerAdapter;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -63,8 +63,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -85,45 +83,35 @@ import okhttp3.Response;
  */
 
 public class MainActivity extends AppCompatActivity {
-    ThreadPoolExecutor localDBThreads = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
-
-    final int WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
     public static List<Wallet> wallets = new ArrayList<Wallet>();
-    //public static int lastWalletPosition = 0;
-    TabLayout tabLayout;
-
-    //MVVM
-    private MainActivityViewModel mainActivityViewModel;
-    private BankAccountViewModel bankAccountViewModel;
-    private ServicesHandlerViewModel servicesHandlerViewModel;
-    private Observer<List<Wallet>> walletListObsever;
-
-    //My Server
-    private String serverBaseLink = "ADD_HERE_BACKEND_SERVER_IP";//ACASA
+    final int WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
     public String sessionID = null;
-
+    public String googleSignInTokenID = null;
+    TabLayout tabLayout;
     //Google Sign In
     GoogleSignInAccount account = null;
     GoogleSignInClient mGoogleSignInClient = null;
-    public String googleSignInTokenID = null;
-
     //Wallets Viewpager UI
     ViewPager viewPager;
     WalletViewPagerAdapter adapter;
     TextView introText;
     ImageView introArrow;
-
     // Experimental results variables
     long startTimeonCreateonResumeFlows = 0;
     long endTimeonCreateonResumeFlows = 0;
-
     long startTimeGoogleSignInFlow = 0;
     long endTimeGoogleSignInFlow = 0;
-
+    //MVVM
+    private MainActivityViewModel mainActivityViewModel;
+    private BankAccountViewModel bankAccountViewModel;
+    private ServicesHandlerViewModel servicesHandlerViewModel;
+    private Observer<List<Wallet>> walletListObsever;
+    //My Server
+    private final String serverBaseLink = "ADD_HERE_BACKEND_SERVER_IP";
     //Biometric app authentication
     private Executor executor;
     private BiometricPrompt biometricPrompt;
-    private BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+    private final BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
             .setTitle("Biometric login")
             .setSubtitle("Log in using your biometric credential")
             .setNegativeButtonText("Use account password")
@@ -186,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                 activateDeactivateIntroScreen(false);
                 refresh_wallets();
                 // Animate the first page's progress bar
-                if(!MainActivityViewModel.firstStart) {
+                if (!MainActivityViewModel.firstStart) {
                     animate_firstPagePb();
                 }
             }
@@ -310,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
                         "Authentication succeeded!", Toast.LENGTH_SHORT).show();
                 authUpdateUI(true);
                 animate_firstPagePb();
-                MainActivityViewModel.firstStart=false;
+                MainActivityViewModel.firstStart = false;
             }
 
             @Override
@@ -478,23 +466,22 @@ public class MainActivity extends AppCompatActivity {
 
         //SETTINGS BUTTON
         ImageButton settingsButton = (ImageButton) this.findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                //hide other layouts
+        settingsButton.setOnClickListener(v -> {
+            //hide other layouts
 //                RelativeLayout mainScreenLayout = (RelativeLayout) MainActivity.this.findViewById(R.id.main_screen_layout);
 //                RelativeLayout overlayLayout = (RelativeLayout) MainActivity.this.findViewById(R.id.overlay_layout);
 //                overlayLayout.bringToFront();
 //                overlayLayout.setTranslationZ(1);
-                //mainScreenLayout.setVisibility(View.GONE);
+            //mainScreenLayout.setVisibility(View.GONE);
 
-                //final View overlay_view = (View) MainActivity.this.findViewById(R.id.overlay_view);
-                //final View overlay = (View) MainActivity.this.findViewById(R.id.overlay);
-                //RelativeLayout mainScreenLayout = (RelativeLayout) MainActivity.this.findViewById(R.id.main_screen_layout);
-                //mainScreenLayout.setClickable(false);
-                //overlay_view.setAlpha(0f);
-                //overlay_view.setVisibility(View.VISIBLE);
-                // Animate the content view to 100% opacity, and clear any animation
-                // listener set on the view.
+            //final View overlay_view = (View) MainActivity.this.findViewById(R.id.overlay_view);
+            //final View overlay = (View) MainActivity.this.findViewById(R.id.overlay);
+            //RelativeLayout mainScreenLayout = (RelativeLayout) MainActivity.this.findViewById(R.id.main_screen_layout);
+            //mainScreenLayout.setClickable(false);
+            //overlay_view.setAlpha(0f);
+            //overlay_view.setVisibility(View.VISIBLE);
+            // Animate the content view to 100% opacity, and clear any animation
+            // listener set on the view.
 //                overlay_view.animate()
 //                        .alpha(1f)
 //                        .setDuration(shortAnimationDuration)
@@ -506,9 +493,8 @@ public class MainActivity extends AppCompatActivity {
 //                transition.addTarget(overlay);
 //                TransitionManager.beginDelayedTransition((ViewGroup)overlay.getParent(),transition);
 //                overlay.setVisibility(View.VISIBLE);
-                //addWalletFab.setAlpha(0.6F);
-                //removeWalletFab.setAlpha(0.6F);
-            }
+            //addWalletFab.setAlpha(0.6F);
+            //removeWalletFab.setAlpha(0.6F);
         });
 
         //BANK ACCOUNTS BUTTON
@@ -599,10 +585,12 @@ public class MainActivity extends AppCompatActivity {
     private void animate_firstPagePb() {
         ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrollStateChanged(int arg0) { }
+            public void onPageScrollStateChanged(int arg0) {
+            }
 
             @Override
-            public void onPageScrolled(int arg0, float arg1, int arg2) { }
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+            }
 
             @Override
             public void onPageSelected(int position) {
@@ -630,11 +618,9 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager.setOnPageChangeListener(pageChangeListener);
         // do this in a runnable to make sure the viewPager's views are already instantiated before triggering the onPageSelected call
-        viewPager.post(new Runnable()
-        {
+        viewPager.post(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 pageChangeListener.onPageSelected(viewPager.getCurrentItem());
             }
         });
@@ -661,6 +647,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             startTimeGoogleSignInFlow = System.currentTimeMillis();
             account = completedTask.getResult(ApiException.class);
+            assert account != null;
             googleSignInTokenID = account.getIdToken();
             //we send to validate user on our server and to obtain SessionID
             Thread validateUserThread = new Thread(this::serverValidateUser);
@@ -673,30 +660,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-//        try {
-//            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-//            googleSignInTokenID = account.getIdToken();
-//            // Signed in successfully, show authenticated UI.
-//            updateUI(account);
-//        } catch (ApiException e) {
-//            // The ApiException status code indicates the detailed failure reason.
-//            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-//            Log.d(MainActivity.class.toString(), "signInResult:failed code=" + GoogleSignInStatusCodes.getStatusCodeString(e.getStatusCode()));
-//            updateUI(null);
-//        }
-//    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == 9001) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
+            // The Task returned from this call is always completed, no need to attach a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            //TODO: send ID Token to server and validate
-
             handleSignInResultWithToken(task);
         } else if (requestCode == 9002) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -715,8 +685,6 @@ public class MainActivity extends AppCompatActivity {
                 cloud.setImageResource(R.drawable.tosyncwhitecloud);
                 Log.d("TOKENID: ", account.getIdToken());
             }
-//            ImageButton analyticsButton = (ImageButton) this.findViewById(R.id.analyticsButton);
-//            analyticsButton.setVisibility(View.VISIBLE);
             MainActivityViewModel.loginStatus = true;
 
             ImageButton cardsButton = (ImageButton) this.findViewById(R.id.bank_accounts_button);
@@ -724,9 +692,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             ImageButton cloud = (ImageButton) this.findViewById(R.id.cloud_image_button);
             cloud.setImageResource(R.drawable.crossedwhitecloud);
-
-//            ImageButton analyticsButton = (ImageButton) this.findViewById(R.id.analyticsButton);
-//            analyticsButton.setVisibility(View.GONE);
             MainActivityViewModel.loginStatus = false;
             ImageButton cardsButton = (ImageButton) this.findViewById(R.id.bank_accounts_button);
             cardsButton.setVisibility(View.GONE);
@@ -762,14 +727,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isLoggedIn() {
-        if (account != null)
-            return true;
-        else
-            return false;
+        return account != null;
     }
 
     //CLOUD SYNCH
-
     private boolean isSynchedToCloud() {
         /*
          * Compare local data with data from cloud to see if it's sync

@@ -1,6 +1,7 @@
 package com.example.robi.budgetize.data.remotedatabase.remote.rest.utils;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -8,7 +9,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class HttpUtils {
-    private static OkHttpClient client = new OkHttpClient();
+    private static final OkHttpClient client = new OkHttpClient();
 
     public static String get(String url) throws IOException {
         Request request = new Request.Builder()
@@ -16,19 +17,19 @@ public class HttpUtils {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            return response.body().string();
+            return Objects.requireNonNull(response.body()).string();
         }
     }
 
     public static String post(String url, String value) throws IOException {
-        HttpUrl.Builder httpBuilder = HttpUrl.parse(url).newBuilder();
+        HttpUrl.Builder httpBuilder = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
         httpBuilder.addQueryParameter("BankName",value);
 
         Request request = new Request.Builder()
                 .url(httpBuilder.build())
                 .build();
         try (Response response = client.newCall(request).execute()) {
-            return response.body().string();
+            return Objects.requireNonNull(response.body()).string();
         }
     }
     public static OkHttpClient getClient() {
@@ -44,8 +45,7 @@ public class HttpUtils {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            String responseString = response.body().string();
-            return responseString;
+            return response.body().string();
         }
     }
 }
