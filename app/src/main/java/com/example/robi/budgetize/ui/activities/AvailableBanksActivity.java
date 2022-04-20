@@ -25,7 +25,7 @@ import java.util.List;
 
 public class AvailableBanksActivity extends AppCompatActivity {
 
-    public static ArrayList<Bank> banks = new ArrayList<Bank>();
+    public static ArrayList<Bank> banks = new ArrayList<>();
     private final int MAX_CARDS = 2;
     private ListView listview;
     private ArrayList<AvailableBank> dataList;
@@ -63,7 +63,7 @@ public class AvailableBanksActivity extends AppCompatActivity {
     private void buildscreen() {
         addBanks();
         listadapter = new AvailableBanksAdapter(getApplicationContext(), this,
-                MAX_CARDS, (ArrayList<Bank>) banks);
+                MAX_CARDS, banks);
         listadapter.addItemsInGrid(dataList);
         addHeaderFooters();
         listview.setAdapter(listadapter);

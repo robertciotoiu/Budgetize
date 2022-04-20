@@ -44,7 +44,7 @@ public interface WalletDao {
      String getLatestDate();
 
     @Query("UPDATE wallets SET currency = :currency where id = :wallet_id")
-     long updateCurrency(long wallet_id, String currency);
+     int updateCurrency(long wallet_id, String currency);
 
     //UPDATE THE FINANCIAL STATUS OF A WALLET
     @Query("UPDATE wallets set financial_status = financial_status+(SELECT (SELECT COALESCE(SUM(ie.amount),0) AS wallet_ie FROM wallets w, incomes_expenses ie where w.id = ie.wallet_id and w.id = :wallet_id and ie.type=0)" +

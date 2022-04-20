@@ -84,7 +84,7 @@ public class LinkedBankAccountsActivity extends AppCompatActivity implements Vie
     private void init_UI() {
         if (mCardAdapter != null && mCardAdapter.getCount() != 0) {
             ConstraintSet constraintSet = new ConstraintSet();
-            ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.linked_bank_accounts);
+            ConstraintLayout mConstraintLayout = findViewById(R.id.linked_bank_accounts);
             constraintSet.clone(mConstraintLayout);
             constraintSet.setVerticalBias(imageViewButton.getId(), 0.801f);
             constraintSet.applyTo(mConstraintLayout);
@@ -95,7 +95,7 @@ public class LinkedBankAccountsActivity extends AppCompatActivity implements Vie
             // IF Empty Screen
             // position buttons to center of the screen
             ConstraintSet constraintSet = new ConstraintSet();
-            ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.linked_bank_accounts);
+            ConstraintLayout mConstraintLayout = findViewById(R.id.linked_bank_accounts);
             constraintSet.clone(mConstraintLayout);
             constraintSet.setVerticalBias(imageViewButton.getId(), 0.5f);
             constraintSet.applyTo(mConstraintLayout);

@@ -107,7 +107,7 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
-    public long updateCurrency(long wallet_id, String currency) {
+    public int updateCurrency(long wallet_id, String currency) {
         return mDatabase.walletDao().updateCurrency(wallet_id, currency);
     }
 
@@ -271,9 +271,9 @@ public class DataRepository implements WalletDao, CategoryDao, IEObjectDao, Link
     }
 
     @Override
-    public long updateLinkStatus(long id, String link_status) {
-        long status = mDatabase.linkedBankDao().updateLinkStatus(id, link_status);
-        if (status > 0 && link_status == "UNLINKED") {
+    public int updateLinkStatus(long id, String link_status) {
+        int status = mDatabase.linkedBankDao().updateLinkStatus(id, link_status);
+        if (status > 0 && link_status.equals("UNLINKED")) {
             //TODO: remove all txns from all wallets, and all bank accounts from
             //TODO: I think it is done automatically using foreign keys and cascade on delete, if not do the above todo.
         }

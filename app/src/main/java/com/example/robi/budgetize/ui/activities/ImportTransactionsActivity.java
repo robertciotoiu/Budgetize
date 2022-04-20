@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.robi.budgetize.ApplicationObj;
@@ -93,33 +92,30 @@ public class ImportTransactionsActivity extends AppCompatActivity {
                     ImportTransactionsActivity.linkedBanks.add(linkedBank);
                     //For each linkedbank, we add an observer of bankAccounts on that linked bank.
                     LiveData<List<BankAccount>> bankAccountsList = bankAccountViewModel.getBankAccountsFromALinkedBank(linkedBank.getId());//wrong, must get bank accounts from linked banked with linkedbank.getID();
-                    bankAccountsList.observe(ImportTransactionsActivity.this, new Observer<List<BankAccount>>() {
-                        @Override
-                        public void onChanged(List<BankAccount> bankAccounts) {
+                    bankAccountsList.observe(ImportTransactionsActivity.this, bankAccounts -> {
 
-                            for (int i = 0; i < mExpandingList.getItemsCount(); i++) {
-                                if (mExpandingList.getItemByIndex(i) != null) {
-                                    ExpandingItem item = mExpandingList.getItemByIndex(i);
-                                    if (item.itemIDHolder.contentEquals(linkedBank.getObp_bank_id())) {
-                                        item.removeAllSubItems();
-                                        item.createSubItems(bankAccounts.size());
-                                        for (int j = 0; j < item.getSubItemsCount(); j++) {
-                                            //Let's get the created sub item by its index
-                                            final View view = item.getSubItemView(j);
-                                            configureSubItem(item, view, bankAccounts.get(j));
-                                        }
-                                        ImportTransactionsActivity.bankAccounts.put(linkedBank.getObp_bank_id(), bankAccounts);
+                        for (int i = 0; i < mExpandingList.getItemsCount(); i++) {
+                            if (mExpandingList.getItemByIndex(i) != null) {
+                                ExpandingItem item = mExpandingList.getItemByIndex(i);
+                                if (item.itemIDHolder.contentEquals(linkedBank.getObp_bank_id())) {
+                                    item.removeAllSubItems();
+                                    item.createSubItems(bankAccounts.size());
+                                    for (int j = 0; j < item.getSubItemsCount(); j++) {
+                                        //Let's get the created sub item by its index
+                                        final View view = item.getSubItemView(j);
+                                        configureSubItem(item, view, bankAccounts.get(j));
                                     }
+                                    ImportTransactionsActivity.bankAccounts.put(linkedBank.getObp_bank_id(), bankAccounts);
                                 }
+                            }
 //                if(i== item.getSubItemsCount()-1) {
 //                    RelativeLayout layout = view.findViewById(R.id.layout_subitem);
 //                    ViewGroup.LayoutParams params = layout.getLayoutParams();
 //                    params.height = 300;
 //                    view.setLayoutParams(params);
 //                }
-                                //Let's set some values in
+                            //Let's set some values in
 
-                            }
                         }
                     });
                     //TODO: solve issues from here
@@ -150,14 +146,11 @@ public class ImportTransactionsActivity extends AppCompatActivity {
                 item.setIndicatorIcon(AppCompatResources.getDrawable(this, R.drawable.synch_transactions));
             }
             item.setIndicatorSize(25, 25, this);
-            item.setIndicatorOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (bankAccountViewModel.isSyncLinkedBank(walletID, linkedBank)) {
-                        //TODO: implement here dialog asking user for desync
-                    } else {
-                        doItemSync(item, linkedBank);
-                    }
+            item.setIndicatorOnClickListener(v -> {
+                if (bankAccountViewModel.isSyncLinkedBank(walletID, linkedBank)) {
+                    //TODO: implement here dialog asking user for desync
+                } else {
+                    doItemSync(item, linkedBank);
                 }
             });
             //1. ImageView category_icon
@@ -179,10 +172,10 @@ public class ImportTransactionsActivity extends AppCompatActivity {
 
         if (bankAccountViewModel.isSyncBankAccount(walletID, bankAccount)) {
             ((ImageView) view.findViewById(R.id.remove_sub_item_transaction)).setImageDrawable(getDrawable(R.drawable.transactions_synched));
-            ((ImageView) view.findViewById(R.id.remove_sub_item_transaction)).setTag("sync");
+            view.findViewById(R.id.remove_sub_item_transaction).setTag("sync");
         } else {
             ((ImageView) view.findViewById(R.id.remove_sub_item_transaction)).setImageDrawable(getDrawable(R.drawable.synch_transactions));
-            ((ImageView) view.findViewById(R.id.remove_sub_item_transaction)).setTag("desync");
+            view.findViewById(R.id.remove_sub_item_transaction).setTag("desync");
         }
 
         //((TextView) view.findViewById(R.id.text_view_ie_description_white)).setText("TO BE IMPLEMENTED");
@@ -226,7 +219,7 @@ public class ImportTransactionsActivity extends AppCompatActivity {
     }
 
     private void syncAccountTransactions(BankAccount bankAccount, View view) {
-        String status = (String) ((ImageView) view.findViewById(R.id.remove_sub_item_transaction)).getTag();
+        String status = (String) view.findViewById(R.id.remove_sub_item_transaction).getTag();
         if (status.contentEquals("sync")) {
             //TODO: implement here dialog asking user for desync
         } else {
@@ -263,10 +256,10 @@ public class ImportTransactionsActivity extends AppCompatActivity {
     private void updateUISubItem(View view, BankAccount bankAccount) {
         if (bankAccountViewModel.isSyncBankAccount(walletID, bankAccount)) {
             ((ImageView) view.findViewById(R.id.remove_sub_item_transaction)).setImageDrawable(getDrawable(R.drawable.transactions_synched));
-            ((ImageView) view.findViewById(R.id.remove_sub_item_transaction)).setTag("sync");
+            view.findViewById(R.id.remove_sub_item_transaction).setTag("sync");
         } else {
             ((ImageView) view.findViewById(R.id.remove_sub_item_transaction)).setImageDrawable(getDrawable(R.drawable.synch_transactions));
-            ((ImageView) view.findViewById(R.id.remove_sub_item_transaction)).setTag("desync");
+            view.findViewById(R.id.remove_sub_item_transaction).setTag("desync");
         }
     }
 
@@ -275,7 +268,7 @@ public class ImportTransactionsActivity extends AppCompatActivity {
         for (int i = 0; i < subItems; i++) {
             View v = item.getSubItemView(i);
             ((ImageView) v.findViewById(R.id.remove_sub_item_transaction)).setImageDrawable(getDrawable(R.drawable.transactions_synched));
-            ((ImageView) v.findViewById(R.id.remove_sub_item_transaction)).setTag("sync");
+            v.findViewById(R.id.remove_sub_item_transaction).setTag("sync");
         }
     }
 
@@ -321,50 +314,47 @@ public class ImportTransactionsActivity extends AppCompatActivity {
     }
 
     private void importSubItemClickListener(final ExpandingItem expandingItem, final View view, final BankAccount bankAccount) {
-        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE: {
-                        try {
-                            //TODO
-                            Toast.makeText(ImportTransactionsActivity.this, "I/E Deleted", Toast.LENGTH_SHORT).show();
-                            expandingItem.removeSubItem(view);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            System.out.println(e.getMessage());
-                            Toast toast = Toast.makeText(ImportTransactionsActivity.this, "Unable to import transactions", Toast.LENGTH_SHORT);
-                            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
-                            v.setTextColor(Color.RED);
-                            toast.show();
-                        }
-                        //Yes button clicked
-                        break;
-                    }
+        /*
+        private void refresh_category(ExpandingItem expandingItem, View view, CategoryObject categoryObject) {
+            double ieValue = MainActivity.myDatabase.categoryDao().getCategoryIESUM(wallet.getId(), categoryObject.getName());
+            expandingItem.setIndicatorIcon(getIcon(ieValue));
 
-                    case DialogInterface.BUTTON_NEGATIVE: {
-                        //No button clicked
-                        break;
+            if (ieValue > 0) {
+                expandingItem.setBackgroundResource(R.drawable.item_shape_positive);
+            } else if (ieValue < 0) {
+                expandingItem.setBackgroundResource(R.drawable.item_shape_negative);
+            } else {
+                expandingItem.setBackgroundResource(R.drawable.item_shape_neutral);
+            }
+            TextView value = (TextView) expandingItem.findViewById(R.id.text_view_value_white);
+            value.setText(String.valueOf(ieValue));
+        }
+
+         */
+        final DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE: {
+                    try {
+                        //TODO
+                        Toast.makeText(ImportTransactionsActivity.this, "I/E Deleted", Toast.LENGTH_SHORT).show();
+                        expandingItem.removeSubItem(view);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println(e.getMessage());
+                        Toast toast = Toast.makeText(ImportTransactionsActivity.this, "Unable to import transactions", Toast.LENGTH_SHORT);
+                        TextView v = toast.getView().findViewById(android.R.id.message);
+                        v.setTextColor(Color.RED);
+                        toast.show();
                     }
+                    //Yes button clicked
+                    break;
+                }
+
+                case DialogInterface.BUTTON_NEGATIVE: {
+                    //No button clicked
+                    break;
                 }
             }
-            /*
-            private void refresh_category(ExpandingItem expandingItem, View view, CategoryObject categoryObject) {
-                double ieValue = MainActivity.myDatabase.categoryDao().getCategoryIESUM(wallet.getId(), categoryObject.getName());
-                expandingItem.setIndicatorIcon(getIcon(ieValue));
-
-                if (ieValue > 0) {
-                    expandingItem.setBackgroundResource(R.drawable.item_shape_positive);
-                } else if (ieValue < 0) {
-                    expandingItem.setBackgroundResource(R.drawable.item_shape_negative);
-                } else {
-                    expandingItem.setBackgroundResource(R.drawable.item_shape_neutral);
-                }
-                TextView value = (TextView) expandingItem.findViewById(R.id.text_view_value_white);
-                value.setText(String.valueOf(ieValue));
-            }
-
-             */
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Are you sure you want do DELETE permanently this I/E?").setPositiveButton("Yes", dialogClickListener)

@@ -30,7 +30,7 @@ public interface LinkedBankDao {
      String getLinkedBankOBPID(long id);
 
     @Query("UPDATE linked_banks SET link_status=:link_status WHERE id=:id")
-     long updateLinkStatus(long id, String link_status);
+     int updateLinkStatus(long id, String link_status);
 
     @Query("DELETE FROM linked_banks where id=:id")
      int deleteLinkedBank(long id);

@@ -230,14 +230,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void doLogicOnFirstAppStart() {
-        tabLayout = (TabLayout) findViewById(R.id.tabDots);
+        tabLayout = findViewById(R.id.tabDots);
         bankAccountViewModel.appFirstStartLogicInit();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        wallets = new ArrayList<Wallet>();
+        wallets = new ArrayList<>();
     }
 
     @Override
@@ -345,6 +345,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            @NotNull String[] permissions,
                                            @NotNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == WRITE_EXTERNAL_STORAGE_PERMISSION) {
             // Parse all the request permissions results
             for (int i = 0, len = permissions.length; i < len; i++) {
@@ -392,17 +393,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showBankAccountNeedActions() {
-        ImageButton bankAccounts = (ImageButton) this.findViewById(R.id.bank_accounts_button);
+        ImageButton bankAccounts = this.findViewById(R.id.bank_accounts_button);
         bankAccounts.setImageResource(R.drawable.account_action_to_take);
     }
 
     private void activateLoader() {
-        ProgressBar accLoader = (ProgressBar) findViewById(R.id.progressAccountLoad);
+        ProgressBar accLoader = findViewById(R.id.progressAccountLoad);
         accLoader.setVisibility(View.VISIBLE);
     }
 
     private void deactivateLoader() {
-        ProgressBar accLoader = (ProgressBar) findViewById(R.id.progressAccountLoad);
+        ProgressBar accLoader = findViewById(R.id.progressAccountLoad);
         accLoader.setVisibility(View.GONE);
     }
 
@@ -423,35 +424,22 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //ADD WALLET FAB
-        final ElasticButton addWalletFab = (ElasticButton) this.findViewById(R.id.add_wallet);
-        addWalletFab.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                startActivity(CreateWalletActivity.class);
-            }
-        });
+        final ElasticButton addWalletFab = this.findViewById(R.id.add_wallet);
+        addWalletFab.setOnClickListener(v -> startActivity(CreateWalletActivity.class));
 
         //REMOVE WALLET FAB
-        final ElasticButton removeWalletFab = (ElasticButton) this.findViewById(R.id.remove_wallet);
-        removeWalletFab.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                createDialogClickListener();
-            }
-        });
+        final ElasticButton removeWalletFab = this.findViewById(R.id.remove_wallet);
+        removeWalletFab.setOnClickListener(v -> createDialogClickListener());
 
         //CLOUD BUTTON
-        ImageButton cloudButton = (ImageButton) this.findViewById(R.id.cloud_image_button);
-        cloudButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.cloud_image_button: {
-                        if (googleSignInTokenID == null) {
-                            signIn();
-                        } else {
-                            //TODO: Implement synch between local database and server database
-                            createSignOutDialog();
-                        }
-                    }
-                    break;
+        ImageButton cloudButton = this.findViewById(R.id.cloud_image_button);
+        cloudButton.setOnClickListener(v -> {
+            if (v.getId() == R.id.cloud_image_button) {
+                if (googleSignInTokenID == null) {
+                    signIn();
+                } else {
+                    //TODO: Implement synch between local database and server database
+                    createSignOutDialog();
                 }
             }
         });
@@ -465,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
         //SETTINGS BUTTON
-        ImageButton settingsButton = (ImageButton) this.findViewById(R.id.settings_button);
+        ImageButton settingsButton = this.findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(v -> {
             //hide other layouts
 //                RelativeLayout mainScreenLayout = (RelativeLayout) MainActivity.this.findViewById(R.id.main_screen_layout);
@@ -498,12 +486,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //BANK ACCOUNTS BUTTON
-        ImageButton bankAccounts = (ImageButton) this.findViewById(R.id.bank_accounts_button);
-        bankAccounts.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                startActivity(LinkedBankAccountsActivity.class);
-            }
-        });
+        ImageButton bankAccounts = this.findViewById(R.id.bank_accounts_button);
+        bankAccounts.setOnClickListener(v -> startActivity(LinkedBankAccountsActivity.class));
     }
 
     //Database sync
@@ -513,8 +497,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initIntroScreen() {
-        introText = (TextView) this.findViewById(R.id.intro_text);
-        introArrow = (ImageView) this.findViewById(R.id.intro_arrow_imgview);
+        introText = this.findViewById(R.id.intro_text);
+        introArrow = this.findViewById(R.id.intro_arrow_imgview);
     }
 
     private void activateDeactivateIntroScreen(boolean shouldActivate) {
@@ -531,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the adapter with all the wallets
         adapter = new WalletViewPagerAdapter(wallets, this, mainActivityViewModel);
         // Initialize the viewpager
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        viewPager = findViewById(R.id.viewPager);
         // Set the adapter to the Viewpager
         viewPager.setAdapter(adapter);
         viewPager.setPadding(0, 0, 0, 0);
@@ -553,7 +537,7 @@ public class MainActivity extends AppCompatActivity {
                 double financialGoal = wallets.get(i).getFinancialGoal();
                 int percentage = (int) ((financialStatus / financialGoal) * 100);
                 ObjectAnimator animation = ObjectAnimator.ofInt(pb, "progress", percentage);
-                animation.setDuration(percentage * 16);//for 50%: 800 is great except small ones.
+                animation.setDuration(percentage * 16L);//for 50%: 800 is great except small ones.
                 animation.setInterpolator(new AccelerateDecelerateInterpolator());//new FastOutSlowInInterpolator());
                 animation.start();
             }
@@ -594,36 +578,24 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                switch (position) {
-                    default: {
-                        {
-                            ProgressBar pb = new ProgressBar(MainActivity.this);
-                            for (View v : viewPager.getTouchables())
-                                if (v instanceof ProgressBar) {
-                                    pb = (ProgressBar) v;
-                                }
-                            double financialStatus = wallets.get(position).getFinancialStatus();
-                            double financialGoal = wallets.get(position).getFinancialGoal();
-                            int percentage = (int) ((financialStatus / financialGoal) * 100);
-                            ObjectAnimator animation = ObjectAnimator.ofInt(pb, "progress", percentage);
-                            animation.setDuration(percentage * 16);//for 50%: 800 is great except small ones.
-                            animation.setInterpolator(new AccelerateDecelerateInterpolator());//new FastOutSlowInInterpolator());
-                            animation.start();
-                            break;
-                        }
+                ProgressBar pb = new ProgressBar(MainActivity.this);
+                for (View v : viewPager.getTouchables())
+                    if (v instanceof ProgressBar) {
+                        pb = (ProgressBar) v;
                     }
-                }
+                double financialStatus = wallets.get(position).getFinancialStatus();
+                double financialGoal = wallets.get(position).getFinancialGoal();
+                int percentage = (int) ((financialStatus / financialGoal) * 100);
+                ObjectAnimator animation = ObjectAnimator.ofInt(pb, "progress", percentage);
+                animation.setDuration(percentage * 16L);//for 50%: 800 is great except small ones.
+                animation.setInterpolator(new AccelerateDecelerateInterpolator());//new FastOutSlowInInterpolator());
+                animation.start();
             }
         };
 
         viewPager.setOnPageChangeListener(pageChangeListener);
         // do this in a runnable to make sure the viewPager's views are already instantiated before triggering the onPageSelected call
-        viewPager.post(new Runnable() {
-            @Override
-            public void run() {
-                pageChangeListener.onPageSelected(viewPager.getCurrentItem());
-            }
-        });
+        viewPager.post(() -> pageChangeListener.onPageSelected(viewPager.getCurrentItem()));
     }
 
     //GOOGLE SIGN-IN
@@ -635,12 +607,7 @@ public class MainActivity extends AppCompatActivity {
         // this asynchronous branch will attempt to sign in the user silently and get a valid
         // ID token. Cross-device single sign on will occur in this branch.
         mGoogleSignInClient.silentSignIn()
-                .addOnCompleteListener(this, new OnCompleteListener<GoogleSignInAccount>() {
-                    @Override
-                    public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
-                        handleSignInResultWithToken(task);
-                    }
-                });
+                .addOnCompleteListener(this, this::handleSignInResultWithToken);
     }
 
     private void handleSignInResultWithToken(Task<GoogleSignInAccount> completedTask) {
@@ -675,25 +642,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUI(GoogleSignInAccount account) {
+        ImageButton cloud = this.findViewById(R.id.cloud_image_button);
         if (account != null) {
             if (isSynchedToCloud()) {
-                ImageButton cloud = (ImageButton) this.findViewById(R.id.cloud_image_button);
                 cloud.setImageResource(R.drawable.synchedwhitecloud);
-                Log.d("TOKENID: ", account.getIdToken());
             } else {
-                ImageButton cloud = (ImageButton) this.findViewById(R.id.cloud_image_button);
                 cloud.setImageResource(R.drawable.tosyncwhitecloud);
-                Log.d("TOKENID: ", account.getIdToken());
             }
+            Log.d("TOKENID: ", account.getIdToken());
             MainActivityViewModel.loginStatus = true;
 
-            ImageButton cardsButton = (ImageButton) this.findViewById(R.id.bank_accounts_button);
+            ImageButton cardsButton = this.findViewById(R.id.bank_accounts_button);
             cardsButton.setVisibility(View.VISIBLE);
         } else {
-            ImageButton cloud = (ImageButton) this.findViewById(R.id.cloud_image_button);
             cloud.setImageResource(R.drawable.crossedwhitecloud);
             MainActivityViewModel.loginStatus = false;
-            ImageButton cardsButton = (ImageButton) this.findViewById(R.id.bank_accounts_button);
+            ImageButton cardsButton = this.findViewById(R.id.bank_accounts_button);
             cardsButton.setVisibility(View.GONE);
         }
     }
@@ -718,12 +682,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void revokeAccess() {
         mGoogleSignInClient.revokeAccess().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
-                    }
-                });
+                task -> updateUI(null));
     }
 
     private boolean isLoggedIn() {
@@ -746,42 +705,37 @@ public class MainActivity extends AppCompatActivity {
         // that the sign-in request is in process
         MainActivity.this.runOnUiThread(this::activateLoader);
         // We create a new ValidateUserTask and define the onTaskCompleted listener
-        new ValidateUserTask(new OnTaskCompleted() {
-            @Override
-            public void onTaskCompleted(String responseBody) {
-                // When the task has been completed, firstly we deactivate the progress bar loader
-                MainActivity.this.runOnUiThread(() -> deactivateLoader());
-                // Then we check the responseBody received from the server
-                // in order to see if there is any exception, or a valid Session ID
-                if (responseBody.toUpperCase().contains("EXCEPTION")) {
-                    if (responseBody.toUpperCase().contains("CONNECTEXCEPTION")) {
-                        MainActivity.this.runOnUiThread(() -> {
-                            // Inform the user there is no internet connection
-                            Toast.makeText(MainActivity.this,
-                                    "NO INTERNET CONNECTION", Toast.LENGTH_SHORT).show();
-                        });
-                    } else if (responseBody.toUpperCase().contains("SOCKETTIMEOUTEXCEPTION")) {
-                        MainActivity.this.runOnUiThread(() -> {
-                            // Inform the user that Budgetize's server is not available
-                            Toast.makeText(MainActivity.this,
-                                    "SERVICE CURRENTLY UNAVAILABLE", Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                    // If any issue occurs, we logout the user also from the google sign in account
-                    // disabling his access to the special features also
-                    signOut();
-                } else {
-                    // If there is no exception in the responseBody
-                    // we retrieve the sessionID and we update the UI accordingly.
-                    sessionID = responseBody;
+        new ValidateUserTask(responseBody -> {
+            // When the task has been completed, firstly we deactivate the progress bar loader
+            MainActivity.this.runOnUiThread(this::deactivateLoader);
+            // Then we check the responseBody received from the server
+            // in order to see if there is any exception, or a valid Session ID
+            if (responseBody.toUpperCase().contains("EXCEPTION")) {
+                if (responseBody.toUpperCase().contains("CONNECTEXCEPTION")) {
                     MainActivity.this.runOnUiThread(() -> {
-                        updateUI(account);
+                        // Inform the user there is no internet connection
+                        Toast.makeText(MainActivity.this,
+                                "NO INTERNET CONNECTION", Toast.LENGTH_SHORT).show();
+                    });
+                } else if (responseBody.toUpperCase().contains("SOCKETTIMEOUTEXCEPTION")) {
+                    MainActivity.this.runOnUiThread(() -> {
+                        // Inform the user that Budgetize's server is not available
+                        Toast.makeText(MainActivity.this,
+                                "SERVICE CURRENTLY UNAVAILABLE", Toast.LENGTH_SHORT).show();
                     });
                 }
-                endTimeGoogleSignInFlow = System.currentTimeMillis();
-                Log.d(" Time took Sign-in Flow",
-                        " " + (endTimeGoogleSignInFlow - startTimeGoogleSignInFlow));
+                // If any issue occurs, we logout the user also from the google sign in account
+                // disabling his access to the special features also
+                signOut();
+            } else {
+                // If there is no exception in the responseBody
+                // we retrieve the sessionID and we update the UI accordingly.
+                sessionID = responseBody;
+                MainActivity.this.runOnUiThread(() -> updateUI(account));
             }
+            endTimeGoogleSignInFlow = System.currentTimeMillis();
+            Log.d(" Time took Sign-in Flow",
+                    " " + (endTimeGoogleSignInFlow - startTimeGoogleSignInFlow));
         }, googleSignInTokenID).doInBackground();
     }
 
@@ -853,20 +807,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createSignOutDialog() {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE: {
-                        signOut();
-                        //Yes button clicked
-                        break;
-                    }
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE: {
+                    signOut();
+                    //Yes button clicked
+                    break;
+                }
 
-                    case DialogInterface.BUTTON_NEGATIVE: {
-                        //No button clicked
-                        break;
-                    }
+                case DialogInterface.BUTTON_NEGATIVE: {
+                    //No button clicked
+                    break;
                 }
             }
         };
@@ -876,35 +827,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createDialogClickListener() {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE: {
-                        try {
-                            mainActivityViewModel.deleteWallet(wallets.get(viewPager.getCurrentItem()));
-                            wallets.remove(viewPager.getCurrentItem());
-                            mainActivityViewModel.lastWalletPosition = 0;
-                            refresh_wallets();
-                            Toast.makeText(MainActivity.this, "Wallet Deleted", Toast.LENGTH_SHORT).show();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            System.out.println(e.getMessage());
-                            Toast toast = Toast.makeText(MainActivity.this, "Unable to delete the Wallet", Toast.LENGTH_SHORT);
-                            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
-                            v.setTextColor(Color.RED);
-                            toast.show();
-                        }
-
-
-                        //Yes button clicked
-                        break;
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE: {
+                    try {
+                        mainActivityViewModel.deleteWallet(wallets.get(viewPager.getCurrentItem()));
+                        wallets.remove(viewPager.getCurrentItem());
+                        mainActivityViewModel.lastWalletPosition = 0;
+                        refresh_wallets();
+                        Toast.makeText(MainActivity.this, "Wallet Deleted", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println(e.getMessage());
+                        Toast toast = Toast.makeText(MainActivity.this, "Unable to delete the Wallet", Toast.LENGTH_SHORT);
+                        TextView v = toast.getView().findViewById(android.R.id.message);
+                        v.setTextColor(Color.RED);
+                        toast.show();
                     }
 
-                    case DialogInterface.BUTTON_NEGATIVE: {
-                        //No button clicked
-                        break;
-                    }
+
+                    //Yes button clicked
+                    break;
+                }
+
+                case DialogInterface.BUTTON_NEGATIVE: {
+                    //No button clicked
+                    break;
                 }
             }
         };

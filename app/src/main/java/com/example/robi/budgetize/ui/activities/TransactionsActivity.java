@@ -39,14 +39,12 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.maltaisn.icondialog.pack.IconPack;
 import com.mynameismidori.currencypicker.CurrencyPicker;
-import com.mynameismidori.currencypicker.CurrencyPickerListener;
 import com.mynameismidori.currencypicker.ExtendedCurrency;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
-import com.whiteelephant.monthpicker.MonthPickerDialog;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -59,9 +57,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 //TODO: display at the bottom all the IEs without a category
 public class TransactionsActivity extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener, DatePickerDialog.OnDateSetListener {
-    private static final List<CategoryObject> categoryObjectsList = new ArrayList<CategoryObject>();
-    private static final List<IEObject> orphanIEs = new ArrayList<IEObject>();
-    private static final List<IEObject> ieObjects = new ArrayList<IEObject>();
+    private static final List<CategoryObject> categoryObjectsList = new ArrayList<>();
+    private static final List<IEObject> orphanIEs = new ArrayList<>();
+    private static final List<IEObject> ieObjects = new ArrayList<>();
     String TAG = this.getClass().getName();
     long walletID = 0;
     boolean firstStart = true;
@@ -91,7 +89,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 //    private Observer<List<IEObject>> ieListObserver;
 
     public static List<IEObject> cloneList(List<IEObject> orphanIEs) {
-        List<IEObject> clone = new ArrayList<IEObject>(orphanIEs.size());
+        List<IEObject> clone = new ArrayList<>(orphanIEs.size());
         for (IEObject ieObject : orphanIEs) {
             try {
                 clone.add((IEObject) ieObject.clone());
@@ -147,33 +145,27 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         init_floatingPointButton();
         initUIElements();
         //Observers
-        categoryListObsever = new Observer<List<CategoryObject>>() {
-            @Override
-            public void onChanged(List<CategoryObject> categoryObjects) {
-                TransactionsActivity.categoryObjectsList.clear();
-                TransactionsActivity.categoryObjectsList.addAll(categoryObjects);
-                if (firstStart) {
-                    try {
-                        populateLists();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    firstStart = false;
+        categoryListObsever = categoryObjects -> {
+            TransactionsActivity.categoryObjectsList.clear();
+            TransactionsActivity.categoryObjectsList.addAll(categoryObjects);
+            if (firstStart) {
+                try {
+                    populateLists();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                orphanIEsObserver = new Observer<List<IEObject>>() {
-                    @Override
-                    public void onChanged(List<IEObject> orphanIEs) {
-                        TransactionsActivity.orphanIEs.clear();
-                        TransactionsActivity.orphanIEs.addAll(orphanIEs);
-                        if (firstStartOrphane) {
-                            addOrphaneIEs();
-                            firstStartOrphane = false;
-                        }
-                        //addOrphaneCategories();
-                    }
-                };
-                mainActivityViewModel.getAllIEofAWalletWithoutCategoriesAssigned(walletID).observe(TransactionsActivity.this, orphanIEsObserver);
+                firstStart = false;
             }
+            orphanIEsObserver = orphanIEs -> {
+                TransactionsActivity.orphanIEs.clear();
+                TransactionsActivity.orphanIEs.addAll(orphanIEs);
+                if (firstStartOrphane) {
+                    addOrphaneIEs();
+                    firstStartOrphane = false;
+                }
+                //addOrphaneCategories();
+            };
+            mainActivityViewModel.getAllIEofAWalletWithoutCategoriesAssigned(walletID).observe(TransactionsActivity.this, orphanIEsObserver);
         };//categoryObjects::addAll;
         mainActivityViewModel.getAllCategoriesOfAWallet(walletID).observe(this, categoryListObsever);
 //        ieListObserver = new Observer<List<IEObject>>() {
@@ -198,44 +190,30 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
         String date = year + "-" + (month + 1) + "-" + day;
         pickedDate.setText(date);
-        pickedDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog();
-            }
-        });
+        pickedDate.setOnClickListener(v -> showDatePickerDialog());
         // init filters
         timeFrameFilter = date;
         frequencyFilter = "monthly";
         monthlyCheck.setChecked(true);
 
-        dailyCheck.addOnCheckedChangeListener(new MaterialButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(MaterialButton button, boolean isChecked) {
-                if (isChecked) {
-                    frequencyFilter = "daily";
-                    refreshScreen();
-                }
+        dailyCheck.addOnCheckedChangeListener((button, isChecked) -> {
+            if (isChecked) {
+                frequencyFilter = "daily";
+                refreshScreen();
             }
         });
 
-        monthlyCheck.addOnCheckedChangeListener(new MaterialButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(MaterialButton button, boolean isChecked) {
-                if (isChecked) {
-                    frequencyFilter = "monthly";
-                    refreshScreen();
-                }
+        monthlyCheck.addOnCheckedChangeListener((button, isChecked) -> {
+            if (isChecked) {
+                frequencyFilter = "monthly";
+                refreshScreen();
             }
         });
 
-        yearlyCheck.addOnCheckedChangeListener(new MaterialButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(MaterialButton button, boolean isChecked) {
-                if (isChecked) {
-                    frequencyFilter = "yearly";
-                    refreshScreen();
-                }
+        yearlyCheck.addOnCheckedChangeListener((button, isChecked) -> {
+            if (isChecked) {
+                frequencyFilter = "yearly";
+                refreshScreen();
             }
         });
     }
@@ -371,44 +349,32 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         currencyTextView.setText(currencyCode.getCode());
         currencyImageView.setImageDrawable(getDrawable(currencyCode.getFlag()));
 
-        currencyImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
-                picker.setListener(new CurrencyPickerListener() {
-                    @Override
-                    public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
-                        // Implement your code here
-                        currencyFilter = code;
-                        wallet.setCurrency(code);
-                        doSelectCurrencyLogic(code, flagDrawableResID, picker);
-                        updateAllAmounts();
-                        //mainActivityViewModel.prepareCurrencies(walletID);
-                        refreshScreen();
-                    }
-                });
-                picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
-            }
+        currencyImageView.setOnClickListener(v -> {
+            CurrencyPicker picker1 = CurrencyPicker.newInstance("Select Currency");  // dialog title
+            picker1.setListener((name, code, symbol, flagDrawableResID) -> {
+                // Implement your code here
+                currencyFilter = code;
+                wallet.setCurrency(code);
+                doSelectCurrencyLogic(code, flagDrawableResID, picker1);
+                updateAllAmounts();
+                //mainActivityViewModel.prepareCurrencies(walletID);
+                refreshScreen();
+            });
+            picker1.show(getSupportFragmentManager(), "CURRENCY_PICKER");
         });
 
-        currencyTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CurrencyPicker picker = CurrencyPicker.newInstance("Select Currency");  // dialog title
-                picker.setListener(new CurrencyPickerListener() {
-                    @Override
-                    public void onSelectCurrency(String name, String code, String symbol, int flagDrawableResID) {
-                        // Implement your code here
-                        currencyFilter = code;
-                        wallet.setCurrency(code);
-                        doSelectCurrencyLogic(code, flagDrawableResID, picker);
-                        updateAllAmounts();
-                        //mainActivityViewModel.prepareCurrencies(walletID);
-                        refreshScreen();
-                    }
-                });
-                picker.show(getSupportFragmentManager(), "CURRENCY_PICKER");
-            }
+        currencyTextView.setOnClickListener(v -> {
+            CurrencyPicker picker12 = CurrencyPicker.newInstance("Select Currency");  // dialog title
+            picker12.setListener((name, code, symbol, flagDrawableResID) -> {
+                // Implement your code here
+                currencyFilter = code;
+                wallet.setCurrency(code);
+                doSelectCurrencyLogic(code, flagDrawableResID, picker12);
+                updateAllAmounts();
+                //mainActivityViewModel.prepareCurrencies(walletID);
+                refreshScreen();
+            });
+            picker12.show(getSupportFragmentManager(), "CURRENCY_PICKER");
         });
         //}
 
@@ -453,7 +419,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             picker.dismiss();
         } else {
             Toast toast = Toast.makeText(TransactionsActivity.this, "Cannot change currency! Contact support team!", Toast.LENGTH_LONG);
-            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+            TextView v = toast.getView().findViewById(android.R.id.message);
             v.setTextColor(Color.RED);
             toast.show();
         }
@@ -496,12 +462,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                 ((TextView) item.findViewById(R.id.text_view_value_white)).setText(String.valueOf(orphaneIEObject.amount));
                 ((TextView) item.findViewById(R.id.text_view_category_name_white)).setText(orphaneIEObject.getName());
                 ((TextView) item.findViewById(R.id.text_view_description_white)).setText("Transaction");
-                item.findViewById(R.id.remove_item).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        removeItemClickListener(orphaneIEObject, item);
-                    }
-                });
+                item.findViewById(R.id.remove_item).setOnClickListener(v -> removeItemClickListener(orphaneIEObject, item));
             }
             Log.d("UI thread", "I am the UI thread");
         });
@@ -526,19 +487,19 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                 //item.setIndicatorColorRes(getIconIndicatorColor(ie_value));//R.color.positiveBackgroundColor);
                 item.setIndicatorIcon(getIcon(categoryObject.getIconID(), ie_value));//R.drawable.house_icon);
                 //1. ImageView category_icon
-                TextView valueTextView = (TextView) item.findViewById(R.id.text_view_value_white);
+                TextView valueTextView = item.findViewById(R.id.text_view_value_white);
                 valueTextView.setText(String.valueOf(ie_value));
                 valueTextView.setTooltipText(String.valueOf(ie_value));
 
-                TextView nameTextView = ((TextView) item.findViewById(R.id.text_view_category_name_white));
+                TextView nameTextView = item.findViewById(R.id.text_view_category_name_white);
                 nameTextView.setText(categoryObject.getName());
                 nameTextView.setTooltipText(String.valueOf(categoryObject.getName()));
 
-                TextView descriptionTextView = ((TextView) item.findViewById(R.id.text_view_description_white));
+                TextView descriptionTextView = item.findViewById(R.id.text_view_description_white);
                 descriptionTextView.setText(categoryObject.getDescription());
                 descriptionTextView.setTooltipText(String.valueOf(categoryObject.getDescription()));
 
-                if (ieObjectList != null && ieObjectList.size() != 0) {
+                if (ieObjectList.size() != 0) {
                     item.createSubItems(ieObjectList.size());
                     for (int i = 0; i < item.getSubItemsCount(); i++) {
                         final View view = item.getSubItemView(i);
@@ -565,12 +526,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
                     item.setIndicatorIcon(personalizeIcon(R.drawable.bankaccounts, R.color.gold));
                     item.setBackground(getDrawable(R.drawable.item_shape_gold));
                 } else {
-                    item.findViewById(R.id.remove_item).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            removeItemClickListener(categoryObject, item);
-                        }
-                    });
+                    item.findViewById(R.id.remove_item).setOnClickListener(v -> removeItemClickListener(categoryObject, item));
                 }
             }
             Log.d("UI thread", "I am the UI thread");
@@ -594,37 +550,34 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
     }
 
     private void removeItemClickListener(Object object, final ExpandingItem expandingItem) {
-        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE: {
-                        try {
-                            if (object instanceof IEObject) {
-                                mainActivityViewModel.deleteIE(((IEObject) object).getId());
-                                mExpandingList.removeView(expandingItem);
-                            } else {
-                                mainActivityViewModel.deleteCategory(((CategoryObject) object).getCategory_id());
-                                mExpandingList.removeView(expandingItem);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            System.out.println(e.getMessage());
-                            Toast toast = Toast.makeText(TransactionsActivity.this, "Unable to delete the Category", Toast.LENGTH_SHORT);
-                            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
-                            v.setTextColor(Color.RED);
-                            toast.show();
+        final DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE: {
+                    try {
+                        if (object instanceof IEObject) {
+                            mainActivityViewModel.deleteIE(((IEObject) object).getId());
+                            mExpandingList.removeView(expandingItem);
+                        } else {
+                            mainActivityViewModel.deleteCategory(((CategoryObject) object).getCategory_id());
+                            mExpandingList.removeView(expandingItem);
                         }
-
-
-                        //Yes button clicked
-                        break;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println(e.getMessage());
+                        Toast toast = Toast.makeText(TransactionsActivity.this, "Unable to delete the Category", Toast.LENGTH_SHORT);
+                        TextView v = toast.getView().findViewById(android.R.id.message);
+                        v.setTextColor(Color.RED);
+                        toast.show();
                     }
 
-                    case DialogInterface.BUTTON_NEGATIVE: {
-                        //No button clicked
-                        break;
-                    }
+
+                    //Yes button clicked
+                    break;
+                }
+
+                case DialogInterface.BUTTON_NEGATIVE: {
+                    //No button clicked
+                    break;
                 }
             }
         };
@@ -674,7 +627,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 
     private void configureSubItem(final ExpandingItem item, final View view, final IEObject ieObject, final CategoryObject categoryObject) {
         //subItemViewHolder.ieIcon.setText(ieObject.getSubItemTitle()); //to be implemented
-        TextView valueTextView = ((TextView) view.findViewById(R.id.text_view_ie_value_white));
+        TextView valueTextView = view.findViewById(R.id.text_view_ie_value_white);
         if (ieObject.type == 1) {
             if (ieObject.amount >= 0) {
                 valueTextView.setText("-" + ieObject.amount);
@@ -687,7 +640,7 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             valueTextView.setText(String.valueOf(ieObject.amount));
             valueTextView.setTooltipText(String.valueOf(ieObject.amount));
         }
-        TextView ieNameTextView = ((TextView) view.findViewById(R.id.text_view_title_white));
+        TextView ieNameTextView = view.findViewById(R.id.text_view_title_white);
         ieNameTextView.setText(String.valueOf(ieObject.name));
         ieNameTextView.setTooltipText(String.valueOf(ieObject.name));
         //((TextView) view.findViewById(R.id.text_view_ie_description_white)).setText("TO BE IMPLEMENTED");
@@ -703,42 +656,34 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
             params.rightMargin = dpToPixels(10);
             valueTextView.setLayoutParams(params);
         } else {
-            view.findViewById(R.id.remove_sub_item_white).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    removeSubItemClickListener(ieObject.getId(), item, view, categoryObject);
-                }
-            });
+            view.findViewById(R.id.remove_sub_item_white).setOnClickListener(v -> removeSubItemClickListener(ieObject.getId(), item, view, categoryObject));
         }
     }
 
     private void removeSubItemClickListener(final long ieID, final ExpandingItem expandingItem, final View view, final CategoryObject categoryObject) {
-        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE: {
-                        try {
-                            //TODO:issue here, when we delete one IE, we must removeSubItem() and recalculate category
-                            mainActivityViewModel.deleteIE(ieID);
-                            Toast.makeText(TransactionsActivity.this, "Transaction Deleted", Toast.LENGTH_SHORT).show();
-                            expandingItem.removeSubItem(view);
-                            recalculateCategorySum(expandingItem, categoryObject);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            System.out.println(e.getMessage());
-                            Toast toast = Toast.makeText(TransactionsActivity.this, "Unable to delete Transaction", Toast.LENGTH_SHORT);
-                            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
-                            v.setTextColor(Color.RED);
-                            toast.show();
-                        }
-                        //Yes button clicked
-                        break;
+        final DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE: {
+                    try {
+                        //TODO:issue here, when we delete one IE, we must removeSubItem() and recalculate category
+                        mainActivityViewModel.deleteIE(ieID);
+                        Toast.makeText(TransactionsActivity.this, "Transaction Deleted", Toast.LENGTH_SHORT).show();
+                        expandingItem.removeSubItem(view);
+                        recalculateCategorySum(expandingItem, categoryObject);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println(e.getMessage());
+                        Toast toast = Toast.makeText(TransactionsActivity.this, "Unable to delete Transaction", Toast.LENGTH_SHORT);
+                        TextView v = toast.getView().findViewById(android.R.id.message);
+                        v.setTextColor(Color.RED);
+                        toast.show();
                     }
-                    case DialogInterface.BUTTON_NEGATIVE: {
-                        //No button clicked
-                        break;
-                    }
+                    //Yes button clicked
+                    break;
+                }
+                case DialogInterface.BUTTON_NEGATIVE: {
+                    //No button clicked
+                    break;
                 }
             }
         };
@@ -769,9 +714,9 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
 
     private void setAllColors(double ie) {
 //        RelativeLayout lLayout = (RelativeLayout) findViewById(R.id.expanding_item_id);
-        TextView value = (TextView) findViewById(R.id.text_view_value);
-        TextView description = (TextView) findViewById(R.id.text_view_category_name);
-        TextView name = (TextView) findViewById(R.id.text_view_category_name);
+        TextView value = findViewById(R.id.text_view_value);
+        TextView description = findViewById(R.id.text_view_category_name);
+        TextView name = findViewById(R.id.text_view_category_name);
 
         if (ie > 0) {
 //            lLayout.setBackgroundColor(getResources().getColor(R.color.positiveBackgroundColor));
@@ -813,46 +758,46 @@ public class TransactionsActivity extends AppCompatActivity implements RapidFloa
         datePickerDialog.show();
     }
 
-    private void oldshowDatePickerDialog() {
-        MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(TransactionsActivity.this,
-                new MonthPickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(int selectedMonth, int selectedYear) { // on date set }
-                        String date = selectedYear + "-" + selectedMonth;
-                        pickedDate.setText(date);
-
-                    }
-                }, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH));
-
-        builder.setActivatedMonth(Calendar.JULY)
-                .setMinYear(1990)
-                .setActivatedYear(Calendar.getInstance().get(Calendar.YEAR))
-                .setMaxYear(2050)
-                .setMinMonth(Calendar.JANUARY)
-                .setTitle("Select month")
-                .setMonthRange(Calendar.JANUARY, Calendar.DECEMBER)
-                // .setMaxMonth(Calendar.OCTOBER)
-                // .setYearRange(1890, 1890)
-                // .setMonthAndYearRange(Calendar.FEBRUARY, Calendar.OCTOBER, 1890, 1890)
-                //.showMonthOnly()
-                // .showYearOnly()
-                .setOnMonthChangedListener(new MonthPickerDialog.OnMonthChangedListener() {
-                    @Override
-                    public void onMonthChanged(int selectedMonth) {
-                        Log.d(TAG, "Selected month : " + selectedMonth);
-                        // Toast.makeText(MainActivity.this, " Selected month : " + selectedMonth, Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setOnYearChangedListener(new MonthPickerDialog.OnYearChangedListener() {
-                    @Override
-                    public void onYearChanged(int selectedYear) {
-                        Log.d(TAG, "Selected year : " + selectedYear);
-                        // Toast.makeText(MainActivity.this, " Selected year : " + selectedYear, Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .build()
-                .show();
-    }
+//    private void oldshowDatePickerDialog() {
+//        MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(TransactionsActivity.this,
+//                new MonthPickerDialog.OnDateSetListener() {
+//                    @Override
+//                    public void onDateSet(int selectedMonth, int selectedYear) { // on date set }
+//                        String date = selectedYear + "-" + selectedMonth;
+//                        pickedDate.setText(date);
+//
+//                    }
+//                }, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH));
+//
+//        builder.setActivatedMonth(Calendar.JULY)
+//                .setMinYear(1990)
+//                .setActivatedYear(Calendar.getInstance().get(Calendar.YEAR))
+//                .setMaxYear(2050)
+//                .setMinMonth(Calendar.JANUARY)
+//                .setTitle("Select month")
+//                .setMonthRange(Calendar.JANUARY, Calendar.DECEMBER)
+//                // .setMaxMonth(Calendar.OCTOBER)
+//                // .setYearRange(1890, 1890)
+//                // .setMonthAndYearRange(Calendar.FEBRUARY, Calendar.OCTOBER, 1890, 1890)
+//                //.showMonthOnly()
+//                // .showYearOnly()
+//                .setOnMonthChangedListener(new MonthPickerDialog.OnMonthChangedListener() {
+//                    @Override
+//                    public void onMonthChanged(int selectedMonth) {
+//                        Log.d(TAG, "Selected month : " + selectedMonth);
+//                        // Toast.makeText(MainActivity.this, " Selected month : " + selectedMonth, Toast.LENGTH_SHORT).show();
+//                    }
+//                })
+//                .setOnYearChangedListener(new MonthPickerDialog.OnYearChangedListener() {
+//                    @Override
+//                    public void onYearChanged(int selectedYear) {
+//                        Log.d(TAG, "Selected year : " + selectedYear);
+//                        // Toast.makeText(MainActivity.this, " Selected year : " + selectedYear, Toast.LENGTH_SHORT).show();
+//                    }
+//                })
+//                .build()
+//                .show();
+//    }
 
 
     @Override
