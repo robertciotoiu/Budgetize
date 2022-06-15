@@ -1,5 +1,5 @@
 # <img src="app/src/main/res/mipmap-xxxhdpi/app_icon_foreground.png" align="left" width="100"> Budgetize
-Android application for tracking incomes and expenses
+Android application for tracking incomes and expenses. **PLEASE NOTE: the project was recently migrated to latest Gradle and Android API version and some libraries that I am using were migrated from JCenter. After all these changes bugs may occur, if you find anything not working or crashing, please open an Issue.**
 
 ### Project description
 
